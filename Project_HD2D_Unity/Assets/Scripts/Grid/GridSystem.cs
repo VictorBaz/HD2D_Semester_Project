@@ -15,6 +15,12 @@ namespace Grid
 
         #endregion
 
+        #region Singleton
+
+        public static GridSystem Instance { get; private set; }
+
+        #endregion
+
         #region Unity Lifecycle
 
         private void OnEnable()
@@ -25,6 +31,18 @@ namespace Grid
         private void OnDisable()
         {
             CleanSub();
+        }
+
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
         }
 
         #endregion
@@ -71,30 +89,6 @@ namespace Grid
             dictionnaryGridObjects.Add(toPosition, gridObject);
         }
         
-
-        public  Vector3Int WorldToGrid(Vector3 worldPosition)
-        {
-            Vector3Int gridPosition = new Vector3Int
-            (
-                Mathf.FloorToInt(worldPosition.x / cellSize),
-                Mathf.FloorToInt(worldPosition.y / cellSize),
-                Mathf.FloorToInt(worldPosition.z / cellSize)
-            );
-            
-            return gridPosition;
-        }
-
-        public  Vector3 GridToWorld(Vector3Int gridPosition)
-        {
-            Vector3 wordPosition = new Vector3
-            (
-                (gridPosition.x * cellSize) + (cellSize * 0.5f),
-                (gridPosition.y * cellSize) /* + (cellSize * 0.5f)*/ ,
-                (gridPosition.z * cellSize) + (cellSize * 0.5f)
-            );
-            
-            return wordPosition;
-        }
 
         public bool TryGetGridObjectAt(Vector3Int gridPosition, out GridObject gridObject)
         {

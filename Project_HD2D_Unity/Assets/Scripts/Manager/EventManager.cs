@@ -15,5 +15,20 @@ namespace Manager
         /// Vector3Int => to
         /// </summary>
         public static event Action<GridObject, Vector3Int, Vector3Int> OnObjectMoved;
+
+        public static void RegisterObject(GridObject gridObject,  Vector3Int position)
+        {
+            OnObjectRegister?.Invoke(gridObject, position);
+        }
+
+        public static void UnregisterObject(GridObject gridObject, Vector3Int position)
+        {
+            OnObjectUnregister?.Invoke(gridObject, position);
+        }
+
+        public static void MovedObject(GridObject gridObject, Vector3Int fromPosition, Vector3Int toPosition)
+        {
+            OnObjectMoved?.Invoke(gridObject, fromPosition, toPosition);
+        }
     }
 }

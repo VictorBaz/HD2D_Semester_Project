@@ -13,8 +13,6 @@ namespace Grid
         
         [SerializeField] private float cellSize = 1f;
 
-
-
         #endregion
 
         #region Unity Lifecycle
@@ -35,20 +33,16 @@ namespace Grid
 
         private void SetupSub()
         {
-            /*
-            EventManager.OnObjectRegister += 
-            EventManager.OnObjectUnregister += 
-            EventManager.OnObjectMoved += 
-            */
+            EventManager.OnObjectRegister += RegisterObject;
+            EventManager.OnObjectUnregister += UnregisterObject;
+            EventManager.OnObjectMoved += MoveObject;
         }
 
         private void CleanSub()
         {
-            /*
-            EventManager.OnObjectRegister -=
-            EventManager.OnObjectUnregister -=
-            EventManager.OnObjectMoved -=
-            */
+            EventManager.OnObjectRegister -= RegisterObject;
+            EventManager.OnObjectUnregister -= UnregisterObject;
+            EventManager.OnObjectMoved -= MoveObject;
         }
 
         #endregion
@@ -57,44 +51,68 @@ namespace Grid
 
         private void RegisterObject(GridObject gridObject, Vector3Int position)
         {
-            
+            if (!dictionnaryGridObjects.TryAdd(position, gridObject))
+            {
+                throw new  Exception("A GridObject is already placed here");
+            }
         }
 
         private void UnregisterObject(GridObject gridObject, Vector3Int position)
         {
-            
+            dictionnaryGridObjects.Remove(position);
         }
 
         private void MoveObject(GridObject gridObject, Vector3Int fromPosition, Vector3Int toPosition)
         {
-            
-        }
-
-        private bool TryMoveObject(Vector3Int toPosition)
-        {
-            
-        }
-
-        private Vector3Int WorldToGrid(Vector3 worldPosition)
-        {
-            
-        }
-
-        private Vector3 GridToWorld(Vector3Int gridPosition)
-        {
-            
-        }
-
-        private GridObject GetGridObjectAt(Vector3Int gridPosition)
-        {
-            
-        }
-
-        private void IsPositionOccupied(Vector3Int gridPosition)
-        {
-            
+            if (!dictionnaryGridObjects.ContainsKey(fromPosition)) return;
+            if (IsPositionOccupied(toPosition)) return;
+    
+            dictionnaryGridObjects.Remove(fromPosition);
+            dictionnaryGridObjects.Add(toPosition, gridObject);
         }
         
+
+        public  Vector3Int WorldToGrid(Vector3 worldPosition)
+        {
+            Vector3Int gridPosition = new Vector3Int
+            (
+                Mathf.FloorToInt(worldPosition.x / cellSize),
+                Mathf.FloorToInt(worldPosition.y / cellSize),
+                Mathf.FloorToInt(worldPosition.z / cellSize)
+            );
+            
+            return gridPosition;
+        }
+
+        public  Vector3 GridToWorld(Vector3Int gridPosition)
+        {
+            Vector3 wordPosition = new Vector3
+            (
+                (gridPosition.x * cellSize) + (cellSize * 0.5f),
+                (gridPosition.y * cellSize) /* + (cellSize * 0.5f)*/ ,
+                (gridPosition.z * cellSize) + (cellSize * 0.5f)
+            );
+            
+            return wordPosition;
+        }
+
+        public bool TryGetGridObjectAt(Vector3Int gridPosition, out GridObject gridObject)
+        {
+            return dictionnaryGridObjects.TryGetValue(gridPosition, out gridObject);
+        }
+
+        public  bool IsPositionOccupied(Vector3Int gridPosition)
+        {
+            return dictionnaryGridObjects.ContainsKey(gridPosition);
+        }
+        
+        #endregion
+
+        #region Properties 
+
+        public float CellSize => cellSize;
+        public int ObjectCount => dictionnaryGridObjects.Count;
+
         #endregion
     }
 }

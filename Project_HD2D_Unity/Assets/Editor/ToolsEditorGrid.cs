@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Grid;
 using UnityEditor;
@@ -24,6 +25,8 @@ public class ToolsEditorGrid : EditorWindow
     
     private GameObject gameObjectSelected;
     private bool snappingGameobjectSelected = false;
+    
+    private Vector3 lastKnownPosition;
 
     #endregion
 
@@ -75,7 +78,7 @@ public class ToolsEditorGrid : EditorWindow
         
         EditorGUILayout.LabelField("Placement", EditorStyles.boldLabel);
         placementMode = EditorGUILayout.Toggle("Placement Mode", placementMode);
-        snappingGameobjectSelected = EditorGUILayout.Toggle("Snapping Mode", snappingGameobjectSelected);
+        
         
         EditorGUILayout.Space(10);
         
@@ -87,6 +90,7 @@ public class ToolsEditorGrid : EditorWindow
         EditorGUILayout.Space(10);
         
         DrawPrefabPalette();
+        EditSelectedGameObject();
         
     }
     
@@ -127,6 +131,8 @@ public class ToolsEditorGrid : EditorWindow
             EditorGUILayout.Space(5);
             EditorGUILayout.LabelField($"Selected: {availablePrefabs[selectedPrefabIndex].name}");
         }
+        
+        
     }
     
     /// <summary>
@@ -152,15 +158,37 @@ public class ToolsEditorGrid : EditorWindow
     #endregion
 
     #region Scene GUI
+    
 
     private void OnSceneGUI(SceneView sceneView)
     {
         DrawGrid();
-        
+    
         if (placementMode && selectedPrefabIndex >= 0)
         {
             HandlePlacement(sceneView);
         }
+
+        if (snappingGameobjectSelected && gameObjectSelected != null)
+        {
+            Vector3 actualPositionSelectedObject = gameObjectSelected.transform.position;
+
+            if (lastKnownPosition == Vector3.zero)
+            {
+                lastKnownPosition = actualPositionSelectedObject;
+                return; 
+            }
+            
+            if (Vector3.Distance(actualPositionSelectedObject,lastKnownPosition) > 0.01f)
+            {
+                Vector3Int gridPosition = GridHelper.WorldToGrid(actualPositionSelectedObject, gridCellSize);
+                Vector3 newPosition = GridHelper.GridToWorld(gridPosition, gridCellSize);
+                Undo.RecordObject(gameObjectSelected.transform, "Snap to Grid");
+                gameObjectSelected.transform.position = newPosition;
+                lastKnownPosition = newPosition;
+            }
+        }
+        
     }
 
     private void DrawGrid()
@@ -215,7 +243,6 @@ public class ToolsEditorGrid : EditorWindow
             
             previewGridPosition = GridHelper.WorldToGrid(worldPos,gridCellSize);
             isValidPlacement = true;
-            Debug.Log(previewGridPosition);
             
             DrawPlacementPreview();
             
@@ -255,18 +282,18 @@ public class ToolsEditorGrid : EditorWindow
     
     private void EditSelectedGameObject()
     {
+        gameObjectSelected = Selection.activeGameObject;
+    
         if (gameObjectSelected == null) return;
         
+        snappingGameobjectSelected = EditorGUILayout.Toggle("Snapping Mode", snappingGameobjectSelected);
+    
         if (GUILayout.Button("Rotate 90°", GUILayout.Height(25)))
         {
-            //rotate it
+            gameObjectSelected.transform.Rotate(90, PuzzleHelpers.RotationAxis.Y);
         }
-
-        if (!snappingGameobjectSelected) return;
-        
-        //code catch and snap
-        Selection.activeObject = gameObjectSelected;
         
         
     }
+    
 }

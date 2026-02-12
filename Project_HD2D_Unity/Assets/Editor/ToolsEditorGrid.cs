@@ -124,6 +124,11 @@ public class ToolsEditorGrid : EditorWindow
 
         snappingHandler.SnappingGameObjectSelected(gameObjectSelected, snappingGameobjectSelected, 
                                                    gridCellSize, ref lastKnownPosition);
+
+        if (gameObjectSelected != null)
+        {
+            gridRenderer.DrawGridY(gridCellSize, gridLineCount, gameObjectSelected.transform.position, gridOpacity);
+        }
     }
 
     #endregion
@@ -147,6 +152,7 @@ public class ToolsEditorGrid : EditorWindow
     private void OnSelectionChange()
     {
         snappingHandler.ResetLastKnownPosition(ref lastKnownPosition);
+        placementMode = false;
         Repaint();
     }
 

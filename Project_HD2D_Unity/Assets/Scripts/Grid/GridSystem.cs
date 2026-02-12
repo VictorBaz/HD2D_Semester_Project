@@ -9,7 +9,7 @@ namespace Grid
     {
         #region Variables
 
-        Dictionary<Vector3Int, GridObject> dictionnaryGridObjects = new Dictionary<Vector3Int, GridObject>();
+        [SerializeField] private Dictionary<Vector3Int, GridObject> dictionnaryGridObjects = new Dictionary<Vector3Int, GridObject>();
         
         [SerializeField] private float cellSize = 1f;
 
@@ -71,7 +71,7 @@ namespace Grid
         {
             if (!dictionnaryGridObjects.TryAdd(position, gridObject))
             {
-                throw new  Exception("A GridObject is already placed here");
+                throw new  Exception($"A GridObject is already placed here at {position}");
             }
         }
 

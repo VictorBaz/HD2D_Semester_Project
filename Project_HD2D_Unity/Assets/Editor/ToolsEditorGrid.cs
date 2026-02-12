@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Grid;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
@@ -88,9 +89,9 @@ public class ToolsEditorGrid : EditorWindow
         floorCount = EditorGUILayout.IntField("Grid Floor", floorCount);
         
         EditorGUILayout.Space(10);
-        
-        DrawPrefabPalette();
+        Debug.Log("pipi");
         EditSelectedGameObject();
+        DrawPrefabPalette();
         
     }
     
@@ -282,6 +283,8 @@ public class ToolsEditorGrid : EditorWindow
     
     private void EditSelectedGameObject()
     {
+        Debug.Log("caca");
+        
         gameObjectSelected = Selection.activeGameObject;
     
         if (gameObjectSelected == null) return;
@@ -292,8 +295,10 @@ public class ToolsEditorGrid : EditorWindow
         {
             gameObjectSelected.transform.Rotate(90, PuzzleHelpers.RotationAxis.Y);
         }
-        
-        
     }
-    
+
+    private void OnSelectionChange()
+    {
+        Repaint();
+    }
 }

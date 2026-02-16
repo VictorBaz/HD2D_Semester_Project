@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using Enum;
 using Manager;
-using UnityEditor;
-using UnityEditor.Rendering.LookDev;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
@@ -20,11 +18,10 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private Vector3 offsetCamera;
     [SerializeField] private float smoothTime = 0.3f;
     
-    private CameraPlayerState cameraState = CameraPlayerState.FollowPlayer;
+    private CameraPlayerState cameraState = CameraPlayerState.Fix;
     private float cameraPositionY = 0f;
     
     private Coroutine cameraCoroutine;
-    private Vector3 velocity = Vector3.zero;
 
     private void Awake()
     {
@@ -39,19 +36,36 @@ public class CameraManager : MonoBehaviour
 
     private void OnEnable()
     {
-        EventManager.OnCameraTrigger += TravelingCamera;
+        EventManager.OnCameraTrigger += OnCameraTrigger;
     }
 
     private void OnDisable()
     {
-        EventManager.OnCameraTrigger -= TravelingCamera;
+        EventManager.OnCameraTrigger -= OnCameraTrigger;
     }
+    
 
-    private void LateUpdate()
+    private void FixedUpdate()
     {
         FollowPlayer();
     }
 
+    private void OnCameraTrigger(CameraSettings cameraSettings)
+    {
+        switch (cameraSettings.CameraPlayerState)
+        {
+            case CameraPlayerState.Fix:
+                cameraState = CameraPlayerState.Fix;
+                TravelingCamera(cameraSettings);
+                break;
+            case CameraPlayerState.FollowPlayer:
+                cameraState = CameraPlayerState.FollowPlayer;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+    
     private void TravelingCamera(CameraSettings cameraSettings)
     {
         if (cameraCoroutine != null)
@@ -71,17 +85,16 @@ public class CameraManager : MonoBehaviour
             elapsedTime += Time.deltaTime;
             float ratio = elapsedTime / travelDuration;
 
-            float x = Mathf.Lerp(startPosition.x, cameraSettings.cameraPosition.x, ratio);
-            float z = Mathf.Lerp(startPosition.z, cameraSettings.cameraPosition.y, ratio);
-            
-            cameraTransform.position = new Vector3(x, cameraTransform.position.y, z);
+            /*float x = Mathf.Lerp(startPosition.x, cameraSettings.CameraPosition.x, ratio);
+            float z = Mathf.Lerp(startPosition.z, cameraSettings.CameraPosition.y, ratio);*/
+            Vector3 newPosition = Vector3.Lerp(startPosition, cameraSettings.CameraPosition, ratio);
+
+
+            cameraTransform.position = newPosition;
             yield return null;
         }
 
-        cameraTransform.position = new Vector3(
-            cameraSettings.cameraPosition.x,
-            cameraTransform.position.y,
-            cameraSettings.cameraPosition.y);
+        cameraTransform.position = cameraSettings.CameraPosition;
         
         cameraCoroutine = null;
     }
@@ -92,11 +105,12 @@ public class CameraManager : MonoBehaviour
         
         Vector3 targetPosition = playerTransform.position +  offsetCamera;
         
-        Vector3 newPosition = Vector3.SmoothDamp(
+        Vector3 newPosition = Vector3.Lerp(
             cameraTransform.position,
             targetPosition,
-            ref velocity,
-            smoothTime);;
+            Time.deltaTime * smoothTime
+            );
+        
         
         newPosition = new Vector3(newPosition.x, cameraPositionY, newPosition.z);
         

@@ -23,12 +23,16 @@ public class PlacementHandler
             previewGridPosition = GridHelper.WorldToGrid(worldPos, gridCellSize);
             
             //TODO ADD CHECK IF VALID PLACEMENT LIKE IF THERE IS ALREADY A CELL PLACED HERE
+
             isValidPlacement = true;
             
             DrawPlacementPreview(gridCellSize);
             
             if (e.type == EventType.MouseDown && e.button == 0)
             {
+
+                if (!CanPlacePrefab(gridCellSize)) return;
+                
                 PlacePrefab(availablePrefabs, selectedPrefabIndex, gridCellSize);
                 e.Use(); 
             }
@@ -59,5 +63,21 @@ public class PlacementHandler
         instance.transform.position = worldPos;
         
         Undo.RegisterCreatedObjectUndo(instance, "Place Prefab");
+    }
+
+
+    private bool CanPlacePrefab(float cellSize)
+    {
+        Vector3 worldPos = GridHelper.GridToWorld(previewGridPosition, cellSize);
+        
+        Vector3 screenPos = HandleUtility.WorldToGUIPoint(worldPos); 
+        
+        GameObject selectGameObject = HandleUtility.PickGameObject(
+            screenPos,
+            false);
+
+        Debug.Log(selectGameObject == null ? "NO" : "YES");
+
+        return selectGameObject == null;
     }
 }

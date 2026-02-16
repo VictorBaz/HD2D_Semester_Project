@@ -18,6 +18,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform cam;
     [SerializeField] private PlayerData playerDataRaw;
     [SerializeField] private float playerHeight = 2f;
+    [SerializeField] private float rotationSpeed = 0.1f;
 
     #endregion
 
@@ -56,6 +57,7 @@ public class PlayerController : MonoBehaviour
     {
         CalculateMoveDirection();
         CheckGround();
+        HandleRotation();
     }
 
     private void FixedUpdate()
@@ -90,6 +92,8 @@ public class PlayerController : MonoBehaviour
     private void ReceiveMove(InputAction.CallbackContext ctx)
     {
         moveInput = ctx.ReadValue<Vector2>();
+
+        if (Renderer == null || UiText == null) return;
         
         ChangeSprite(moveInput);
         ChangeLookingUI(moveInput);
@@ -233,6 +237,29 @@ public class PlayerController : MonoBehaviour
             {
                 UiText.text = "South";
             }
+        }
+
+        private void HandleRotation()
+        {
+            Vector3 targetDirection = Vector3.zero;
+
+            targetDirection = cam.forward * moveInput.x;
+            targetDirection += cam.right * - moveInput.y;
+            
+            targetDirection.Normalize();
+            
+            targetDirection.y = 0;
+
+            if (targetDirection == Vector3.zero)
+            {
+                targetDirection = transform.forward;
+            }
+        
+            Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+            Quaternion playerRotation = Quaternion.Slerp
+                (transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+
+            transform.rotation = playerRotation;
         }
 
     #endregion

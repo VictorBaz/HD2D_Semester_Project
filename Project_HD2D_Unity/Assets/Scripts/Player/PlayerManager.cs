@@ -29,7 +29,7 @@ public class PlayerManager : MonoBehaviour
     {
         CalculateTargetDirection();
         playerController.UpdatePlayerController(cameraTransform, inputManager.MoveInput);
-        animationManager.HandleAnimation(playerController.Rb.linearVelocity.magnitude);
+        animationManager.HandleAnimation(playerController.Rb.linearVelocity.magnitude, inputManager.MoveInput);
     }
 
     private void FixedUpdate()

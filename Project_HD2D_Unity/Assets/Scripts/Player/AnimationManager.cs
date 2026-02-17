@@ -7,7 +7,6 @@ public class AnimationManager : MonoBehaviour
     [SerializeField] private Transform mainTransform;
     [SerializeField] private Animator animator;
     [SerializeField] private SpriteRenderer spriteRenderer;
-    [SerializeField] private Sprite idleSprite;
     
     #endregion
 
@@ -28,10 +27,6 @@ public class AnimationManager : MonoBehaviour
 
             animator.SetFloat("moveX", input.x);
             animator.SetFloat("moveY", input.y);
-        }
-        else
-        {
-            spriteRenderer.sprite = idleSprite;
         }
         
     }

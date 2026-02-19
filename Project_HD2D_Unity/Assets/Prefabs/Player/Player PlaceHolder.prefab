@@ -103,6 +103,7 @@ MonoBehaviour:
     GroundCheckDistance: 0.2
     PlayerHeight: 1.9
     RotationSpeed: 0
+    MaxSlopeAngle: 0
 --- !u!114 &5011098004673443459
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,13 +144,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2997636382240519081}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.6, y: 2, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalRotation: {x: 0, y: 0.38268343, z: 0, w: 0.92387956}
+  m_LocalPosition: {x: 0, y: -2.11, z: 0}
+  m_LocalScale: {x: 0.54, y: 0.7563699, z: 0.1849315}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 5059742062778784755}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 45, z: 0}
 --- !u!212 &2727255195874718159
 SpriteRenderer:
   serializedVersion: 2
@@ -159,8 +160,8 @@ SpriteRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2997636382240519081}
   m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_StaticShadowCaster: 0
   m_MotionVectors: 1
@@ -176,7 +177,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  - {fileID: 2100000, guid: 88ef6671c2ca17641a3f45ac7f35e799, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -199,7 +200,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 811866838, guid: 29f0d1ab4212134418d71e3a7194f831, type: 3}
+  m_Sprite: {fileID: 1769201124, guid: a5c6ee21543aa6a4cb5e55e6e9dbde5b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

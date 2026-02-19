@@ -21,8 +21,6 @@ public class PlacementHandler
             worldPos = new Vector3(worldPos.x, floorCount * gridCellSize, worldPos.z);
             
             previewGridPosition = GridHelper.WorldToGrid(worldPos, gridCellSize);
-            
-            //TODO ADD CHECK IF VALID PLACEMENT LIKE IF THERE IS ALREADY A CELL PLACED HERE
 
             isValidPlacement = true;
             

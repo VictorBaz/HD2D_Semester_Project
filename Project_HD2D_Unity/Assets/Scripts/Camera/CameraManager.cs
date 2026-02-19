@@ -132,7 +132,7 @@ public class CameraManager : MonoBehaviour
             smoothTime
         );
         
-        newPosition.y = cameraPositionY;
+        //newPosition.y = cameraPositionY;
         cameraTransform.position = newPosition;
     }
 

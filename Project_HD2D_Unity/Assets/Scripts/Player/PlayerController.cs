@@ -11,6 +11,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerData playerDataRaw;
     
     [SerializeField] private PlayerDataInstance playerData;
+    
+    private RaycastHit slopeHit;
+    private bool exitingSlope;
 
     #endregion
 
@@ -53,6 +56,11 @@ public class PlayerController : MonoBehaviour
         Vector3 targetVelocity = targetDirection * playerData.MoveSpeed;
         Vector3 currentVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         Vector3 smoothedVelocity = Vector3.Lerp(currentVelocity, targetVelocity, 0.2f);
+
+        if (OnSlope())
+        {
+            smoothedVelocity = GetSlopeMoveDirection(smoothedVelocity);
+        }
         
         rb.linearVelocity = new Vector3(
             smoothedVelocity.x,
@@ -135,6 +143,26 @@ public class PlayerController : MonoBehaviour
 
         Gizmos.color = grounded ? new Color(0, 1, 0, 0.3f) : new Color(1, 0, 0, 0.3f);
         Gizmos.DrawSphere(rayEnd, 0.15f);
+    }
+
+    #endregion
+
+    #region Slope And Stairs
+
+    private bool OnSlope()
+    { 
+        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerData.PlayerHeight * 0.5f + 0.2f, playerData.GroundMask))
+        {
+            float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
+            return angle < playerData.MaxSlopeAngle && angle != 0;
+        }
+
+        return false;
+    }
+
+    private Vector3 GetSlopeMoveDirection(Vector3 direction)
+    {
+        return Vector3.ProjectOnPlane(direction, slopeHit.normal);
     }
 
     #endregion

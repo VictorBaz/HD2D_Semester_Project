@@ -10,6 +10,8 @@ public class PlayerData : ScriptableObject
     [field: SerializeField]  public  float GroundCheckDistance  {get; private set;}
     [field: SerializeField]  public  float PlayerHeight  {get; private set;}
     [field: SerializeField]  public  float RotationSpeed  {get; private set;}
+    
+    [field: SerializeField]  public  float MaxSlopeAngle  {get; private set;}
 
     public PlayerDataInstance Init()
     {
@@ -27,6 +29,7 @@ public class PlayerDataInstance
     public float GroundCheckDistance;
     public float PlayerHeight;
     public float RotationSpeed;
+    public float MaxSlopeAngle;
 
     public PlayerDataInstance(PlayerData data)
     {
@@ -36,5 +39,6 @@ public class PlayerDataInstance
         GroundCheckDistance = data.GroundCheckDistance;
         PlayerHeight = data.PlayerHeight;
         RotationSpeed = data.RotationSpeed;
+        MaxSlopeAngle = data.MaxSlopeAngle;
     }
 }

@@ -239,13 +239,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 203844586}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.40821788, y: -0.23456968, z: 0.10938163, w: 0.8754261}
+  m_LocalRotation: {x: 0.28977984, y: -0.24689744, z: 0.07764626, w: 0.9214339}
   m_LocalPosition: {x: 0, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+  m_LocalEulerAnglesHint: {x: 34.915, y: -30, z: 0}
 --- !u!1 &243934714
 GameObject:
   m_ObjectHideFlags: 0
@@ -3780,51 +3780,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2001969576}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &2071128695
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2071128697}
-  - component: {fileID: 2071128696}
-  m_Layer: 0
-  m_Name: GridSystem
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &2071128696
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2071128695}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 483426b056517eb4b889e64721d545fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Grid.GridSystem
-  cellSize: 1
---- !u!4 &2071128697
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2071128695}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -30.5, y: -26, z: 18.5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &2636261790364949917 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5059742062778784755, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
@@ -3927,6 +3882,18 @@ PrefabInstance:
       propertyPath: cameraTransform
       value: 
       objectReference: {fileID: 961739753}
+    - target: {fileID: 2727255195874718159, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
+      propertyPath: m_CastShadows
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2727255195874718159, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
+      propertyPath: m_ReceiveShadows
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2727255195874718159, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 88ef6671c2ca17641a3f45ac7f35e799, type: 2}
     - target: {fileID: 2750060000828546307, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
       propertyPath: cam
       value: 
@@ -3988,7 +3955,6 @@ SceneRoots:
   - {fileID: 1748570421}
   - {fileID: 677721164}
   - {fileID: 698868108}
-  - {fileID: 2071128697}
   - {fileID: 638703591}
   - {fileID: 7863538600632627637}
   - {fileID: 1861757558}

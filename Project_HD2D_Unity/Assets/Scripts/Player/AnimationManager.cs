@@ -35,6 +35,5 @@ public class AnimationManager : MonoBehaviour
         
     }
     
-
     #endregion
 }

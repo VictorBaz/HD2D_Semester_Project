@@ -1,8 +1,11 @@
+using System;
 using UnityEngine;
 
 public class NmiTest : MonoBehaviour, ILockable
 {
-    [SerializeField] private Transform lockPoint; 
+    [SerializeField] private Transform lockPoint;
+    
+    [SerializeField] private GameObject visualsLock;
     
     private bool isDead = false;
     
@@ -20,6 +23,5 @@ public class NmiTest : MonoBehaviour, ILockable
     {
         return 1f; 
     }
-
 
 }

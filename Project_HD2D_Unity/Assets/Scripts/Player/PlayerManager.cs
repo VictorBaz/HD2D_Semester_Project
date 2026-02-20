@@ -36,10 +36,10 @@ public class PlayerManager : MonoBehaviour
         
         playerController.SetLockMode(lockOnSystem.IsLocked);
         playerController.UpdatePlayerController(cameraTransform, inputManager.MoveInput);
-        
-        Vector2 animationInput = lockOnSystem.IsLocked 
-            ? CalculateAnimationInputFromVelocity()
-            : inputManager.MoveInput;
+
+        Vector2 animationInput = inputManager.MoveInput;//lockOnSystem.IsLocked 
+        //    ? CalculateLocalInput(targetDirection) 
+         //   : inputManager.MoveInput;
         
         animationManager.HandleAnimation(
             playerController.Rb.linearVelocity.magnitude, 
@@ -90,23 +90,7 @@ public class PlayerManager : MonoBehaviour
         return localInput;
     }
 
-    private Vector2 CalculateAnimationInputFromVelocity()
-{
-    Vector3 velocity = playerController.Rb.linearVelocity;
-    velocity.y = 0;
     
-    if (velocity.magnitude < 0.1f) 
-        return Vector2.zero;
-    
-    Vector3 localVelocity = playerController.transform.InverseTransformDirection(velocity);
-    
-    Vector2 localInput = new Vector2(localVelocity.x, localVelocity.z);
-    
-    if (localInput.magnitude > 1f)
-        localInput.Normalize();
-    
-    return localInput;
-}
 
     #endregion
 }

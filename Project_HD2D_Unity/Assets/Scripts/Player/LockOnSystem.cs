@@ -45,7 +45,6 @@ public class LockOnSystem : MonoBehaviour
             Unlock();
             return;
         }
-
         
         
         Vector3 directionToTarget = (CurrentTarget.GetLockTransform().position - playerTransform.position).normalized;

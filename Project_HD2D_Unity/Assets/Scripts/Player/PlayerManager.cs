@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -30,8 +31,8 @@ public class PlayerManager : MonoBehaviour
 
     private void Update()
     {
-        CalculateTargetDirection();
         lockOnSystem.UpdateLockRotation();
+        CalculateTargetDirection();
     
         playerController.SetLockMode(lockOnSystem.IsLocked);
         playerController.UpdatePlayerController(cameraTransform, inputManager.MoveInput);
@@ -73,16 +74,23 @@ public class PlayerManager : MonoBehaviour
     
     private Vector2 CalculateAnimationInput()
     {
+        //
         if (targetDirection.magnitude < 0.1f)
             return Vector2.zero;
 
-        Vector3 camForwardFlat = cameraTransform.forward;
-        camForwardFlat.y = 0;
-        camForwardFlat.Normalize();
+        Vector3 reference = lockOnSystem.IsLocked
+            ? transform.forward
+            : cameraTransform.forward;
 
-        float yaw = Vector3.SignedAngle(camForwardFlat, targetDirection, Vector3.up);
+        Debug.DrawRay(transform.position,targetDirection, Color.red);
+        
+        reference.y = 0;
+        reference.Normalize();
+    
+        float yaw = Vector3.SignedAngle(reference, targetDirection, Vector3.up);
         float yawRad = yaw * Mathf.Deg2Rad;
 
+        
         return new Vector2(Mathf.Sin(yawRad), Mathf.Cos(yawRad));
     }
 

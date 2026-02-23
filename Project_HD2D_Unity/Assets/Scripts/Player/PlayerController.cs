@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    private static readonly int CanJump = Animator.StringToHash("CanJump");
+
     #region Variables
 
     public bool IsGrounded { get; private set; }
     public Rigidbody Rb => rb;
+
 
     public event Action OnJump;
 
@@ -15,6 +18,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerData playerDataRaw;
     
     [SerializeField] private PlayerDataInstance playerData;
+    [SerializeField] private Animator animator;
     
     private RaycastHit slopeHit;
     private bool exitingSlope;
@@ -45,13 +49,7 @@ public class PlayerController : MonoBehaviour
         ApplyMovement(targetDirection);
     }
 
-    public void TryJump()
-    {
-        if (IsGrounded)
-        {
-            Jump();
-        }
-    }
+    
 
     #endregion
 
@@ -116,8 +114,17 @@ public class PlayerController : MonoBehaviour
 
     #region Jump
 
+    public void TryJump()
+    {
+        if (IsGrounded && animator.GetBool(CanJump))
+        {
+            Jump();
+        }
+    }
+    
     private void Jump()
     {
+        
         rb.AddForce(Vector3.up * playerData.JumpForce, ForceMode.Impulse);
         
         OnJump?.Invoke();

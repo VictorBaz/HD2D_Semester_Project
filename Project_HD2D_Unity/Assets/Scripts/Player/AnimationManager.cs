@@ -56,16 +56,7 @@ public class AnimationManager : MonoBehaviour
     {
         animator.SetTrigger(MeleeAttack);
     }
-
-    public void StartShoot()
-    {
-        animator.SetBool(IsChargingHash, true);
-    }
-
-    public void EndShoot()
-    {
-        animator.SetBool(IsChargingHash, false);
-    }
+    
     
     #endregion
 }

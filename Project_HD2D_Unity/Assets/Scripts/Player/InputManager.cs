@@ -7,6 +7,7 @@ public class InputManager : MonoBehaviour
     #region Variables
 
     public Vector2 MoveInput { get; private set; }
+    public Vector2 ShootInput { get; private set; }
 
     public event Action OnJumpPressed;
     public event Action OnLockToggle;
@@ -43,6 +44,9 @@ public class InputManager : MonoBehaviour
     {
         playerInputAction.Player.Move.performed += ReceiveMove;
         playerInputAction.Player.Move.canceled += ReceiveMove;
+
+        playerInputAction.Player.Look.performed += ReceiveShootDirection;
+        playerInputAction.Player.Look.canceled += ReceiveShootDirection;
         
         playerInputAction.Player.Jump.performed += ReceiveJump;
         
@@ -60,6 +64,9 @@ public class InputManager : MonoBehaviour
     {
         playerInputAction.Player.Move.performed -= ReceiveMove;
         playerInputAction.Player.Move.canceled -= ReceiveMove;
+        
+        playerInputAction.Player.Look.performed -= ReceiveShootDirection;
+        playerInputAction.Player.Look.canceled -= ReceiveShootDirection;
         
         playerInputAction.Player.Jump.performed -= ReceiveJump;
         
@@ -82,6 +89,11 @@ public class InputManager : MonoBehaviour
         MoveInput = ctx.ReadValue<Vector2>();
     }
 
+    private void ReceiveShootDirection(InputAction.CallbackContext ctx)
+    {
+        ShootInput = ctx.ReadValue<Vector2>();
+    }
+
     private void ReceiveJump(InputAction.CallbackContext ctx)
     {
         OnJumpPressed?.Invoke();
@@ -101,8 +113,6 @@ public class InputManager : MonoBehaviour
     {
         OnShoot?.Invoke(ctx);
     }
-
-    
     
     #endregion
 }

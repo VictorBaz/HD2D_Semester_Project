@@ -33,7 +33,6 @@ public class PlayerManager : MonoBehaviour
         inputManager.OnShoot += playerController.TryShoot;
         playerController.OnSimpleShoot += HandleSimpleShoot;
         playerController.OnChargeShoot += HandleChargeShoot;
-        playerController.OnStartChargingShoot += animationManager.StartShoot;
     }
 
     private void OnDisable()
@@ -50,7 +49,6 @@ public class PlayerManager : MonoBehaviour
         inputManager.OnShoot -= playerController.TryShoot;
         playerController.OnSimpleShoot -= HandleSimpleShoot;
         playerController.OnChargeShoot -= HandleChargeShoot;
-        playerController.OnStartChargingShoot -= animationManager.StartShoot;
     }
 
     private void Update()
@@ -113,7 +111,8 @@ public class PlayerManager : MonoBehaviour
 
         if (lockOnSystem.IsLocked)
         {
-            Vector3 enemyDir = lockOnSystem.CurrentTarget.GetLockTransform().position - transform.position;
+            Vector3 enemyDir = lockOnSystem.CurrentTarget.GetLockTransform().position
+                               - transform.position;
             enemyDir.y = 0f; enemyDir.Normalize();
 
             float eX = Vector3.Dot(enemyDir, camR);
@@ -148,12 +147,12 @@ public class PlayerManager : MonoBehaviour
 
     private void HandleSimpleShoot()
     {
-        animationManager.EndShoot();
+        //animationManager.EndShoot();
     }
 
     private void HandleChargeShoot(float chargeRatio)
     {
-        animationManager.EndShoot();
+        //animationManager.EndShoot();
     }
 
     #endregion

@@ -28,6 +28,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float chargeThreshold = 0.2f;
     [SerializeField] private float maxChargeTime = 2f;
     
+    [SerializeField] private float dashSpeed = 6f;
+    
+    
     private RaycastHit slopeHit;
     private bool exitingSlope;
     
@@ -234,15 +237,37 @@ public class PlayerController : MonoBehaviour
     private IEnumerator AttackMeleeIe()
     {
         IsAttacking = true;
+
+        float dashDuration = 0.35f;
+        float elapsed = 0f;
+
+        while (elapsed < dashDuration)
+        {
+            float t = elapsed / dashDuration;
+            
+            rb.linearVelocity = Vector3.Lerp(
+                transform.forward * dashSpeed,
+                Vector3.zero,
+                t);
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
         ToggleFixPlayerPosition(true);
-        yield return new WaitForSeconds(playerData.GetLengthOfClip(playerData.AttackClip));
+        yield return new WaitForSeconds(
+            playerData.GetLengthOfClip(playerData.AttackClip) - dashDuration);
+
         ToggleFixPlayerPosition(false);
         IsAttacking = false;
     }
 
     public void TryShoot(InputAction.CallbackContext ctx)
     {
-        if (IsAttacking || !IsGrounded) return;
+        if (IsAttacking || !IsGrounded)
+        {
+            return;
+        }
 
         if (ctx.started)
         {
@@ -258,16 +283,18 @@ public class PlayerController : MonoBehaviour
 
             if (holdDuration < chargeThreshold)
             {
+                Debug.Log("Simple shoot fired");
                 OnSimpleShoot?.Invoke();
             }
             else
             {
                 float chargeRatio = Mathf.Clamp01(holdDuration / maxChargeTime);
+                Debug.Log($"Charged shoot fired — charge ratio: {chargeRatio:F2}");
                 OnChargeShoot?.Invoke(chargeRatio);
             }
         }
     }
-    
+
     private void HandleChargeTick()
     {
         if (!isChargingShoot) return;
@@ -275,7 +302,6 @@ public class PlayerController : MonoBehaviour
         float chargeRatio = Mathf.Clamp01((Time.time - shootPressTime) / maxChargeTime);
         OnChargeTick?.Invoke(chargeRatio);
     }
-    
     #endregion
 
     #region Contraints
@@ -296,4 +322,5 @@ public class PlayerController : MonoBehaviour
     
 
     #endregion
+
 }

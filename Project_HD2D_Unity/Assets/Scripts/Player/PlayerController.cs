@@ -28,8 +28,6 @@ public class PlayerController : MonoBehaviour
     private bool exitingSlope;
 
     private bool isInLockMode = false;
-    
-    private bool canJump = true;
 
     #endregion
 

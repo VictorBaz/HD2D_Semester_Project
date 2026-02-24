@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2565947084703810372}
   - component: {fileID: 6945632285107405488}
   - component: {fileID: 5011098004673443459}
+  - component: {fileID: 6652683228054312222}
   m_Layer: 0
   m_Name: Player PlaceHolder
   m_TagString: Player
@@ -79,7 +80,9 @@ MonoBehaviour:
   inputManager: {fileID: 5011098004673443459}
   playerController: {fileID: 6945632285107405488}
   animationManager: {fileID: 2750060000828546307}
+  lockOnSystem: {fileID: 6652683228054312222}
   cameraTransform: {fileID: 0}
+  visualTransform: {fileID: 4853645424513758346}
 --- !u!114 &6945632285107405488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -104,6 +107,8 @@ MonoBehaviour:
     PlayerHeight: 1.9
     RotationSpeed: 0
     MaxSlopeAngle: 0
+    AttackClip: {fileID: 0}
+  animator: {fileID: 3109046576608672110}
 --- !u!114 &5011098004673443459
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -116,6 +121,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6a59ded29e1f0d409452c1ebffc24de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::InputManager
+--- !u!114 &6652683228054312222
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 306448382632177375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa75fbe188bc950419a17761096ae4cd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LockOnSystem
+  playerTransform: {fileID: 5059742062778784755}
+  lockRange: 15
+  lockAngle: 180
+  lockableLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  rotationSpeed: 10
 --- !u!1 &2997636382240519081
 GameObject:
   m_ObjectHideFlags: 0
@@ -144,13 +168,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2997636382240519081}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.38268343, z: 0, w: 0.92387956}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -2.11, z: 0}
   m_LocalScale: {x: 0.54, y: 0.7563699, z: 0.1849315}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 5059742062778784755}
-  m_LocalEulerAnglesHint: {x: 0, y: 45, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2727255195874718159
 SpriteRenderer:
   serializedVersion: 2

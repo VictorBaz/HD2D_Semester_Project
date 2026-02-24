@@ -124,7 +124,7 @@ public class PlayerController : MonoBehaviour
 
     public void TryJump()
     {
-        if (IsGrounded && !IsAttacking)
+        if (IsGrounded && !IsAttacking && !IsLanding() && !IsInAir())
         {
             Jump();
         }
@@ -136,7 +136,16 @@ public class PlayerController : MonoBehaviour
         
         OnJump?.Invoke();
     }
-    
+
+    private bool IsLanding()
+    {
+        return animator.GetCurrentAnimatorStateInfo(0).IsName("Land");
+    }
+
+    private bool IsInAir()
+    {
+        return  animator.GetCurrentAnimatorStateInfo(0).IsName("Fall");
+    }
 
     #endregion
 

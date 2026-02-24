@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour
     public event Action OnSimpleShoot;
     public event Action<float> OnChargeShoot;
     public event Action OnStartChargingShoot;
+    public event Action<float> OnChargeTick;
 
     [SerializeField] private Rigidbody rb;
     [SerializeField] private PlayerData playerDataRaw;
@@ -24,7 +25,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerDataInstance playerData;
     [SerializeField] private Animator animator;
     
-    [SerializeField] private float chargeThreshold = 0.5f;
+    [SerializeField] private float chargeThreshold = 0.2f;
     [SerializeField] private float maxChargeTime = 2f;
     
     private RaycastHit slopeHit;
@@ -37,14 +38,6 @@ public class PlayerController : MonoBehaviour
 
     private static readonly int CanJump = Animator.StringToHash("CanJump");
     private static readonly int Attacking = Animator.StringToHash("IsAttacking");
-    
-    
-    
-
-    
-
-    
-    
     
     #endregion
 
@@ -63,6 +56,7 @@ public class PlayerController : MonoBehaviour
     {
         CheckGround();
         HandleRotation(cam, moveInput);
+        HandleChargeTick();
     }
 
     public void UpdatePlayerControllerPhysics(Vector3 targetDirection)
@@ -252,13 +246,14 @@ public class PlayerController : MonoBehaviour
 
         if (ctx.started)
         {
-            shootPressTime = Time.time;
             isChargingShoot = true;
+            shootPressTime = Time.time;
             OnStartChargingShoot?.Invoke();
         }
         else if (ctx.canceled && isChargingShoot)
         {
             isChargingShoot = false;
+
             float holdDuration = Time.time - shootPressTime;
 
             if (holdDuration < chargeThreshold)
@@ -273,6 +268,13 @@ public class PlayerController : MonoBehaviour
         }
     }
     
+    private void HandleChargeTick()
+    {
+        if (!isChargingShoot) return;
+
+        float chargeRatio = Mathf.Clamp01((Time.time - shootPressTime) / maxChargeTime);
+        OnChargeTick?.Invoke(chargeRatio);
+    }
     
     #endregion
 

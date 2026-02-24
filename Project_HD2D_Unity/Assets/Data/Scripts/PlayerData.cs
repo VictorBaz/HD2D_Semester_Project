@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "PlayerData", menuName = "PlayerData", order = 1)]
@@ -12,6 +13,8 @@ public class PlayerData : ScriptableObject
     [field: SerializeField]  public  float PlayerHeight  {get; private set;}
 
     [field: Header("Restrictions Settings"), SerializeField]  public  float MaxSlopeAngle  {get; private set;}
+    
+    [field: SerializeField]  public  AnimationClip AttackClip {get; private set;}
     
     public PlayerDataInstance Init()
     {
@@ -30,6 +33,7 @@ public class PlayerDataInstance
     public float PlayerHeight;
     public float RotationSpeed;
     public float MaxSlopeAngle;
+    public AnimationClip AttackClip;
 
     public PlayerDataInstance(PlayerData data)
     {
@@ -40,5 +44,12 @@ public class PlayerDataInstance
         PlayerHeight = data.PlayerHeight;
         RotationSpeed = data.RotationSpeed;
         MaxSlopeAngle = data.MaxSlopeAngle;
+        AttackClip = data.AttackClip;
     }
+
+    public float GetLengthOfClip(AnimationClip clip)
+    {
+        return clip.length;
+    }
+    
 }

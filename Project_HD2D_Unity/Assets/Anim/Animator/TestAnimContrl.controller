@@ -516,6 +516,20 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!114 &-1343225445340514979
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a283c30d1946c44b8944756528273e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ResetBoolExitAnim
+  boolNameExit: CanJump
+  boolValueExit: 1
 --- !u!1101 &-696152941180617458
 AnimatorStateTransition:
   m_ObjectHideFlags: 1
@@ -715,22 +729,6 @@ AnimatorController:
     m_IKPass: 0
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
---- !u!114 &1301285573322370065
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eeade636f5e07304ea956cdd27cc3b42, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ResetBool
-  boolNameExit: CanJump
-  boolValueExit: 1
-  boolNameEnter: 
-  boolValueEnter: 0
 --- !u!1102 &1962379449001737192
 AnimatorState:
   serializedVersion: 6
@@ -744,7 +742,7 @@ AnimatorState:
   m_Transitions:
   - {fileID: -4651036208700573169}
   m_StateMachineBehaviours:
-  - {fileID: 1301285573322370065}
+  - {fileID: -1343225445340514979}
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
@@ -908,7 +906,7 @@ AnimatorState:
   m_Transitions:
   - {fileID: -6202505100933864265}
   m_StateMachineBehaviours:
-  - {fileID: 7446402914636589299}
+  - {fileID: 7447093964107610589}
   m_Position: {x: 50, y: 50, z: 0}
   m_IKOnFeet: 0
   m_WriteDefaultValues: 1
@@ -954,7 +952,7 @@ BlendTree:
   m_UseAutomaticThresholds: 1
   m_NormalizedBlendValues: 0
   m_BlendType: 0
---- !u!114 &7446402914636589299
+--- !u!114 &7447093964107610589
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -963,11 +961,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eeade636f5e07304ea956cdd27cc3b42, type: 3}
+  m_Script: {fileID: 11500000, guid: 0df032c1e72f0e44d8f0b9fbe518cffc, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ResetBool
-  boolNameExit: 
-  boolValueExit: 0
+  m_EditorClassIdentifier: Assembly-CSharp::ResetBoolEnterAnim
   boolNameEnter: CanJump
   boolValueEnter: 0
 --- !u!206 &7491343952298526935

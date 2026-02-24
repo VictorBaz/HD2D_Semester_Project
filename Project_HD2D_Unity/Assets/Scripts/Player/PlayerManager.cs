@@ -13,6 +13,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private Transform visualTransform; 
     
     private Vector3 targetDirection;
+    private Vector2 blendInput;
 
     #endregion
 
@@ -50,8 +51,7 @@ public class PlayerManager : MonoBehaviour
         playerController.SetLockMode(lockOnSystem.IsLocked);
         playerController.UpdatePlayerController(cameraTransform, inputManager.MoveInput);
 
-        Vector2 blendInput = GetBlendTreeInput();
-        Debug.Log($"moveX: {blendInput.x:F2} | moveY: {blendInput.y:F2} | locked: {lockOnSystem.IsLocked}");
+        blendInput = GetBlendTreeInput(playerController.IsAttacking);
         
         animationManager.HandleAnimation(
             playerController.Rb.linearVelocity.magnitude, 
@@ -91,8 +91,10 @@ public class PlayerManager : MonoBehaviour
     
     
 
-    Vector2 GetBlendTreeInput()
+    Vector2 GetBlendTreeInput(bool isAttacking)
     {
+        if (isAttacking) return blendInput;
+        
         Vector3 camR = cameraTransform.right;
         camR.y = 0f; camR.Normalize();
 

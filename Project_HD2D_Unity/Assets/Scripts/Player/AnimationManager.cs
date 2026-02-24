@@ -13,7 +13,8 @@ public class AnimationManager : MonoBehaviour
     private static readonly int MoveYHash = Animator.StringToHash("moveY");
     private static readonly int JumpHash = Animator.StringToHash("Jump");
     private static readonly int IsGroundedHash = Animator.StringToHash("IsGrounded");
-    
+    private static readonly int MeleeAttack = Animator.StringToHash("MeleeAttack");
+
     #endregion
 
     #region Public Methods
@@ -48,7 +49,7 @@ public class AnimationManager : MonoBehaviour
 
     public void AttackMelee()
     {
-        
+        animator.SetTrigger(MeleeAttack);
     }
     
     #endregion

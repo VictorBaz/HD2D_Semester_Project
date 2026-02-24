@@ -1,16 +1,19 @@
 using System;
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
     private static readonly int CanJump = Animator.StringToHash("CanJump");
+    private static readonly int Attacking = Animator.StringToHash("IsAttacking");
 
     #region Variables
 
     public bool IsGrounded { get; private set; }
     public Rigidbody Rb => rb;
 
+    public bool IsAttacking { get;private set; }
 
     public event Action OnJump;
     public event Action OnAttackMelee;
@@ -25,6 +28,8 @@ public class PlayerController : MonoBehaviour
     private bool exitingSlope;
 
     private bool isInLockMode = false;
+    
+    private bool canJump = true;
 
     #endregion
 
@@ -58,6 +63,8 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyMovement(Vector3 targetDirection)
     {
+        if(IsAttacking) return;
+        
         Vector3 targetVelocity = targetDirection * playerData.MoveSpeed;
         Vector3 currentVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         Vector3 smoothedVelocity = Vector3.Lerp(currentVelocity, targetVelocity, 0.2f);
@@ -75,7 +82,7 @@ public class PlayerController : MonoBehaviour
 
     private void HandleRotation(Transform cam, Vector2 moveInput)
     {
-        if (isInLockMode) return;
+        if (isInLockMode && IsAttacking) return;
 
         Vector3 targetDirection = cam.forward * moveInput.y;
         targetDirection += cam.right * moveInput.x;
@@ -117,7 +124,7 @@ public class PlayerController : MonoBehaviour
 
     public void TryJump()
     {
-        if (IsGrounded && animator.GetBool(CanJump))
+        if (IsGrounded && !IsAttacking)
         {
             Jump();
         }
@@ -125,11 +132,11 @@ public class PlayerController : MonoBehaviour
     
     private void Jump()
     {
-        
         rb.AddForce(Vector3.up * playerData.JumpForce, ForceMode.Impulse);
         
         OnJump?.Invoke();
     }
+    
 
     #endregion
 
@@ -197,8 +204,42 @@ public class PlayerController : MonoBehaviour
 
     public void TryAttack()
     {
-        //attack
+        if (IsAttacking || !IsGrounded) return;
+        
+        AttackMelee();
+    }
+
+    private void AttackMelee()
+    {
         OnAttackMelee?.Invoke();
+        StartCoroutine(AttackMeleeIe());
+    }
+
+    private IEnumerator AttackMeleeIe()
+    {
+        IsAttacking = true;
+        ToggleFixPlayerPosition(true);
+        yield return new WaitForSeconds(playerData.GetLengthOfClip(playerData.AttackClip));
+        ToggleFixPlayerPosition(false);
+        IsAttacking = false;
+    }
+    
+    #endregion
+
+    #region Contraints
+
+    private void ToggleFixPlayerPosition(bool fixedPosition)
+    {
+        if (fixedPosition)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.constraints = RigidbodyConstraints.FreezePosition;
+        }
+        else
+        {
+            rb.constraints = RigidbodyConstraints.None;
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+        }
     }
     
 

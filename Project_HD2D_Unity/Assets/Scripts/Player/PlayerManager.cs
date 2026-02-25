@@ -77,6 +77,11 @@ public class PlayerManager : MonoBehaviour
         playerController.UpdatePlayerControllerPhysics(targetDirection);
     }
 
+    private void LateUpdate()
+    {
+        playerCursor.FollowPlayer();
+    }
+
     #endregion
 
     #region Private Methods

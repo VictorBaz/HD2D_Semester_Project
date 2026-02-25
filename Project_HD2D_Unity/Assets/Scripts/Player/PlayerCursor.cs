@@ -34,7 +34,7 @@ public class PlayerCursor : MonoBehaviour
     #region Public Methods
     public void HandleRotation(Vector2 shootInput)
     {
-        FollowPlayer();
+        
 
         if (shootInput.magnitude < inputDeadzone) return;
 
@@ -53,17 +53,14 @@ public class PlayerCursor : MonoBehaviour
 
         targetRotation = Quaternion.LookRotation(worldDirection);
 
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            targetRotation,
-            rotationSpeed * Time.deltaTime);
+        transform.rotation = targetRotation;
     }
 
     #endregion
 
     #region Private Methods
 
-    private void FollowPlayer()
+    public void FollowPlayer()
     {
         transform.position = new Vector3(
             playerTransform.position.x,

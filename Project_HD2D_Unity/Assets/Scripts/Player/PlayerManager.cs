@@ -11,6 +11,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private LockOnSystem lockOnSystem;
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private Transform visualTransform; 
+    [SerializeField] private PlayerCursor playerCursor; 
     
     private Vector3 targetDirection;
     private Vector2 blendInput;
@@ -66,6 +67,8 @@ public class PlayerManager : MonoBehaviour
             blendInput,
             playerController.IsGrounded
         );
+        
+        playerCursor.HandleRotation(inputManager.ShootInput);
         
     }
 

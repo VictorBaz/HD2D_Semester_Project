@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float maxChargeTime = 2f;
     
     [SerializeField] private float dashSpeed = 6f;
+    [SerializeField] private float dashDuration = 6f;
     
     
     private RaycastHit slopeHit;
@@ -238,7 +239,7 @@ public class PlayerController : MonoBehaviour
     {
         IsAttacking = true;
 
-        float dashDuration = 0.35f;
+        dashDuration = 0.35f;
         float elapsed = 0f;
 
         while (elapsed < dashDuration)
@@ -322,5 +323,7 @@ public class PlayerController : MonoBehaviour
     
 
     #endregion
+
+    
 
 }

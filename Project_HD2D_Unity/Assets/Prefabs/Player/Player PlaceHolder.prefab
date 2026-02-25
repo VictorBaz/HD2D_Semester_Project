@@ -83,6 +83,9 @@ MonoBehaviour:
   lockOnSystem: {fileID: 6652683228054312222}
   cameraTransform: {fileID: 0}
   visualTransform: {fileID: 4853645424513758346}
+  playerCursor: {fileID: 0}
+  rb: {fileID: 3639011257540391852}
+  inputDeadzone: 0.8
 --- !u!114 &6945632285107405488
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -109,6 +112,10 @@ MonoBehaviour:
     MaxSlopeAngle: 0
     AttackClip: {fileID: 0}
   animator: {fileID: 3109046576608672110}
+  chargeThreshold: 0.2
+  maxChargeTime: 2
+  dashSpeed: 6
+  dashDuration: 6
 --- !u!114 &5011098004673443459
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -138,7 +145,7 @@ MonoBehaviour:
   lockAngle: 180
   lockableLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 128
   rotationSpeed: 10
 --- !u!1 &2997636382240519081
 GameObject:
@@ -222,7 +229,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 10
   m_MaskInteraction: 0
   m_Sprite: {fileID: 1769201124, guid: a5c6ee21543aa6a4cb5e55e6e9dbde5b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

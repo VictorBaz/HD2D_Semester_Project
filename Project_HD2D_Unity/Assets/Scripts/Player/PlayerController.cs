@@ -91,12 +91,15 @@ public class PlayerController : MonoBehaviour
         if (OnSlope())
         {
             smoothedVelocity = GetSlopeMoveDirection(smoothedVelocity);
+            rb.linearVelocity = smoothedVelocity;
         }
-        
-        rb.linearVelocity = new Vector3(
-            smoothedVelocity.x,
-            rb.linearVelocity.y,
-            smoothedVelocity.z);
+        else
+        {
+            rb.linearVelocity = new Vector3(
+                smoothedVelocity.x,
+                rb.linearVelocity.y,
+                smoothedVelocity.z);
+        }
     }
 
     private void HandleRotation(Transform cam, Vector2 moveInput)

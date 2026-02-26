@@ -37,7 +37,7 @@ public class PlayerManager : MonoBehaviour
 
     private void Start()
     {
-        ObjectPooler.SetupPool<ProjectileBase>(projectilePrefab, 20, "Projectile");
+        ObjectPooler.SetupPool<ProjectileBase>(projectilePrefab, 10, "Projectile");
     }
 
     private void OnEnable()

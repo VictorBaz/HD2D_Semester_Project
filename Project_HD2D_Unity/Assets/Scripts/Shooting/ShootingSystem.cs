@@ -12,7 +12,11 @@ public class ShootingSystem
         
         projectile.gameObject.SetActive(true);
 
-        projectile.Initialize(new Vector2(directionShoot.x,directionShoot.z));
+        Vector2 finalDirection = new Vector2(directionShoot.x, directionShoot.z);
+        
+        if(finalDirection != Vector2.zero) finalDirection.Normalize();
+            
+        projectile.Initialize(finalDirection);
     }
 
     

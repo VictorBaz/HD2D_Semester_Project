@@ -49,8 +49,6 @@ public class ShootingSystem : MonoBehaviour
         isCharging     = true;
         shootPressTime = Time.time;
         OnStartChargingShoot?.Invoke();
-        
-        Debug.Log("Started");
     }
 
     public void HandleStopTryShoot()
@@ -70,7 +68,6 @@ public class ShootingSystem : MonoBehaviour
             chargeRatio = Mathf.Clamp01(holdDuration / maxChargeTime);
             SpawnProjectile(SelectProjectile(chargeRatio));
         }
-        Debug.Log("Stop");
 
         chargeRatio = 0f;
     }

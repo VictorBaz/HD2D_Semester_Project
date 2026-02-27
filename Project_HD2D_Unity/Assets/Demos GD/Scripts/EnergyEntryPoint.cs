@@ -1,26 +1,28 @@
+using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace Demos_GD.Scripts
 {
-    public class EnergyEntryPoint : MonoBehaviour, IPointerClickHandler
+    public class EnergyEntryPoint : MonoBehaviour
     {
         [SerializeField] private RootLinker rootLinker;
-        
-        public void OnPointerClick(PointerEventData eventData)
+
+        private void OnTriggerEnter(Collider other)
         {
-            Debug.Log("FAAAH");
+            ProjectileBase projectile = other.GetComponent<ProjectileBase>();
+            if (!projectile) return;
             
-            switch (eventData.button)
-            {
-                case PointerEventData.InputButton.Left:
-                    rootLinker.ChangeEnergyLevel(1);
-                    break;
-                
-                case PointerEventData.InputButton.Right:
-                    rootLinker.ChangeEnergyLevel(-1);
-                    break;
-            }
+            AddEnergy();
+        }
+
+        public void AddEnergy()
+        {
+            rootLinker.ChangeEnergyLevel(1);
+        }
+
+        public void RemoveEnergy()
+        {
+            rootLinker.ChangeEnergyLevel(-1);
         }
     }
 }

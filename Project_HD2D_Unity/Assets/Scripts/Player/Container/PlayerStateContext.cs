@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerStateContext : MonoBehaviour
+public class PlayerStateContext
 {
     public PlayerController Controller;
     public AnimationManager AnimationManager;
@@ -8,4 +8,8 @@ public class PlayerStateContext : MonoBehaviour
     public InputManager InputManager;
     public Rigidbody Rb;
     public Transform CameraTransform;
+    public Transform PlayerTransform;
+    public PlayerManager StateMachine;
+    public PlayerCursor PlayerCursor;
+    public ShootingSystem ShootingSystem;
 }

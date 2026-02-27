@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3209333169002192180}
   - component: {fileID: 7357589674322983724}
   - component: {fileID: 9173149384515098787}
+  - component: {fileID: 3227450256482644711}
   m_Layer: 0
   m_Name: Fissure
   m_TagString: Untagged
@@ -113,6 +114,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &3227450256482644711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1026550862799942525}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 913041fab0f324345be283923d65eb03, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Demos_GD.Scripts.EnergyEntryPoint
+  rootLinker: {fileID: 0}
 --- !u!1 &4214566004102068747
 GameObject:
   m_ObjectHideFlags: 0
@@ -124,7 +138,6 @@ GameObject:
   - component: {fileID: 7473905948290670856}
   - component: {fileID: 6849582884141732383}
   - component: {fileID: 1038594411601946617}
-  - component: {fileID: 8269343021171683847}
   m_Layer: 0
   m_Name: Cube (1)
   m_TagString: Untagged
@@ -204,24 +217,3 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &8269343021171683847
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4214566004102068747}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}

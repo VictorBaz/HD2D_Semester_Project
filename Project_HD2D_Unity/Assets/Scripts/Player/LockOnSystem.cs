@@ -7,14 +7,8 @@ public class LockOnSystem : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private Transform playerTransform;
-    
-    [Header("Lock Settings")]
-    [SerializeField] private float lockRange = 15f;
-    [SerializeField] private float lockAngle = 90f; 
-    [SerializeField] private LayerMask lockableLayer;
-    
-    [Header("Rotation")]
-    [SerializeField] private float rotationSpeed = 10f;
+
+    private PlayerDataInstance playerData;
     
     public ILockable CurrentTarget { get; private set; }
     public bool IsLocked => CurrentTarget != null;
@@ -72,7 +66,7 @@ public class LockOnSystem : MonoBehaviour
             targetRotation = Quaternion.Slerp(
                 playerTransform.rotation,
                 targetRotation,
-                rotationSpeed * Time.deltaTime
+                playerData.RotationSpeed * Time.deltaTime
             );
         }
     }
@@ -95,7 +89,7 @@ public class LockOnSystem : MonoBehaviour
     {
         lockableTargets.Clear();
 
-        Collider[] colliders = Physics.OverlapSphere(playerTransform.position, lockRange, lockableLayer);
+        Collider[] colliders = Physics.OverlapSphere(playerTransform.position, playerData.LockRange, playerData.LockableLayer);
 
         foreach (Collider collider in colliders)
         {
@@ -107,7 +101,7 @@ public class LockOnSystem : MonoBehaviour
                 float angleToTarget = Vector3.Angle(playerTransform.forward, directionToTarget);
 
 
-                if (angleToTarget <= lockAngle)
+                if (angleToTarget <= playerData.LockAngle)
                 {
                     lockableTargets.Add(lockable);
                 }
@@ -154,22 +148,26 @@ public class LockOnSystem : MonoBehaviour
 
         float distancePlayerToTarget = Vector3.Distance(playerTransform.position, target.GetLockTransform().position);
 
-        if (distancePlayerToTarget > lockRange) return false;
+        if (distancePlayerToTarget > playerData.LockRange) return false;
 
         return true;
     }
 
     private bool HasLineOfSight(ILockable target)
-{
-    Vector3 startPos = playerTransform.position + Vector3.up; 
-    Vector3 targetPos = target.GetLockTransform().position;
-    
-    if (Physics.Linecast(startPos, targetPos, out RaycastHit hit))
     {
-        return hit.collider.GetComponent<ILockable>() == target;
+        Vector3 startPos = playerTransform.position + Vector3.up; 
+        Vector3 targetPos = target.GetLockTransform().position;
+        
+        if (Physics.Linecast(startPos, targetPos, out RaycastHit hit))
+        {
+            return hit.collider.GetComponent<ILockable>() == target;
+        }
+        
+        return true; 
     }
-    
-    return true; 
-}
 
+    public void InitData(PlayerDataInstance data)
+    {
+        playerData = data;
+    }
 }

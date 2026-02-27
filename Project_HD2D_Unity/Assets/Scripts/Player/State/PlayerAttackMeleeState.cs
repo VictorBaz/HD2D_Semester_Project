@@ -30,7 +30,7 @@ namespace Player.State
         private IEnumerator AttackMeleeIe(PlayerStateContext psc)
         {
             
-            float dashDuration = 0.35f;
+            float dashDuration = psc.PlayerData.DashDuration;
             float elapsed = 0f;
 
             while (elapsed < dashDuration)
@@ -46,7 +46,7 @@ namespace Player.State
 
             psc.Controller.ToggleFixPlayerPosition(true);
             yield return new WaitForSeconds(
-                psc.PlayerData.GetLengthOfClip(psc.PlayerData.AttackClip) - dashDuration);
+                psc.PlayerData.GetAttackClipLength() - dashDuration);
 
             psc.Controller.ToggleFixPlayerPosition(false);
             

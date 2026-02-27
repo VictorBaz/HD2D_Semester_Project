@@ -17,9 +17,8 @@ public class ShootingSystem : MonoBehaviour
     private float shootPressTime  = 0f;
     private bool isCharging      = false;
     private float chargeRatio     = 0f;
-
-    [SerializeField] private float chargeThreshold = 0.2f;
-    [SerializeField] private float maxChargeTime   = 2f;
+    
+    private PlayerDataInstance playerData;
 
     #endregion
 
@@ -58,13 +57,13 @@ public class ShootingSystem : MonoBehaviour
 
         float holdDuration = Time.time - shootPressTime;
 
-        if (holdDuration < chargeThreshold)
+        if (holdDuration < playerData.ChargeThreshold)
         {
             SpawnProjectile(SelectProjectile());
         }
         else
         {
-            chargeRatio = Mathf.Clamp01(holdDuration / maxChargeTime);
+            chargeRatio = Mathf.Clamp01(holdDuration / playerData.MaxChargeTime);
             SpawnProjectile(SelectProjectile(chargeRatio));
         }
 
@@ -83,7 +82,7 @@ public class ShootingSystem : MonoBehaviour
     {
         if (!isCharging) return;
 
-        chargeRatio = Mathf.Clamp01((Time.time - shootPressTime) / maxChargeTime);
+        chargeRatio = Mathf.Clamp01((Time.time - shootPressTime) / playerData.MaxChargeTime);
         OnChargeTick?.Invoke(chargeRatio);
     }
 
@@ -96,7 +95,7 @@ public class ShootingSystem : MonoBehaviour
 
     private ProjectileBase SelectProjectile(float charge)
     {
-        return charge < 0.5f ? projectilePrefab[1] : projectilePrefab[2];
+        return charge < playerData.MediumHeavyThreshold ? projectilePrefab[1] : projectilePrefab[2];
     }
 
     #endregion
@@ -113,5 +112,10 @@ public class ShootingSystem : MonoBehaviour
         if (finalDirection != Vector2.zero) finalDirection.Normalize();
 
         projectile.Initialize(finalDirection);
+    }
+
+    public void InitData(PlayerDataInstance data)
+    {
+        playerData = data;
     }
 }

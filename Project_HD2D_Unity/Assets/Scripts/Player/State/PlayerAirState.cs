@@ -28,9 +28,9 @@ namespace Player.State
     
             HandleMovement(psc); 
         
-            Vector3 shootDir = CalculateShootDirection(psc);
-            psc.PlayerCursor.HandleRotation(shootDir);
-            psc.ShootingSystem.SetShootDirection(shootDir);
+            shootDirection = CalculateShootDirection(psc);
+            psc.PlayerCursor.HandleRotation(shootDirection);
+            psc.ShootingSystem.SetShootDirection(shootDirection);
         
             HandleCursor(psc);
         }

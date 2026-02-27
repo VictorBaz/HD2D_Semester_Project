@@ -2,8 +2,9 @@ using UnityEngine;
 
 public abstract class PlayerBaseState
 {
-    protected  Vector3 targetDirection;
-    protected Vector2 blendInput;
+    protected  Vector3 targetDirection = Vector3.zero;
+    protected Vector2 blendInput = Vector2.zero;
+    protected Vector3 shootDirection = Vector2.zero;
     
     public abstract void EnterState(PlayerStateContext psc);
     public abstract void ExitState(PlayerStateContext psc);
@@ -61,7 +62,7 @@ public abstract class PlayerBaseState
     
     protected Vector3 CalculateShootDirection(PlayerStateContext psc)
     {
-        //if (psc.InputManager.ShootInput.magnitude < inputDeadzone) return shootDirection;
+        if (psc.InputManager.ShootInput.magnitude < psc.PlayerData.InputDeadzone) return shootDirection;
 
         Vector3 camRight = psc.CameraTransform.right;
         camRight.y = 0f; camRight.Normalize();

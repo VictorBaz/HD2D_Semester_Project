@@ -49,6 +49,10 @@ public class PlayerManager : MonoBehaviour
         };
 
         TransitionTo(new PlayerLocomotionState());
+        
+        lockOnSystem.InitData(playerData);
+        playerController.InitData(playerData);
+        shootingSystem.InitData(playerData);
     }
 
     private void OnEnable()

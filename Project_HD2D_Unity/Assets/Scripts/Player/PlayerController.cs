@@ -14,12 +14,7 @@ public class PlayerController : MonoBehaviour
     public Action OnAttackMelee;
 
     [SerializeField] private Rigidbody rb;
-    [SerializeField] private PlayerData playerDataRaw;
-    [SerializeField] private PlayerDataInstance playerData;
     [SerializeField] private Animator animator;
-
-    [SerializeField] private float dashSpeed    = 6f;
-    [SerializeField] private float dashDuration = 6f;
 
     private RaycastHit slopeHit;
     private bool isInLockMode;
@@ -28,16 +23,10 @@ public class PlayerController : MonoBehaviour
     private static readonly int CanJump    = Animator.StringToHash("CanJump");
     private static readonly int Attacking  = Animator.StringToHash("IsAttacking");
 
+    private PlayerDataInstance playerData;
+    
     #endregion
 
-    #region Unity Lifecycle
-
-    private void Awake()
-    {
-        playerData = playerDataRaw.Init();
-    }
-
-    #endregion
 
     #region Public Methods
 
@@ -149,37 +138,6 @@ public class PlayerController : MonoBehaviour
     
     public void RunRoutine(IEnumerator routine) => StartCoroutine(routine);
 
-    public void AttackMelee()
-    {
-        OnAttackMelee?.Invoke();
-        StartCoroutine(AttackMeleeIe());
-    }
-
-    private IEnumerator AttackMeleeIe()
-    {
-        IsAttacking = true;
-        dashDuration = 0.35f;
-        float elapsed = 0f;
-
-        while (elapsed < dashDuration)
-        {
-            rb.linearVelocity = Vector3.Lerp(
-                transform.forward * dashSpeed,
-                Vector3.zero,
-                elapsed / dashDuration);
-
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        ToggleFixPlayerPosition(true);
-        yield return new WaitForSeconds(
-            playerData.GetLengthOfClip(playerData.AttackClip) - dashDuration);
-
-        ToggleFixPlayerPosition(false);
-        IsAttacking = false;
-    }
-
     #endregion
 
     #region Constraints
@@ -220,34 +178,9 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
-    #region Gizmos
-
-    private void OnDrawGizmos()
+    public void InitData(PlayerDataInstance data)
     {
-        float playerHeight = playerData != null
-            ? playerData.PlayerHeight
-            : (playerDataRaw != null ? playerDataRaw.PlayerHeight : 2f);
-
-        float groundCheckDistance = playerData != null
-            ? playerData.GroundCheckDistance
-            : (playerDataRaw != null ? playerDataRaw.GroundCheckDistance : 0.2f);
-
-        LayerMask groundMask = playerData != null
-            ? playerData.GroundMask
-            : (playerDataRaw != null ? playerDataRaw.GroundMask : (LayerMask)Physics.DefaultRaycastLayers);
-
-        Vector3 rayStart = transform.position - new Vector3(0, playerHeight / 2f, 0);
-        Vector3 rayEnd   = rayStart - new Vector3(0, groundCheckDistance, 0);
-
-        bool grounded = Physics.Raycast(rayStart, -Vector3.up, groundCheckDistance, groundMask);
-
-        Gizmos.color = grounded ? Color.green : Color.red;
-        Gizmos.DrawLine(rayStart, rayEnd);
-        Gizmos.DrawWireSphere(rayStart, 0.1f);
-
-        Gizmos.color = grounded ? new Color(0, 1, 0, 0.3f) : new Color(1, 0, 0, 0.3f);
-        Gizmos.DrawSphere(rayEnd, 0.15f);
+        playerData = data;
     }
-
-    #endregion
+   
 }

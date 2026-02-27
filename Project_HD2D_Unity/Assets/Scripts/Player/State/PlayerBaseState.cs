@@ -13,6 +13,7 @@ public abstract class PlayerBaseState
     public virtual bool CanJump => false;
     public virtual bool CanAttack => false;
     public virtual bool CanMove => true;
+    public virtual bool CanShoot => true;
     
     protected virtual void CalculateTargetDirection(PlayerStateContext psc)
     {

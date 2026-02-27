@@ -4656,11 +4656,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &713998308 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 306448382632177375, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
-  m_PrefabInstance: {fileID: 7863538600632627637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &739677016
 GameObject:
   m_ObjectHideFlags: 0
@@ -5041,11 +5036,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
---- !u!4 &761477307 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5224823794098431500, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
-  m_PrefabInstance: {fileID: 7863538600632627637}
-  m_PrefabAsset: {fileID: 0}
 --- !u!43 &776669642
 Mesh:
   m_ObjectHideFlags: 0
@@ -12981,31 +12971,12 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6652683228054312222, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
   m_PrefabInstance: {fileID: 7863538600632627637}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 713998308}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: aa75fbe188bc950419a17761096ae4cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LockOnSystem
---- !u!114 &2636261790364949927
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 713998308}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f92cb0b9740fab4192fd553be34dcd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ShootingSystem
-  projectilePrefab:
-  - {fileID: 6662875346291001534, guid: d5e46bf9ce47f8641a1185b21fbb68e3, type: 3}
-  - {fileID: 6662875346291001534, guid: 1de6d10cd329b38458e5d158f5adbf55, type: 3}
-  - {fileID: 6662875346291001534, guid: a09fa4b086e48f842ae24825b305c3b5, type: 3}
-  origin: {fileID: 761477307}
-  chargeThreshold: 0.2
-  maxChargeTime: 2
 --- !u!1001 &7863538600632627637
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13023,33 +12994,9 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 610014270}
     - target: {fileID: 2565947084703810372, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
-      propertyPath: playerDataRaw
-      value: 
-      objectReference: {fileID: 11400000, guid: 6e73603580fe6a74d86f03fe582124ee, type: 2}
-    - target: {fileID: 2565947084703810372, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
-      propertyPath: shootingSystem
-      value: 
-      objectReference: {fileID: 2636261790364949927}
-    - target: {fileID: 2565947084703810372, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
       propertyPath: cameraTransform
       value: 
       objectReference: {fileID: 961739753}
-    - target: {fileID: 2565947084703810372, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
-      propertyPath: m_shootingSystem
-      value: 
-      objectReference: {fileID: 2636261790364949927}
-    - target: {fileID: 2565947084703810372, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
-      propertyPath: 'projectilePrefab.Array.data[0]'
-      value: 
-      objectReference: {fileID: 6662875346291001534, guid: d5e46bf9ce47f8641a1185b21fbb68e3, type: 3}
-    - target: {fileID: 2565947084703810372, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
-      propertyPath: 'projectilePrefab.Array.data[1]'
-      value: 
-      objectReference: {fileID: 6662875346291001534, guid: 1de6d10cd329b38458e5d158f5adbf55, type: 3}
-    - target: {fileID: 2565947084703810372, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
-      propertyPath: 'projectilePrefab.Array.data[2]'
-      value: 
-      objectReference: {fileID: 6662875346291001534, guid: a09fa4b086e48f842ae24825b305c3b5, type: 3}
     - target: {fileID: 2750060000828546307, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
       propertyPath: cam
       value: 
@@ -13101,10 +13048,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 306448382632177375, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2636261790364949927}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

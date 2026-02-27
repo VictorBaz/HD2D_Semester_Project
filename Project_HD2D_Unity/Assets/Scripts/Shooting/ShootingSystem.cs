@@ -43,7 +43,6 @@ public class ShootingSystem : MonoBehaviour
 
     public void HandleStartTryShoot()
     {
-        //  if (!m_canShoot()) return; //TODO STATEMACHINE
         if (isCharging) return;
         
         isCharging     = true;
@@ -70,6 +69,7 @@ public class ShootingSystem : MonoBehaviour
         }
 
         chargeRatio = 0f;
+        OnChargeTick?.Invoke(chargeRatio);
     }
 
     #endregion

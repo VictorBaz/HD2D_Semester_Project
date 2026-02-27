@@ -4,15 +4,17 @@ using UnityEngine;
 public class PlayerLocomotionState : PlayerBaseState
 {
     
+    private float speedMultiplier = 1f;
     
     public override void EnterState(PlayerStateContext psc)
     {
-        
+        psc.ShootingSystem.OnChargeTick += HandleChargeTick;
     }
 
     public override void ExitState(PlayerStateContext psc)
     {
-        
+        psc.ShootingSystem.OnChargeTick -= HandleChargeTick;
+        speedMultiplier = 1f;
     }
 
     public override void UpdateState(PlayerStateContext psc)
@@ -45,8 +47,13 @@ public class PlayerLocomotionState : PlayerBaseState
 
     public override void FixedUpdateState(PlayerStateContext psc)
     {
-        psc.Controller.UpdatePlayerControllerPhysics(targetDirection);
+        psc.Controller.UpdatePlayerControllerPhysics(targetDirection,speedMultiplier);
         psc.LockOnSystem.HandleRotationLock(psc.Rb);
+    }
+    
+    private void HandleChargeTick(float chargeRatio)
+    {
+        speedMultiplier = 1f - (chargeRatio * 0.8f); 
     }
     
     public override bool CanJump   => true;

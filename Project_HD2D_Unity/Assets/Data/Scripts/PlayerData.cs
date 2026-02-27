@@ -16,6 +16,7 @@ public class PlayerData : ScriptableObject
     
     [field: SerializeField]  public  AnimationClip AttackClip {get; private set;}
     [field: SerializeField]  public float DashSpeed {get; private set;}
+    [field: SerializeField]  public float SpeedMultiplierShoot {get; private set;}
     
     public PlayerDataInstance Init()
     {
@@ -36,6 +37,7 @@ public class PlayerDataInstance
     public float MaxSlopeAngle;
     public AnimationClip AttackClip;
     public float DashSpeed;
+    public float SpeedMultiplierShoot;
 
     public PlayerDataInstance(PlayerData data)
     {
@@ -48,6 +50,7 @@ public class PlayerDataInstance
         MaxSlopeAngle = data.MaxSlopeAngle;
         AttackClip = data.AttackClip;
         DashSpeed = data.DashSpeed;
+        SpeedMultiplierShoot = data.SpeedMultiplierShoot;
     }
 
     public float GetLengthOfClip(AnimationClip clip)

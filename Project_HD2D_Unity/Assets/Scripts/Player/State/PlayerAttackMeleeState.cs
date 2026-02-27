@@ -53,5 +53,6 @@ namespace Player.State
             psc.StateMachine.TransitionTo(new PlayerLocomotionState());
         }
         
+        public override bool CanShoot => false;
     }
 }

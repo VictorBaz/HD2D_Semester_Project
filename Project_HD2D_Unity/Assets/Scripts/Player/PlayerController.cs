@@ -47,9 +47,9 @@ public class PlayerController : MonoBehaviour
         HandleRotation(cam, moveInput);
     }
 
-    public void UpdatePlayerControllerPhysics(Vector3 targetDirection)
+    public void UpdatePlayerControllerPhysics(Vector3 targetDirection, float speedMultiplier)
     {
-        ApplyMovement(targetDirection);
+        ApplyMovement(targetDirection,speedMultiplier);
 
         if (targetRotation != Quaternion.identity)
         {
@@ -62,11 +62,11 @@ public class PlayerController : MonoBehaviour
 
     #region Movement
 
-    private void ApplyMovement(Vector3 targetDirection)
+    private void ApplyMovement(Vector3 targetDirection, float speedMultiplier)
     {
         if (IsAttacking) return;
 
-        Vector3 targetVelocity  = targetDirection * playerData.MoveSpeed;
+        Vector3 targetVelocity = targetDirection * playerData.MoveSpeed * speedMultiplier;
         Vector3 currentVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         Vector3 smoothedVelocity = Vector3.Lerp(currentVelocity, targetVelocity, 0.2f);
 

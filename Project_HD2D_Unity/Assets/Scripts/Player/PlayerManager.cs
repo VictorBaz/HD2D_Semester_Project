@@ -125,7 +125,7 @@ public class PlayerManager : MonoBehaviour
 
     private void TryStartShoot()
     {
-        if (CurrentPlayerState.CanAttack)
+        if (CurrentPlayerState.CanShoot)
         {
             shootingSystem.HandleStartTryShoot();
         }
@@ -133,7 +133,7 @@ public class PlayerManager : MonoBehaviour
 
     private void TryStopShoot()
     {
-        if (CurrentPlayerState.CanAttack)
+        if (CurrentPlayerState.CanShoot)
         {
             shootingSystem.HandleStopTryShoot();
         }

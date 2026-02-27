@@ -28,25 +28,18 @@ namespace Player.State
     
             HandleMovement(psc); 
         
-            blendInput = GetBlendTreeInput(psc);
-            psc.AnimationManager.HandleAnimation(
-                psc.Rb.linearVelocity.magnitude,
-                blendInput,
-                psc.Controller.IsGrounded);
-        
             Vector3 shootDir = CalculateShootDirection(psc);
             psc.PlayerCursor.HandleRotation(shootDir);
             psc.ShootingSystem.SetShootDirection(shootDir);
         
             HandleCursor(psc);
-            HandleAnimation(psc);
         }
 
         public override void FixedUpdateState(PlayerStateContext psc)
         {
             
         }
-        
-        
+
+        public override bool CanShoot => false;
     }
 }

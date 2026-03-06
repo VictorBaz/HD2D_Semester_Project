@@ -28,7 +28,7 @@ public class UiManager : MonoBehaviour
         this.UpdateSlider(lifeBarSlider, newValue);
     }
 
-    private void UpdateEnergyTxt(float newValue) =>
+    public void UpdateEnergyTxt(float newValue) =>
         UpdateText(energyText, newValue.ToString());
 
     #endregion

@@ -164,32 +164,6 @@ public class CameraManager : MonoBehaviour
     }
 
     #endregion
-
-    /*
-    #region Camera Collision
-
-    private void HandleCameraCollisions()
-    {
-        float targetPosition = m_defaultPosition;
-        RaycastHit hit;
-        Vector3 direction = m_cameraTransform.position - m_cameraPivot.position;
-        direction.Normalize();
-
-        if (Physics.SphereCast(m_cameraPivot.position, m_cameraCollisionRadius,direction, out hit, Mathf.Abs(targetPosition),m_collisionLayer))
-        {
-            float distance = Vector3.Distance(m_cameraPivot.position, hit.point);
-            targetPosition =- (distance - m_cameraCollisionOffSet);
-        }
-
-        if (Mathf.Abs(targetPosition) < m_minimumCollisionOffSet)
-        {
-            targetPosition -= m_minimumCollisionOffSet;
-        }
-
-        m_cameraVectorPosition.z = Mathf.Lerp(m_cameraTransform.localPosition.z, targetPosition, 0.2f);
-        m_cameraTransform.localPosition = m_cameraVectorPosition;
-    }
-
-    #endregion*/
+    
     
 }

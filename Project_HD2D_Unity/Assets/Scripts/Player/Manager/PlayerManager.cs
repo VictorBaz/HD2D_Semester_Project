@@ -27,6 +27,23 @@ public class PlayerManager : MonoBehaviour
     private PlayerStateContext context;
     
     private PlayerDataInstance playerData;
+    
+    //TEMPORARY
+
+    [SerializeField] private int mana;
+    [SerializeField] private UiManager uiManager;
+
+    public int Mana
+    {
+        get => mana;
+        
+        set
+        {
+            value = Mathf.Clamp(value, 0, 9);
+            mana = value;
+            uiManager.UpdateEnergyTxt(value);
+        }
+    }
 
     #endregion
 
@@ -57,6 +74,8 @@ public class PlayerManager : MonoBehaviour
         lockOnSystem.InitData(playerData);
         playerController.InitData(playerData);
         shootingSystem.InitData(playerData);
+
+        Mana = mana;
     }
 
     private void OnEnable()
@@ -139,7 +158,7 @@ public class PlayerManager : MonoBehaviour
 
     private void TryStartShoot()
     {
-        if (CurrentPlayerState.CanShoot)
+        if (CurrentPlayerState.CanShoot && mana > 0)
         {
             shootingSystem.HandleStartTryShoot();
         }
@@ -147,10 +166,14 @@ public class PlayerManager : MonoBehaviour
 
     private void TryStopShoot()
     {
-        if (CurrentPlayerState.CanShoot)
-        {
-            shootingSystem.HandleStopTryShoot();
-        }
+        if (!CurrentPlayerState.CanShoot) return;
+
+        Transform lockTarget = lockOnSystem.IsLocked 
+            ? lockOnSystem.CurrentTarget.GetLockTransform() 
+            : null;
+
+        shootingSystem.HandleStopTryShoot(lockTarget);
+        Mana--;
     }
 
     #endregion

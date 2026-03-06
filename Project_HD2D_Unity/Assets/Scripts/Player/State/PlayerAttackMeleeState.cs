@@ -45,8 +45,9 @@ namespace Player.State
             }
 
             psc.Controller.ToggleFixPlayerPosition(true);
+            
             yield return new WaitForSeconds(
-                psc.PlayerData.GetAttackClipLength() - dashDuration);
+                psc.PlayerData.GetAttackClipLength() - dashDuration - 0.5f);
 
             psc.Controller.ToggleFixPlayerPosition(false);
             

@@ -51,7 +51,7 @@ public class ShootingSystem : MonoBehaviour
         OnStartChargingShoot?.Invoke();
     }
 
-    public void HandleStopTryShoot()
+    public void HandleStopTryShoot(Transform toPosition = null)
     {
         if (!isCharging) return;
         
@@ -59,6 +59,19 @@ public class ShootingSystem : MonoBehaviour
 
         float holdDuration = Time.time - shootPressTime;
 
+
+        if (toPosition != null)
+        {
+            SpawnProjectile(SelectProjectile(),toPosition);
+            
+            chargeRatio = 0f;
+            OnChargeTick?.Invoke(chargeRatio);
+            
+            return;
+        }
+        
+        
+        
         if (holdDuration < playerData.ChargeThreshold)
         {
             SpawnProjectile(SelectProjectile());
@@ -72,6 +85,8 @@ public class ShootingSystem : MonoBehaviour
         chargeRatio = 0f;
         OnChargeTick?.Invoke(chargeRatio);
     }
+    
+    
 
     #endregion
 
@@ -116,6 +131,16 @@ public class ShootingSystem : MonoBehaviour
         Debug.Log(finalDirection);
         
         projectile.Initialize(finalDirection);
+    }
+    
+    private void SpawnProjectile(ProjectileBase prefab,Transform toPosition)
+    {
+        ProjectileBase projectile = ObjectPooler.DequeueObject<ProjectileBase>(prefab.PoolKey);
+
+        projectile.transform.position = origin.position;
+        projectile.gameObject.SetActive(true);
+        
+        projectile.Initialize(origin,toPosition);
     }
 
     public void InitData(PlayerDataInstance data)

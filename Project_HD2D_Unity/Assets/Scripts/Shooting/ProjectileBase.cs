@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using DG.Tweening;
 using UnityEngine;
 
@@ -16,7 +17,45 @@ public class ProjectileBase : MonoBehaviour
 
     public virtual void Initialize(Vector2 direction)
     {
-        m_rb.linearVelocity = new Vector3(direction.x, 0f, direction.y) * m_speed;
+        Vector3 dir3D = new Vector3(direction.x, 0f, direction.y);
+        m_rb.linearVelocity = dir3D * m_speed;
+
+        if (dir3D != Vector3.zero)
+            transform.rotation = Quaternion.LookRotation(dir3D);
+    }
+    
+    public virtual void Initialize(Transform from, Transform to)
+    {
+        StartCoroutine(InitializeIe(from, to));
+    }
+
+    private IEnumerator InitializeIe(Transform from, Transform to)
+    {
+        Vector3 startPos  = from.position;
+        Vector3 targetPos = to.position;
+        float elapsed  = 0f;
+        float duration = 1f;
+
+        Vector3 midPoint = (startPos + targetPos) / 2f + Vector3.up * 3f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+
+            Vector3 a = Vector3.Lerp(startPos, midPoint,  t);
+            Vector3 b = Vector3.Lerp(midPoint, targetPos, t);
+            transform.position = Vector3.Lerp(a, b, t);
+
+            Vector3 dir = (b - a).normalized;
+            if (dir != Vector3.zero)
+                transform.rotation = Quaternion.LookRotation(dir);
+
+            yield return null;
+        }
+
+        transform.position = targetPos;
+        ImpactBehaviour();
     }
 
     

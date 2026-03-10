@@ -15,7 +15,7 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private LockOnSystem     lockOnSystem;
 
     [SerializeField] private Transform cameraTransform;
-    [SerializeField] private Transform shootOriginPoint;
+    [SerializeField] private Transform playerHead;
 
     [SerializeField] private PlayerCursor   playerCursor;
     [SerializeField] private Rigidbody      rb;
@@ -35,6 +35,7 @@ public class PlayerManager : MonoBehaviour
     private PlayerStateContext context;
     
     private PlayerDataInstance playerData;
+    
     
     //TEMPORARY
 
@@ -85,7 +86,8 @@ public class PlayerManager : MonoBehaviour
             ShootingSystem   = shootingSystem,
             PlayerData = playerData,
             VfxManager = vfxManager,
-            ShootDirection   = transform.forward
+            ShootDirection   = transform.forward,
+            PlayerHeadTransform = playerHead
         };
 
         TransitionTo(LocomotionState);
@@ -99,7 +101,7 @@ public class PlayerManager : MonoBehaviour
 
     private void OnEnable()
     {
-        inputManager.OnLockToggle  += lockOnSystem.ToggleLock;
+        inputManager.OnLockToggle += OnLockToggle;
         inputManager.OnJumpPressed += TryJump;
         inputManager.OnAttackMelee += TryAttack;
 
@@ -115,7 +117,7 @@ public class PlayerManager : MonoBehaviour
 
     private void OnDisable()
     {
-        inputManager.OnLockToggle  -= lockOnSystem.ToggleLock;
+        inputManager.OnLockToggle  -= OnLockToggle;
         inputManager.OnJumpPressed -= TryJump;
         inputManager.OnAttackMelee -= TryAttack;
 
@@ -150,6 +152,11 @@ public class PlayerManager : MonoBehaviour
     private void LateUpdate()
     {
         playerCursor.FollowPlayer();
+
+        if (lockOnSystem.IsLocked)
+        {
+            vfxManager.LinkFollow(playerHead,lockOnSystem.CurrentTarget.GetLockTransform());
+        }
     }
 
     #endregion
@@ -217,4 +224,14 @@ public class PlayerManager : MonoBehaviour
     }
 
     #endregion
+
+    private void OnLockToggle()
+    {
+        lockOnSystem.ToggleLock();
+
+        if (lockOnSystem.IsLocked)
+            vfxManager.ToggleLinkEffect(true, playerHead, lockOnSystem.CurrentTarget.GetLockTransform());
+        else
+            vfxManager.ToggleLinkEffect(false);
+    }
 }

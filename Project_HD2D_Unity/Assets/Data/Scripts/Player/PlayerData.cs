@@ -14,7 +14,9 @@ public class PlayerData : ScriptableObject
 [System.Serializable]
 public class PlayerDataInstance
 {
-    public float MoveSpeed;
+    public float MoveSpeedWalking;
+    public float MoveSpeedRunning;
+    public float MoveSpeedSlope;
     public float RotationSpeed;
     public float JumpForce;
     public LayerMask GroundMask;
@@ -37,16 +39,24 @@ public class PlayerDataInstance
     public float LockAngle;
     public LayerMask LockableLayer;
     public float LockOnRotationSpeed;
+    public float Acceleration;
+    public float Deceleration;
+    public float RunThreshold;
 
     public PlayerDataInstance(PlayerData data)
     {
-        MoveSpeed = data.Movement.MoveSpeed;
+        MoveSpeedWalking = data.Movement.MoveSpeedWalking;
+        MoveSpeedRunning = data.Movement.MoveSpeedRunning;
+        MoveSpeedSlope = data.Movement.MoveSpeedSlope;
         RotationSpeed = data.Movement.RotationSpeed;
         JumpForce = data.Movement.JumpForce;
         GroundMask = data.Movement.GroundMask;
         GroundCheckDistance = data.Movement.GroundCheckDistance;
         PlayerHeight = data.Movement.PlayerHeight;
         MaxSlopeAngle = data.Movement.MaxSlopeAngle;
+        Acceleration = data.Movement.Acceleration;
+        Deceleration = data.Movement.Deceleration;
+        RunThreshold = data.Movement.RunThreshold;
 
         DashSpeed = data.Combat.DashSpeed;
         DashDuration = data.Combat.DashDuration;

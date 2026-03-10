@@ -4,7 +4,9 @@ using UnityEngine;
 public class MovementData : ScriptableObject
 {
     [field: Header("Speed")]
-    [field: SerializeField] public float MoveSpeed { get; private set; } = 5f;
+    [field: SerializeField] public float MoveSpeedWalking { get; private set; } = 5f;
+    [field: SerializeField] public float MoveSpeedRunning { get; private set; } = 5f;
+    [field: SerializeField] public float MoveSpeedSlope { get; private set; } = 5f;
     [field: SerializeField] public float RotationSpeed { get; private set; } = 10f;
 
     [field: Header("Jump")]
@@ -17,4 +19,13 @@ public class MovementData : ScriptableObject
 
     [field: Header("Slope")]
     [field: SerializeField] public float MaxSlopeAngle { get; private set; } = 45f;
+    
+    
+    [field: Header("Acceleration")]
+    [field: SerializeField] public float Acceleration   { get; private set; } = 20f;
+    [field: SerializeField] public float Deceleration   { get; private set; } = 30f;
+
+    [field: Header("Speed Threshold")]
+    [field: Tooltip("Input magnitude above which run speed is applied")]
+    [field: SerializeField] public float RunThreshold   { get; private set; } = 0.6f;
 }

@@ -9,6 +9,7 @@ public class PlayerStateContext
     public Rigidbody Rb;
     public Transform CameraTransform;
     public Transform PlayerTransform;
+    public Transform PlayerHeadTransform;
     public PlayerManager StateMachine;
     public PlayerCursor PlayerCursor;
     public ShootingSystem ShootingSystem;

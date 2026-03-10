@@ -22,7 +22,7 @@ public abstract class PlayerBaseState
     protected void HandlePhysics(PlayerStateContext psc, float speedMultiplier = 1f)
     {
         if (!CanMove) return;
-        psc.Controller.UpdatePlayerControllerPhysics(targetDirection, speedMultiplier);
+        psc.Controller.UpdatePlayerControllerPhysics(targetDirection,psc.InputManager.MoveInput,speedMultiplier);
     }
     
     protected virtual void CalculateTargetDirection(PlayerStateContext psc)
@@ -109,4 +109,5 @@ public abstract class PlayerBaseState
             blendInput,
             psc.Controller.IsGrounded);
     }
+    
 }

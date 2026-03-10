@@ -70,8 +70,6 @@ public class ShootingSystem : MonoBehaviour
             return;
         }
         
-        
-        
         if (holdDuration < playerData.ChargeThreshold)
         {
             SpawnProjectile(SelectProjectile());

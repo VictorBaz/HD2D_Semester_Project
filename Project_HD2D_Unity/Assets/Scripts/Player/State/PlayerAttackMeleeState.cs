@@ -47,7 +47,7 @@ namespace Player.State
             yield return new WaitForSeconds(
                 psc.PlayerData.GetAttackClipLength() - dashDuration);
             
-            psc.StateMachine.TransitionTo(new PlayerLocomotionState());
+            psc.StateMachine.TransitionTo(psc.StateMachine.LocomotionState);
         }
     }
 }

@@ -14,4 +14,7 @@ public class PlayerStateContext
     public ShootingSystem ShootingSystem;
     public PlayerDataInstance PlayerData;
     public VfxManager VfxManager;
+    public Vector3 ShootDirection = Vector3.zero;
+    public bool JumpReleased = false;
+    public bool HasDash = false;
 }

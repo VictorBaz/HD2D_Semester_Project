@@ -3,12 +3,12 @@ using UnityEngine;
 
 public class PlayerLocomotionState : PlayerBaseState
 {
-    
     private float speedMultiplier = 1f;
     
     public override void EnterState(PlayerStateContext psc)
     {
         psc.ShootingSystem.OnChargeTick += HandleChargeTick;
+        psc.HasDash = false;
     }
 
     public override void ExitState(PlayerStateContext psc)
@@ -22,7 +22,7 @@ public class PlayerLocomotionState : PlayerBaseState
         
         if (!psc.Controller.IsGrounded)
         {
-            psc.StateMachine.TransitionTo(new PlayerAirState());
+            psc.StateMachine.TransitionTo(psc.StateMachine.AirState);
             return;
         }
     
@@ -36,10 +36,6 @@ public class PlayerLocomotionState : PlayerBaseState
             psc.Rb.linearVelocity.magnitude,
             blendInput,
             psc.Controller.IsGrounded);
-        
-        shootDirection = CalculateShootDirection(psc);
-        psc.PlayerCursor.HandleRotation(shootDirection);
-        psc.ShootingSystem.SetShootDirection(shootDirection);
         
         HandleCursor(psc);
         HandleAnimation(psc);
@@ -58,6 +54,8 @@ public class PlayerLocomotionState : PlayerBaseState
     
     public override bool CanJump   => true;
     public override bool CanAttack => true;
-    
+
+    public override bool CanDash => true;
+
     public override string Name => "Locomotion";
 }

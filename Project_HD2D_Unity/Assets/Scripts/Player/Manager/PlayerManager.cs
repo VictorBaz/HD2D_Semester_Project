@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Timers;
 using Player.State;
 using TMPro;
 using UnityEngine;
@@ -24,6 +25,12 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private VfxManager vfxManager;
 
     public PlayerBaseState CurrentPlayerState { get; private set; }
+    
+    public PlayerLocomotionState  LocomotionState  { get; private set; }
+    public PlayerAirState         AirState         { get; private set; }
+    public PlayerAttackMeleeState MeleeAttackState { get; private set; }
+    public PlayerLandingState     LandingState     { get; private set; }
+    public PlayerDashState        DashState        { get; private set; }
 
     private PlayerStateContext context;
     
@@ -31,6 +38,9 @@ public class PlayerManager : MonoBehaviour
     
     //TEMPORARY
 
+    private float dashCooldown     = 0.2f;
+    private float dashCooldownTimer = 0f;
+    
     [SerializeField] private int mana;
     [SerializeField] private UiManager uiManager;
 
@@ -52,6 +62,12 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
+        
+        LocomotionState  = new PlayerLocomotionState();
+        AirState         = new PlayerAirState();
+        MeleeAttackState = new PlayerAttackMeleeState();
+        LandingState     = new PlayerLandingState();
+        DashState        = new PlayerDashState();
 
         playerData = playerDataRaw.Init();
         
@@ -68,10 +84,11 @@ public class PlayerManager : MonoBehaviour
             PlayerCursor     = playerCursor,
             ShootingSystem   = shootingSystem,
             PlayerData = playerData,
-            VfxManager = vfxManager
+            VfxManager = vfxManager,
+            ShootDirection   = transform.forward
         };
 
-        TransitionTo(new PlayerLocomotionState());
+        TransitionTo(LocomotionState);
         
         lockOnSystem.InitData(playerData);
         playerController.InitData(playerData);
@@ -86,15 +103,14 @@ public class PlayerManager : MonoBehaviour
         inputManager.OnJumpPressed += TryJump;
         inputManager.OnAttackMelee += TryAttack;
 
-        inputManager.OnShootStart += TryStartShoot;
-        inputManager.OnShootStop  += TryStopShoot;
-
         playerController.OnAttackMelee += animationManager.AttackMelee;
         playerController.OnJump        += animationManager.Jump;
 
         shootingSystem.OnChargeTick += uiManager.UpdateEnergyBar;
         
         inputManager.OnDash += TryDash;
+
+        inputManager.OnJumpReleased += TryJumpReleased;
     }
 
     private void OnDisable()
@@ -103,15 +119,16 @@ public class PlayerManager : MonoBehaviour
         inputManager.OnJumpPressed -= TryJump;
         inputManager.OnAttackMelee -= TryAttack;
 
-        inputManager.OnShootStart -= TryStartShoot;
-        inputManager.OnShootStop  -= TryStopShoot;
+        
 
         playerController.OnAttackMelee -= animationManager.AttackMelee;
         playerController.OnJump        -= animationManager.Jump;
         
         shootingSystem.OnChargeTick -= uiManager.UpdateEnergyBar;
         
-        inputManager.OnDash += TryDash;
+        inputManager.OnDash -= TryDash;
+        
+        inputManager.OnJumpReleased -= TryJumpReleased;
     }
 
     private void Start()
@@ -121,7 +138,8 @@ public class PlayerManager : MonoBehaviour
 
     private void Update()
     {
-        CurrentPlayerState.UpdateState(context); ;
+        CurrentPlayerState.UpdateState(context); 
+        TimerDash();
     }
 
     private void FixedUpdate()
@@ -155,43 +173,38 @@ public class PlayerManager : MonoBehaviour
         if (!CurrentPlayerState.CanJump) return;
         
         playerController.TryJump();
-        TransitionTo(new PlayerAirState());
+        TransitionTo(AirState);
 
+    }
+    
+    private void TryJumpReleased()
+    {
+        if (CurrentPlayerState is PlayerAirState)
+            context.JumpReleased = true;
     }
 
     private void TryAttack()
     {
         if (!CurrentPlayerState.CanAttack) return;
         
-        TransitionTo(new PlayerAttackMeleeState());
+        TransitionTo(MeleeAttackState);
     }
 
-    private void TryStartShoot()
-    {
-        if (CurrentPlayerState.CanShoot && mana > 0)
-        {
-            shootingSystem.HandleStartTryShoot();
-        }
-    }
-
-    private void TryStopShoot()
-    {
-        if (!CurrentPlayerState.CanShoot) return;
-
-        Transform lockTarget = lockOnSystem.IsLocked 
-            ? lockOnSystem.CurrentTarget.GetLockTransform() 
-            : null;
-
-        shootingSystem.HandleStopTryShoot(lockTarget);
-        Mana--;
-    }
 
     private void TryDash()
     {
-        if (CurrentPlayerState.CanMove)
-        {
-            TransitionTo(new PlayerDashState());
-        }
+        if (!CurrentPlayerState.CanDash) return;
+        if (dashCooldownTimer > 0f) return;
+        if (context.HasDash) return;
+        
+        dashCooldownTimer = dashCooldown;
+        TransitionTo(DashState);
+    }
+
+    private void TimerDash()
+    {
+        if (dashCooldownTimer > 0f)
+            dashCooldownTimer -= Time.deltaTime;
     }
 
     #endregion

@@ -13,8 +13,7 @@ public class InputManager : MonoBehaviour
     public event Action OnLockToggle;
     public event Action OnAttackMelee;
 
-    public event Action OnShootStart;
-    public event Action OnShootStop;
+    public event Action OnJumpReleased;
 
     public event Action OnDash;
     
@@ -53,16 +52,14 @@ public class InputManager : MonoBehaviour
         playerInputAction.Player.Look.canceled += ReceiveShootDirection;
         
         playerInputAction.Player.Jump.performed += ReceiveJump;
+        playerInputAction.Player.Jump.canceled += ReceiveJumpReleased;
         
         playerInputAction.Player.Lock.performed += ReceiveLockToggle;
         
         playerInputAction.Player.AttackMelee.performed += ReceiveAttackMelee;
-
-        playerInputAction.Player.Shoot.started += ReceiveShootStart;
-        playerInputAction.Player.Shoot.canceled += ReceiveShootStop;
-        
         
         playerInputAction.Player.Dash.started += ReceiveDash;
+        
         
         playerInputAction.Enable();
     }
@@ -76,15 +73,14 @@ public class InputManager : MonoBehaviour
         playerInputAction.Player.Look.canceled -= ReceiveShootDirection;
         
         playerInputAction.Player.Jump.performed -= ReceiveJump;
+        playerInputAction.Player.Jump.canceled -= ReceiveJumpReleased;
         
         playerInputAction.Player.Lock.performed -= ReceiveLockToggle;
         
         playerInputAction.Player.AttackMelee.performed -= ReceiveAttackMelee;
         
-        playerInputAction.Player.Shoot.started -= ReceiveShootStart;
-        playerInputAction.Player.Shoot.canceled -= ReceiveShootStop;
-        
         playerInputAction.Player.Dash.started -= ReceiveDash;
+        
         
         playerInputAction.Disable();
     }
@@ -107,6 +103,9 @@ public class InputManager : MonoBehaviour
     {
         OnJumpPressed?.Invoke();
     }
+    
+    private void ReceiveJumpReleased(InputAction.CallbackContext ctx)
+        => OnJumpReleased?.Invoke();
 
     private void ReceiveLockToggle(InputAction.CallbackContext ctx)
     {
@@ -116,16 +115,6 @@ public class InputManager : MonoBehaviour
     private void ReceiveAttackMelee(InputAction.CallbackContext ctx)
     {
         OnAttackMelee?.Invoke();
-    }
-
-    private void ReceiveShootStart(InputAction.CallbackContext ctx)
-    {
-        OnShootStart?.Invoke();
-    }
-    
-    private void ReceiveShootStop(InputAction.CallbackContext ctx)
-    {
-        OnShootStop?.Invoke();
     }
 
     private void ReceiveDash(InputAction.CallbackContext ctx)

@@ -10,16 +10,23 @@ namespace Player.State
         private float dashDuration = 0.4f;
 
         private Vector3 velocityStock;
-
+        
         public override string Name { get; protected set; } = "Dash";
 
         public override bool CanShoot  => false;
         public override bool CanMove   => false;
         public override bool CanJump   => false;
         public override bool CanAttack => false;
+        
+        
 
         public override void EnterState(PlayerStateContext psc)
         {
+            if (!psc.Controller.IsGrounded)
+            {
+                psc.HasDash = true;
+            }
+            
             velocityStock = psc.Rb.linearVelocity;
             HandleAnimation(psc);
             psc.Controller.RunRoutine(DashRoutine(psc));
@@ -54,13 +61,16 @@ namespace Player.State
                 yield return null;
             }
 
+            bool isGrounded = psc.Controller.IsGrounded;
             
-            if (psc.Controller.IsGrounded)
+            if (isGrounded)
             {
                 psc.Rb.linearVelocity = velocityStock;
             }
             
-            psc.StateMachine.TransitionTo(new PlayerLocomotionState());
+            psc.StateMachine.TransitionTo(isGrounded ? psc.StateMachine.LocomotionState 
+                : psc.StateMachine.AirState);
+            
             psc.VfxManager.ToggleDashTrail(false);
         }
     }

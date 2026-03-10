@@ -110,8 +110,7 @@ public class PlayerController : MonoBehaviour
 
     public void TryJump()
     {
-        if (IsGrounded && !IsAttacking && !IsLanding() && !IsInAir())
-            Jump();
+        Jump();
     }
 
     private void Jump()

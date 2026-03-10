@@ -4,7 +4,6 @@ public abstract class PlayerBaseState
 {
     protected  Vector3 targetDirection = Vector3.zero;
     protected Vector2 blendInput = Vector2.zero;
-    protected Vector3 shootDirection = Vector3.zero;
     
     public abstract void EnterState(PlayerStateContext psc);
     public abstract void ExitState(PlayerStateContext psc);
@@ -15,6 +14,8 @@ public abstract class PlayerBaseState
     public virtual bool CanAttack => false;
     public virtual bool CanMove => true;
     public virtual bool CanShoot => true;
+    public virtual bool CanTakeDamage => true;
+    public virtual bool CanDash => false;
     
     public virtual string Name { get; protected set; }
     
@@ -70,7 +71,7 @@ public abstract class PlayerBaseState
     
     protected Vector3 CalculateShootDirection(PlayerStateContext psc)
     {
-        if (psc.InputManager.ShootInput.magnitude < psc.PlayerData.InputDeadzone) return shootDirection;
+        if (psc.InputManager.ShootInput.magnitude < psc.PlayerData.InputDeadzone) return psc.ShootDirection;
 
         Vector3 camRight = psc.CameraTransform.right;
         camRight.y = 0f; camRight.Normalize();
@@ -95,9 +96,9 @@ public abstract class PlayerBaseState
     
     protected void HandleCursor(PlayerStateContext psc)
     {
-        shootDirection = CalculateShootDirection(psc); 
-        psc.PlayerCursor.HandleRotation(shootDirection);
-        psc.ShootingSystem.SetShootDirection(shootDirection);
+        psc.ShootDirection = CalculateShootDirection(psc); 
+        psc.PlayerCursor.HandleRotation(psc.ShootDirection);
+        psc.ShootingSystem.SetShootDirection(psc.ShootDirection);
     }
     
     protected void HandleAnimation(PlayerStateContext psc)

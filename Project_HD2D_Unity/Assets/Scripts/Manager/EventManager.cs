@@ -12,6 +12,7 @@ namespace Manager
 
         public static event Action<CameraSettings> OnCameraTrigger; 
         
+        public static event Action OnCameraShake;
         /// <summary>
         /// Vector3Int => from
         /// Vector3Int => to
@@ -37,6 +38,10 @@ namespace Manager
         {
             OnCameraTrigger?.Invoke(cameraSettings);
         }
-        
+
+        public static void CameraShake()
+        {
+            OnCameraShake?.Invoke();
+        }
     }
 }

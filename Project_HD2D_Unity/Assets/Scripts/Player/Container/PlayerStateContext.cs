@@ -13,4 +13,5 @@ public class PlayerStateContext
     public PlayerCursor PlayerCursor;
     public ShootingSystem ShootingSystem;
     public PlayerDataInstance PlayerData;
+    public VfxManager VfxManager;
 }

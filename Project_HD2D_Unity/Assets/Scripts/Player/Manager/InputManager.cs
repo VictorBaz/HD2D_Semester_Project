@@ -15,6 +15,8 @@ public class InputManager : MonoBehaviour
 
     public event Action OnShootStart;
     public event Action OnShootStop;
+
+    public event Action OnDash;
     
     private PlayerInputAction playerInputAction;
 
@@ -59,6 +61,9 @@ public class InputManager : MonoBehaviour
         playerInputAction.Player.Shoot.started += ReceiveShootStart;
         playerInputAction.Player.Shoot.canceled += ReceiveShootStop;
         
+        
+        playerInputAction.Player.Dash.started += ReceiveDash;
+        
         playerInputAction.Enable();
     }
 
@@ -78,6 +83,8 @@ public class InputManager : MonoBehaviour
         
         playerInputAction.Player.Shoot.started -= ReceiveShootStart;
         playerInputAction.Player.Shoot.canceled -= ReceiveShootStop;
+        
+        playerInputAction.Player.Dash.started -= ReceiveDash;
         
         playerInputAction.Disable();
     }
@@ -119,6 +126,11 @@ public class InputManager : MonoBehaviour
     private void ReceiveShootStop(InputAction.CallbackContext ctx)
     {
         OnShootStop?.Invoke();
+    }
+
+    private void ReceiveDash(InputAction.CallbackContext ctx)
+    {
+        OnDash?.Invoke();
     }
     
     #endregion

@@ -1,4 +1,7 @@
+using System;
+using System.Diagnostics;
 using Player.State;
+using TMPro;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
@@ -16,13 +19,32 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private PlayerCursor   playerCursor;
     [SerializeField] private Rigidbody      rb;
     [SerializeField] private ShootingSystem shootingSystem;
+    [SerializeField] private PlayerData playerDataRaw;
+    [SerializeField] private TMP_Text stateText;
+    [SerializeField] private VfxManager vfxManager;
 
     public PlayerBaseState CurrentPlayerState { get; private set; }
 
     private PlayerStateContext context;
     
-    [SerializeField] private PlayerData playerDataRaw;
     private PlayerDataInstance playerData;
+    
+    //TEMPORARY
+
+    [SerializeField] private int mana;
+    [SerializeField] private UiManager uiManager;
+
+    public int Mana
+    {
+        get => mana;
+        
+        set
+        {
+            value = Mathf.Clamp(value, 0, 9);
+            mana = value;
+            uiManager.UpdateEnergyTxt(value);
+        }
+    }
 
     #endregion
 
@@ -45,7 +67,8 @@ public class PlayerManager : MonoBehaviour
             StateMachine     = this,
             PlayerCursor     = playerCursor,
             ShootingSystem   = shootingSystem,
-            PlayerData = playerData
+            PlayerData = playerData,
+            VfxManager = vfxManager
         };
 
         TransitionTo(new PlayerLocomotionState());
@@ -53,6 +76,8 @@ public class PlayerManager : MonoBehaviour
         lockOnSystem.InitData(playerData);
         playerController.InitData(playerData);
         shootingSystem.InitData(playerData);
+
+        Mana = mana;
     }
 
     private void OnEnable()
@@ -66,6 +91,10 @@ public class PlayerManager : MonoBehaviour
 
         playerController.OnAttackMelee += animationManager.AttackMelee;
         playerController.OnJump        += animationManager.Jump;
+
+        shootingSystem.OnChargeTick += uiManager.UpdateEnergyBar;
+        
+        inputManager.OnDash += TryDash;
     }
 
     private void OnDisable()
@@ -79,11 +108,20 @@ public class PlayerManager : MonoBehaviour
 
         playerController.OnAttackMelee -= animationManager.AttackMelee;
         playerController.OnJump        -= animationManager.Jump;
+        
+        shootingSystem.OnChargeTick -= uiManager.UpdateEnergyBar;
+        
+        inputManager.OnDash += TryDash;
+    }
+
+    private void Start()
+    {
+        DebugState();
     }
 
     private void Update()
     {
-        CurrentPlayerState.UpdateState(context);
+        CurrentPlayerState.UpdateState(context); ;
     }
 
     private void FixedUpdate()
@@ -105,6 +143,7 @@ public class PlayerManager : MonoBehaviour
         CurrentPlayerState?.ExitState(context);
         CurrentPlayerState = newState;
         CurrentPlayerState.EnterState(context);
+        DebugState();
     }
 
     #endregion
@@ -129,7 +168,7 @@ public class PlayerManager : MonoBehaviour
 
     private void TryStartShoot()
     {
-        if (CurrentPlayerState.CanShoot)
+        if (CurrentPlayerState.CanShoot && mana > 0)
         {
             shootingSystem.HandleStartTryShoot();
         }
@@ -137,10 +176,31 @@ public class PlayerManager : MonoBehaviour
 
     private void TryStopShoot()
     {
-        if (CurrentPlayerState.CanShoot)
+        if (!CurrentPlayerState.CanShoot) return;
+
+        Transform lockTarget = lockOnSystem.IsLocked 
+            ? lockOnSystem.CurrentTarget.GetLockTransform() 
+            : null;
+
+        shootingSystem.HandleStopTryShoot(lockTarget);
+        Mana--;
+    }
+
+    private void TryDash()
+    {
+        if (CurrentPlayerState.CanMove)
         {
-            shootingSystem.HandleStopTryShoot();
+            TransitionTo(new PlayerDashState());
         }
+    }
+
+    #endregion
+
+    #region Debugging
+
+    private void DebugState()
+    {
+        stateText.text = $"State: {CurrentPlayerState.Name}";
     }
 
     #endregion

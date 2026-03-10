@@ -8,6 +8,7 @@ public class UiManager : MonoBehaviour
     #region Variables
     
     [SerializeField] private Slider lifeBarSlider;
+    [SerializeField] private Slider energyBarSlider;
     [SerializeField] private TMP_Text energyText;
 
     #endregion
@@ -28,9 +29,15 @@ public class UiManager : MonoBehaviour
         this.UpdateSlider(lifeBarSlider, newValue);
     }
 
-    private void UpdateEnergyTxt(float newValue) =>
+    public void UpdateEnergyTxt(float newValue) =>
         UpdateText(energyText, newValue.ToString());
 
+
+    public void UpdateEnergyBar(float newValue)
+    {
+        energyBarSlider.value = newValue;
+    }
+    
     #endregion
     
 }

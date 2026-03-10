@@ -20,9 +20,14 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float smoothTime = 0.3f;
     
     [SerializeField] private CameraPlayerState cameraState = CameraPlayerState.Fix;
+    [SerializeField] private Transform childTransform;
+    
+    
     private float cameraPositionY = 0f;
     
     private Coroutine cameraCoroutine;
+    private Coroutine shakeCoroutine;
+    
     private Vector3 velocity = Vector3.zero;
 
     #endregion
@@ -44,11 +49,13 @@ public class CameraManager : MonoBehaviour
     private void OnEnable()
     {
         EventManager.OnCameraTrigger += OnCameraTrigger;
+        EventManager.OnCameraShake += Shake;
     }
 
     private void OnDisable()
     {
         EventManager.OnCameraTrigger -= OnCameraTrigger;
+        EventManager.OnCameraShake -= Shake;
     }
 
     private void LateUpdate()
@@ -127,8 +134,6 @@ public class CameraManager : MonoBehaviour
             StopCoroutine(cameraCoroutine);
 
         
-        
-        
         Vector3 targetPosition = playerTransform.position + offsetCamera;
         
         Vector3 newPosition = Vector3.SmoothDamp(
@@ -165,31 +170,39 @@ public class CameraManager : MonoBehaviour
 
     #endregion
 
-    /*
-    #region Camera Collision
+    #region Shake
 
-    private void HandleCameraCollisions()
+    private void Shake()
     {
-        float targetPosition = m_defaultPosition;
-        RaycastHit hit;
-        Vector3 direction = m_cameraTransform.position - m_cameraPivot.position;
-        direction.Normalize();
+        if (shakeCoroutine != null)
+            StopCoroutine(shakeCoroutine);
 
-        if (Physics.SphereCast(m_cameraPivot.position, m_cameraCollisionRadius,direction, out hit, Mathf.Abs(targetPosition),m_collisionLayer))
+        shakeCoroutine = StartCoroutine(ShakeIE(0.2f,0.7f));
+    }
+    
+    private IEnumerator ShakeIE(float duration, float magnitude)
+    {
+        float elapsed = 0f;
+        float seed    = UnityEngine.Random.value * 100f;
+
+        while (elapsed < duration)
         {
-            float distance = Vector3.Distance(m_cameraPivot.position, hit.point);
-            targetPosition =- (distance - m_cameraCollisionOffSet);
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+
+            float currentMagnitude = Mathf.Lerp(magnitude, 0f, t);
+
+            childTransform.localPosition = new Vector3(
+                (Mathf.PerlinNoise(seed + t * 10f, 0f) - 0.5f) * 2f,
+                0,
+                (Mathf.PerlinNoise(0f, seed + t * 10f) - 0.5f) * 2f) * currentMagnitude;
+
+            yield return null;
         }
 
-        if (Mathf.Abs(targetPosition) < m_minimumCollisionOffSet)
-        {
-            targetPosition -= m_minimumCollisionOffSet;
-        }
-
-        m_cameraVectorPosition.z = Mathf.Lerp(m_cameraTransform.localPosition.z, targetPosition, 0.2f);
-        m_cameraTransform.localPosition = m_cameraVectorPosition;
+        childTransform.localPosition = Vector3.zero;
+        shakeCoroutine = null;
     }
 
-    #endregion*/
-    
+    #endregion
 }

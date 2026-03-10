@@ -162,12 +162,20 @@ public class AiBehavior : MonoBehaviour
 
         private void OnViewEntered(Collider other)
         {
-            if (other.CompareTag("Player")) target = other.gameObject; isPlayerInViewRange = true;
+            if (other.CompareTag("Player"))
+            {
+                target = other.gameObject;
+                isPlayerInViewRange = true;
+            }
         }
 
         private void OnViewExited(Collider other)
         {
-            if (other.CompareTag("Player")) target = null; isPlayerInViewRange = false;
+            if (other.CompareTag("Player"))
+            {
+                target = null;
+                isPlayerInViewRange = false;
+            }
         }
 
         private void OnAttackEntered(Collider other)

@@ -16,7 +16,8 @@
 
         public override void UpdateState(PlayerStateContext psc)
         {
-            psc.StateMachine.TransitionTo(psc.StateMachine.LocomotionState);
+            if (psc.AnimationManager.IsLandingFinished())
+                psc.StateMachine.TransitionTo(psc.StateMachine.LocomotionState);
         }
 
         public override void FixedUpdateState(PlayerStateContext psc)

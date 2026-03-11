@@ -26,6 +26,12 @@ public class AnimationManager : MonoBehaviour
         
         GroundedParameters(isGrounded);
     }
+    
+    public bool IsLandingFinished()
+    {
+        AnimatorStateInfo info = animator.GetCurrentAnimatorStateInfo(0);
+        return !info.IsName("Land");
+    }
 
     private void UpdateMovement(float velocity, Vector2 input)
     {

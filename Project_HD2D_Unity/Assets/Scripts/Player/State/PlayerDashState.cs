@@ -6,9 +6,6 @@ namespace Player.State
 {
     public class PlayerDashState : PlayerBaseState
     {
-        private float dashSpeed    = 20f;
-        private float dashDuration = 0.4f;
-
         private Vector3 velocityStock;
         
         public override string Name { get; protected set; } = "Dash";
@@ -50,12 +47,12 @@ namespace Player.State
             EventManager.CameraShake();
             psc.VfxManager.ToggleDashTrail(true);
             
-            while (elapsed < dashDuration)
+            while (elapsed < psc.PlayerData.DashDuration)
             {
                 psc.Rb.linearVelocity = Vector3.Lerp(
-                    dashDirection * dashSpeed,
+                    dashDirection * psc.PlayerData.DashSpeed,
                     velocityStock * 0.7f,
-                    elapsed / dashDuration);
+                    elapsed / psc.PlayerData.DashDuration);
 
                 elapsed += Time.deltaTime;
                 yield return null;

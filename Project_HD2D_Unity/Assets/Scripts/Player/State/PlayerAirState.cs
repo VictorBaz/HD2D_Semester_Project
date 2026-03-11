@@ -5,12 +5,7 @@ namespace Player.State
     public class PlayerAirState : PlayerBaseState
     {
         private float timeInAir = 0f;
-        private float maxVerticalVelocity = 12f; 
-        private float gravityMultiplier = 3f;   
-        private float maxGravityTime = 0.8f; 
-        private float jumpCutMultiplier = 0.4f;
         
-
         public override string Name => "Air";
         public override bool CanShoot => false;
 
@@ -60,7 +55,7 @@ namespace Player.State
             {
                 psc.Rb.linearVelocity = new Vector3(
                     psc.Rb.linearVelocity.x,
-                    psc.Rb.linearVelocity.y * jumpCutMultiplier,
+                    psc.Rb.linearVelocity.y * psc.PlayerData.JumpCutMultiplier,
                     psc.Rb.linearVelocity.z);
 
                 psc.JumpReleased = false;
@@ -68,7 +63,7 @@ namespace Player.State
 
             if (psc.Rb.linearVelocity.y >= 0) return;
 
-            float gravityScale = Mathf.Lerp(1f, gravityMultiplier, timeInAir / maxGravityTime);
+            float gravityScale = Mathf.Lerp(1f, psc.PlayerData.GravityMultiplier, timeInAir / psc.PlayerData.MaxGravityTime);
             
             psc.Rb.AddForce(Vector3.down * gravityScale * Physics.gravity.magnitude,
                 ForceMode.Acceleration);
@@ -77,7 +72,7 @@ namespace Player.State
         private float CalculateAirControl(PlayerStateContext psc)
         {
             float verticalVelocity = Mathf.Abs(psc.Rb.linearVelocity.y);
-            return Mathf.Lerp(1f, 0f, verticalVelocity / maxVerticalVelocity);
+            return Mathf.Lerp(1f, 0f, verticalVelocity / psc.PlayerData.MaxVerticalVelocity);
         }
     }
 }

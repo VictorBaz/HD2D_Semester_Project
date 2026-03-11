@@ -7,6 +7,8 @@ public class PlayerData : ScriptableObject
     [field: SerializeField] public CombatData Combat   { get; private set; }
     [field: SerializeField] public ShootingData Shooting { get; private set; }
     [field: SerializeField] public LockOnData LockOn   { get; private set; }
+    [field: SerializeField] public DashData DashData   { get; private set; }
+    [field: SerializeField] public JumpData JumpData   { get; private set; }
 
     public PlayerDataInstance Init() => new PlayerDataInstance(this);
 }
@@ -18,14 +20,13 @@ public class PlayerDataInstance
     public float MoveSpeedRunning;
     public float MoveSpeedSlope;
     public float RotationSpeed;
-    public float JumpForce;
     public LayerMask GroundMask;
     public float GroundCheckDistance;
     public float PlayerHeight;
     public float MaxSlopeAngle;
 
-    public float DashSpeed;
-    public float DashDuration;
+    public float DashSpeedAttack;
+    public float DashDurationAttack;
     public AnimationClip AttackClip;
     public float ComboWindow;
 
@@ -42,6 +43,15 @@ public class PlayerDataInstance
     public float Acceleration;
     public float Deceleration;
     public float RunThreshold;
+    
+    public float DashSpeed;
+    public float DashDuration;
+
+    public float JumpForce;
+    public float MaxVerticalVelocity;
+    public float GravityMultiplier;
+    public float MaxGravityTime;
+    public float JumpCutMultiplier;
 
     public PlayerDataInstance(PlayerData data)
     {
@@ -49,7 +59,6 @@ public class PlayerDataInstance
         MoveSpeedRunning = data.Movement.MoveSpeedRunning;
         MoveSpeedSlope = data.Movement.MoveSpeedSlope;
         RotationSpeed = data.Movement.RotationSpeed;
-        JumpForce = data.Movement.JumpForce;
         GroundMask = data.Movement.GroundMask;
         GroundCheckDistance = data.Movement.GroundCheckDistance;
         PlayerHeight = data.Movement.PlayerHeight;
@@ -58,8 +67,8 @@ public class PlayerDataInstance
         Deceleration = data.Movement.Deceleration;
         RunThreshold = data.Movement.RunThreshold;
 
-        DashSpeed = data.Combat.DashSpeed;
-        DashDuration = data.Combat.DashDuration;
+        DashSpeedAttack = data.Combat.DashSpeed;
+        DashDurationAttack = data.Combat.DashDuration;
         AttackClip = data.Combat.AttackClip;
         ComboWindow = data.Combat.ComboWindow;
 
@@ -73,6 +82,15 @@ public class PlayerDataInstance
         LockAngle = data.LockOn.LockAngle;
         LockableLayer = data.LockOn.LockableLayer;
         LockOnRotationSpeed = data.LockOn.RotationSpeed;
+
+        DashDuration = data.DashData.DashDuration;
+        DashSpeed = data.DashData.DashSpeed;
+
+        JumpForce = data.JumpData.JumpForce;
+        MaxVerticalVelocity = data.JumpData.MaxVerticalVelocity;
+        GravityMultiplier = data.JumpData.GravityMultiplier;
+        MaxGravityTime = data.JumpData.MaxGravityTime;
+        JumpCutMultiplier = data.JumpData.JumpCutMultiplier;
     }
 
     public float GetAttackClipLength() => AttackClip != null ? AttackClip.length : 0f;

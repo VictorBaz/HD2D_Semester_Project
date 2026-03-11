@@ -9,9 +9,6 @@ public class MovementData : ScriptableObject
     [field: SerializeField] public float MoveSpeedSlope { get; private set; } = 5f;
     [field: SerializeField] public float RotationSpeed { get; private set; } = 10f;
 
-    [field: Header("Jump")]
-    [field: SerializeField] public float JumpForce { get; private set; } = 5f;
-
     [field: Header("Ground Detection")]
     [field: SerializeField] public LayerMask GroundMask { get; private set; }
     [field: SerializeField] public float GroundCheckDistance { get; private set; } = 0.2f;

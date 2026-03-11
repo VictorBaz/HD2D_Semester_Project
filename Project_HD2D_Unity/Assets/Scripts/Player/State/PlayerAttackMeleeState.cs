@@ -30,13 +30,13 @@ namespace Player.State
         private IEnumerator AttackMeleeIe(PlayerStateContext psc)
         {
             
-            float dashDuration = psc.PlayerData.DashDuration;
+            float dashDuration = psc.PlayerData.DashDurationAttack;
             float elapsed = 0f;
 
             while (elapsed < dashDuration)
             {
                 psc.Rb.linearVelocity = Vector3.Lerp(
-                    psc.PlayerTransform.forward * psc.PlayerData.DashSpeed,
+                    psc.PlayerTransform.forward * psc.PlayerData.DashSpeedAttack,
                     velocityStock,
                     elapsed / dashDuration);
 

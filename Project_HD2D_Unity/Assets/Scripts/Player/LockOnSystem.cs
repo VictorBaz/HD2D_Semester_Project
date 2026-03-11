@@ -18,8 +18,6 @@ public class LockOnSystem : MonoBehaviour
 
     private Quaternion targetRotation;
 
-    public Action OnUnlock;
-
     #endregion
 
     public void ToggleLock()
@@ -74,19 +72,16 @@ public class LockOnSystem : MonoBehaviour
         }
     }
 
-    private void TryLock()
+    public void TryLock()
     {
         lockableTargets = FindLockableTargets();
-
         if (lockableTargets.Count == 0) return;
-
         CurrentTarget = GetBestLockableTarget(lockableTargets);
     }
 
-    private void Unlock()
+    public void Unlock()
     {
         CurrentTarget = null;
-        OnUnlock?.Invoke();
     }
 
     private List<ILockable> FindLockableTargets()

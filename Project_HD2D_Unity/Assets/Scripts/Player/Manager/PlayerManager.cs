@@ -102,6 +102,8 @@ public class PlayerManager : MonoBehaviour
     private void OnEnable()
     {
         inputManager.OnLockToggle += OnLockToggle;
+        lockOnSystem.OnUnlock += HandleUnlock;
+        
         inputManager.OnJumpPressed += TryJump;
         inputManager.OnAttackMelee += TryAttack;
 
@@ -118,11 +120,11 @@ public class PlayerManager : MonoBehaviour
     private void OnDisable()
     {
         inputManager.OnLockToggle  -= OnLockToggle;
+        lockOnSystem.OnUnlock -= HandleUnlock;
+        
         inputManager.OnJumpPressed -= TryJump;
         inputManager.OnAttackMelee -= TryAttack;
-
         
-
         playerController.OnAttackMelee -= animationManager.AttackMelee;
         playerController.OnJump        -= animationManager.Jump;
         
@@ -156,6 +158,10 @@ public class PlayerManager : MonoBehaviour
         if (lockOnSystem.IsLocked)
         {
             vfxManager.LinkFollow(playerHead,lockOnSystem.CurrentTarget.GetLockTransform());
+        }
+        else
+        {
+            vfxManager.ToggleLinkEffect(false);
         }
     }
 
@@ -233,5 +239,10 @@ public class PlayerManager : MonoBehaviour
             vfxManager.ToggleLinkEffect(true, playerHead, lockOnSystem.CurrentTarget.GetLockTransform());
         else
             vfxManager.ToggleLinkEffect(false);
+    }
+
+    private void HandleUnlock()
+    {
+        vfxManager.ToggleLinkEffect(false);
     }
 }

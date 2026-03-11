@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -16,6 +17,8 @@ public class LockOnSystem : MonoBehaviour
     private List<ILockable> lockableTargets = new List<ILockable>();
 
     private Quaternion targetRotation;
+
+    public Action OnUnlock;
 
     #endregion
 
@@ -83,6 +86,7 @@ public class LockOnSystem : MonoBehaviour
     private void Unlock()
     {
         CurrentTarget = null;
+        OnUnlock?.Invoke();
     }
 
     private List<ILockable> FindLockableTargets()

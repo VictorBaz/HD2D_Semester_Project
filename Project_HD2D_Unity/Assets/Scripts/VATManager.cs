@@ -2,12 +2,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VATManager : MonoBehaviour, IEnergyLockable
+public class VATManager : MonoBehaviour
 {
     #region Variables
 
     [SerializeField] private Renderer targetRenderer;
-    [SerializeField] private Transform pivotPoint;
     [SerializeField] private string shaderPropertyName = "_frame";
 
     [Header("Animation Settings")]
@@ -75,16 +74,6 @@ public class VATManager : MonoBehaviour, IEnergyLockable
 
     #endregion
 
-    #region ILockable
-
-    public Transform GetLockTransform() => pivotPoint;
-    public bool IsLockable() => true;
     public bool IsContainingEnergy() => currentEnergy > 0;
-
-    public float GetLockPriority() => 1f;
-    
-
-    public bool IsAtMaximumEnergy() => currentEnergy >= animationSteps.Count - 1;
-
-    #endregion
+    public bool IsAtMaximumEnergy()  => currentEnergy >= animationSteps.Count - 1;
 }

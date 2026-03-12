@@ -180,15 +180,15 @@ public class PlayerManager : MonoBehaviour
     private void TryTakeEnergy()
     {
         if (!lockOnSystem.IsLocked) return;
-        
-        EventManager.EnergyInteract(true);
+
+        lockOnSystem.CurrentTarget.AddEnergy();
     }
 
     private void TryGiveEnergy()
     {
         if (!lockOnSystem.IsLocked) return;
-        
-        EventManager.EnergyInteract(false);
+
+        lockOnSystem.CurrentTarget.RemoveEnergy();
     }
     
 

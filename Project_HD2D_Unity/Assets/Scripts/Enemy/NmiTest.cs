@@ -24,4 +24,18 @@ public class NmiTest : MonoBehaviour, ILockable
         return 1f; 
     }
 
+    public void SetEnergy(int energy)
+    {
+        
+    }
+
+    public void AddEnergy()
+    {
+     
+    }
+
+    public void RemoveEnergy()
+    {
+    
+    }
 }

@@ -10,7 +10,7 @@ public abstract class PlayerBaseState
     public abstract void UpdateState(PlayerStateContext psc);
     public abstract void FixedUpdateState(PlayerStateContext psc);
     
-    public virtual bool CanJump => false;
+    public virtual bool CanJump(PlayerStateContext psc) => false;
     public virtual bool CanAttack => false;
     public virtual bool CanMove => true;
     public virtual bool CanShoot => true;

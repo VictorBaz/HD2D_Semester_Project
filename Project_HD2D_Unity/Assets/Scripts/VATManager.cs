@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VATManager : MonoBehaviour, ILockable
+public class VATManager : MonoBehaviour, IEnergyLockable
 {
     #region Variables
 
@@ -50,6 +50,7 @@ public class VATManager : MonoBehaviour, ILockable
 
     public void AddEnergy() => SetEnergy(currentEnergy + 1);
     public void RemoveEnergy() => SetEnergy(currentEnergy - 1);
+    
 
     private void UpdateStep()
     {
@@ -77,8 +78,13 @@ public class VATManager : MonoBehaviour, ILockable
     #region ILockable
 
     public Transform GetLockTransform() => pivotPoint;
-    public bool      IsLockable()       => true;
-    public float     GetLockPriority()  => 1f;
+    public bool IsLockable() => true;
+    public bool IsContainingEnergy() => currentEnergy > 0;
+
+    public float GetLockPriority() => 1f;
+    
+
+    public bool IsAtMaximumEnergy() => currentEnergy >= animationSteps.Count - 1;
 
     #endregion
 }

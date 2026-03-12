@@ -10,11 +10,11 @@ namespace Player.State
 
         private bool bufferNextAttack = false;
         private bool bufferWindowOpen = false;
-        private int  comboIndex       = 0;
+        private int  comboIndex = 0;
 
-        public override bool   CanShoot => false;
-        public override bool   CanMove  => false;
-        public override string Name     => "Attack Melee";
+        public override bool CanShoot => false;
+        public override bool CanMove => false;
+        public override string Name => "Attack Melee";
 
         #endregion
 

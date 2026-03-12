@@ -1,6 +1,3 @@
-using System;
-using System.Diagnostics;
-using System.Timers;
 using Manager;
 using Player.State;
 using TMPro;
@@ -10,50 +7,31 @@ public class PlayerManager : MonoBehaviour
 {
     #region Variables
 
-    [SerializeField] private InputManager     inputManager;
+    [SerializeField] private InputManager inputManager;
     [SerializeField] private PlayerController playerController;
     [SerializeField] private AnimationManager animationManager;
-    [SerializeField] private LockOnSystem     lockOnSystem;
+    [SerializeField] private LockOnSystem lockOnSystem;
 
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private Transform playerHead;
-    [SerializeField] private Rigidbody      rb;
+    [SerializeField] private Rigidbody rb;
     [SerializeField] private PlayerData playerDataRaw;
     [SerializeField] private TMP_Text stateText;
     [SerializeField] private VfxManager vfxManager;
+    [SerializeField] private UiManager uiManager;
 
     public PlayerBaseState CurrentPlayerState { get; private set; }
-    
-    public PlayerLocomotionState  LocomotionState  { get; private set; }
-    public PlayerAirState         AirState         { get; private set; }
+    public PlayerLocomotionState LocomotionState { get; private set; }
+    public PlayerAirState AirState { get; private set; }
     public PlayerAttackMeleeState MeleeAttackState { get; private set; }
-    public PlayerLandingState     LandingState     { get; private set; }
-    public PlayerDashState        DashState        { get; private set; }
+    public PlayerLandingState LandingState { get; private set; }
+    public PlayerDashState DashState { get; private set; }
 
     private PlayerStateContext context;
-    
     private PlayerDataInstance playerData;
-    
-    
-    //TEMPORARY
 
     private float dashCooldownTimer = 0f;
     private float jumpCooldownTimer = 0f;
-    
-    [SerializeField] private int mana;
-    [SerializeField] private UiManager uiManager;
-
-    public int Mana
-    {
-        get => mana;
-        
-        set
-        {
-            value = Mathf.Clamp(value, 0, 9);
-            mana = value;
-            uiManager.UpdateEnergyTxt(value);
-        }
-    }
 
     #endregion
 
@@ -61,52 +39,50 @@ public class PlayerManager : MonoBehaviour
 
     private void Awake()
     {
-        
-        LocomotionState  = new PlayerLocomotionState();
-        AirState         = new PlayerAirState();
+        LocomotionState = new PlayerLocomotionState();
+        AirState = new PlayerAirState();
         MeleeAttackState = new PlayerAttackMeleeState();
-        LandingState     = new PlayerLandingState();
-        DashState        = new PlayerDashState();
+        LandingState = new PlayerLandingState();
+        DashState = new PlayerDashState();
 
         playerData = playerDataRaw.Init();
-        
+
         context = new PlayerStateContext
         {
-            Controller       = playerController,
+            Controller = playerController,
             AnimationManager = animationManager,
-            LockOnSystem     = lockOnSystem,
-            InputManager     = inputManager,
-            Rb               = rb,
-            CameraTransform  = cameraTransform,
-            PlayerTransform  = transform,
-            StateMachine     = this,
+            LockOnSystem = lockOnSystem,
+            InputManager = inputManager,
+            Rb = rb,
+            CameraTransform = cameraTransform,
+            PlayerTransform = transform,
+            StateMachine = this,
             PlayerData = playerData,
             VfxManager = vfxManager,
-            ShootDirection   = transform.forward,
+            ShootDirection = transform.forward,
             PlayerHeadTransform = playerHead
         };
 
         TransitionTo(LocomotionState);
-        
+
         lockOnSystem.InitData(playerData);
         playerController.InitData(playerData);
-
-        Mana = mana;
+        
+        uiManager.UpdateEnergyTxt(playerData.Energy);
     }
 
     private void OnEnable()
     {
         inputManager.OnLockToggle += OnLockToggle;
-        inputManager.OnLockToggle  += OnLockToggle;
         inputManager.OnLockRelease += OnLockRelease;
-        
+
         inputManager.OnJumpPressed += TryJump;
         inputManager.OnJumpReleased += TryJumpReleased;
         playerController.OnJump += animationManager.Jump;
-        
+
         inputManager.OnAttackMelee += TryAttack;
         playerController.OnAttackMelee += animationManager.AttackMelee;
-        
+
         inputManager.OnDash += TryDash;
 
         inputManager.OnEnergyGive += TryGiveEnergy;
@@ -115,19 +91,18 @@ public class PlayerManager : MonoBehaviour
 
     private void OnDisable()
     {
-        inputManager.OnLockToggle  -= OnLockToggle;
-        inputManager.OnLockToggle  -= OnLockToggle;
+        inputManager.OnLockToggle -= OnLockToggle;
         inputManager.OnLockRelease -= OnLockRelease;
-        
+
         inputManager.OnJumpPressed -= TryJump;
         inputManager.OnJumpReleased -= TryJumpReleased;
         playerController.OnJump -= animationManager.Jump;
-        
+
         inputManager.OnAttackMelee -= TryAttack;
         playerController.OnAttackMelee -= animationManager.AttackMelee;
-        
+
         inputManager.OnDash -= TryDash;
-        
+
         inputManager.OnEnergyGive -= TryGiveEnergy;
         inputManager.OnEnergyTake -= TryTakeEnergy;
     }
@@ -139,9 +114,9 @@ public class PlayerManager : MonoBehaviour
 
     private void Update()
     {
-        CurrentPlayerState.UpdateState(context); 
-        TimerDash();
-        TimerJump();
+        CurrentPlayerState.UpdateState(context);
+        TickDashTimer();
+        TickJumpTimer();
     }
 
     private void FixedUpdate()
@@ -152,13 +127,9 @@ public class PlayerManager : MonoBehaviour
     private void LateUpdate()
     {
         if (lockOnSystem.IsLocked)
-        {
-            vfxManager.LinkFollow(playerHead,lockOnSystem.CurrentTarget.GetLockTransform());
-        }
+            vfxManager.LinkFollow(playerHead, lockOnSystem.CurrentTarget.GetLockTransform());
         else
-        {
             vfxManager.ToggleLinkEffect(false);
-        }
     }
 
     #endregion
@@ -175,37 +146,37 @@ public class PlayerManager : MonoBehaviour
 
     #endregion
 
-    #region Input Gates
-
-    private void TryTakeEnergy()
-    {
-        if (!lockOnSystem.IsLocked) return;
-
-        lockOnSystem.CurrentTarget.AddEnergy();
-    }
-
-    private void TryGiveEnergy()
-    {
-        if (!lockOnSystem.IsLocked) return;
-
-        lockOnSystem.CurrentTarget.RemoveEnergy();
-    }
-    
+    #region Jump
 
     private void TryJump()
     {
-        if (!CurrentPlayerState.CanJump || jumpCooldownTimer > 0f || lockOnSystem.IsLocked) return;
+        if (!CurrentPlayerState.CanJump(context)) return;
+        if (jumpCooldownTimer > 0f) return;
 
+        Jump();
+    }
+
+    private void Jump()
+    {
         jumpCooldownTimer = playerData.JumpCooldown;
-        playerController.TryJump();
+        playerController.Jump();
         TransitionTo(AirState);
     }
-    
+
     private void TryJumpReleased()
     {
         if (CurrentPlayerState is PlayerAirState)
-            context.JumpReleased = true;
+           JumpReleased(); 
     }
+
+    private void JumpReleased()
+    {
+        context.JumpReleased = true;
+    }
+    
+    #endregion
+
+    #region Attack
 
     private void TryAttack()
     {
@@ -219,43 +190,93 @@ public class PlayerManager : MonoBehaviour
         TransitionTo(MeleeAttackState);
     }
 
+    #endregion
+
+    #region Dash
 
     private void TryDash()
     {
         if (!CurrentPlayerState.CanDash) return;
         if (dashCooldownTimer > 0f) return;
         if (context.HasDash) return;
-        
+
+        Dash();
+    }
+
+    private void Dash()
+    {
         dashCooldownTimer = playerData.DashCooldown;
         TransitionTo(DashState);
     }
 
     #endregion
-    
-    #region Timer
-    
-    private void TimerDash()
+
+    #region Energy
+
+    private void TryGiveEnergy()
+    {
+        if (!CanInteractWithTarget(out IEnergyLockable target)) return;
+        if (playerData.IsEnergyEmpty()) return;
+        if (target.IsAtMaximumEnergy()) return;
+
+        HandleEnergy(target, false);
+    }
+
+    private void TryTakeEnergy()
+    {
+        if (!CanInteractWithTarget(out IEnergyLockable target)) return;
+        if (!target.IsContainingEnergy()) return;
+
+        HandleEnergy(target, true);
+    }
+
+    private bool CanInteractWithTarget(out IEnergyLockable target)
+    {
+        target = null;
+        
+        if (!lockOnSystem.IsLocked) return false;
+        if (lockOnSystem.CurrentTarget is not IEnergyLockable energyTarget) return false;
+        
+        target = energyTarget;
+        
+        return true;
+    }
+
+    private void HandleEnergy(IEnergyLockable target, bool takingEnergy)
+    {
+        if (takingEnergy)
+        {
+            target.RemoveEnergy(); 
+            playerData.AddEnergy();
+        }
+        else
+        {
+            target.AddEnergy();    
+            playerData.RemoveEnergy();
+        }
+
+        uiManager.UpdateEnergyTxt(playerData.Energy);
+    }
+
+    #endregion
+
+    #region Timers
+
+    private void TickDashTimer()
     {
         if (dashCooldownTimer > 0f)
             dashCooldownTimer -= Time.deltaTime;
     }
-    
-    private void TimerJump()
+
+    private void TickJumpTimer()
     {
         if (jumpCooldownTimer > 0f)
             jumpCooldownTimer -= Time.deltaTime;
     }
-    
-    #endregion
-
-    #region Debugging
-
-    private void DebugState()
-    {
-        stateText.text = $"State: {CurrentPlayerState.Name}";
-    }
 
     #endregion
+
+    #region Lock On
 
     private void OnLockToggle()
     {
@@ -272,4 +293,15 @@ public class PlayerManager : MonoBehaviour
         lockOnSystem.Unlock();
         vfxManager.ToggleLinkEffect(false);
     }
+
+    #endregion
+
+    #region Debugging
+
+    private void DebugState()
+    {
+        stateText.text = $"State: {CurrentPlayerState.Name}";
+    }
+
+    #endregion
 }

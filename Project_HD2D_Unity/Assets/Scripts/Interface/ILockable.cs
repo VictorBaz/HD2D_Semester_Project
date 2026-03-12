@@ -6,9 +6,7 @@ public interface ILockable
     
     bool IsLockable();
     
+    
     float GetLockPriority();
-
-    public void SetEnergy(int energy);
-    public void AddEnergy();
-    public void RemoveEnergy();
+    
 }

@@ -10,9 +10,8 @@ namespace Player.State
         
         public override string Name { get; protected set; } = "Dash";
 
-        public override bool CanShoot  => false;
-        public override bool CanMove   => false;
-        public override bool CanJump   => false;
+        public override bool CanShoot => false;
+        public override bool CanMove => false;
         public override bool CanAttack => false;
         
         

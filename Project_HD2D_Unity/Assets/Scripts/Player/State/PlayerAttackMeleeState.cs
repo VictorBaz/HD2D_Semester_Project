@@ -7,19 +7,15 @@ namespace Player.State
     public class PlayerAttackMeleeState : PlayerBaseState
     {
         #region Variables
-
         private bool bufferNextAttack = false;
         private bool bufferWindowOpen = false;
         private int comboIndex = 0;
         private Coroutine currentAttackRoutine;
 
         public override bool CanShoot => false;
-        public override bool CanMove => false;
+        public override bool CanMove => true; 
         public override string Name => "Attack Melee";
-
         #endregion
-
-        #region Base
 
         public override void EnterState(PlayerStateContext psc)
         {
@@ -35,18 +31,16 @@ namespace Player.State
             
             bufferWindowOpen = false;
             bufferNextAttack = false;
+            psc.AnimationManager.ExitAttack();
         }
 
         public override void UpdateState(PlayerStateContext psc)
         {
+            HandlePhysics(psc, 0.2f);
             HandleAnimation(psc);
         }
 
         public override void FixedUpdateState(PlayerStateContext psc) { }
-
-        #endregion
-
-        #region Public
 
         public void BufferAttack()
         {
@@ -54,17 +48,42 @@ namespace Player.State
                 bufferNextAttack = true;
         }
 
-        #endregion
-
-        #region Combo Logic
-
         private void StartAttackSequence(PlayerStateContext psc)
         {
             if (currentAttackRoutine != null)
                 psc.Controller.StopCoroutine(currentAttackRoutine);
+            RotateTowardsInput(psc);
 
             psc.AnimationManager.SetComboIndex(comboIndex);
             currentAttackRoutine = psc.Controller.RunRoutine(AttackMeleeIe(psc));
+        }
+
+        private void RotateTowardsInput(PlayerStateContext psc)
+        {
+            CalculateTargetDirection(psc);
+            
+            if (targetDirection.magnitude > 0.1f)
+            {
+                psc.PlayerTransform.forward = targetDirection;
+            }
+        }
+
+        private IEnumerator AttackMeleeIe(PlayerStateContext psc)
+        {
+            CombatHitData hit = psc.PlayerData.ComboHits[comboIndex];
+
+            yield return DashIe(hit, psc);
+
+            yield return new WaitUntil(() => psc.AnimationManager.IsInAttackAnimation());
+
+            bufferWindowOpen = true;
+
+            float clipLength = psc.AnimationManager.GetCurrentAnimatorStateInfo(0).length;
+            
+            yield return new WaitForSeconds(clipLength * 0.7f);
+
+            bufferWindowOpen = false;
+            ResolveCombo(psc);
         }
 
         private void ResolveCombo(PlayerStateContext psc)
@@ -79,43 +98,19 @@ namespace Player.State
             }
             else
             {
-                comboIndex = 0;
-                psc.AnimationManager.ExitAttack();
                 psc.StateMachine.TransitionTo(psc.StateMachine.LocomotionState);
             }
-        }
-
-        #endregion
-
-        #region Coroutines
-
-        private IEnumerator AttackMeleeIe(PlayerStateContext psc)
-        {
-            CombatHitData hit = psc.PlayerData.ComboHits[comboIndex];
-
-            yield return DashIe(hit, psc);
-
-            yield return new WaitUntil(() => psc.AnimationManager.IsInAttackAnimation());
-
-            bufferWindowOpen = true;
-
-            float clipLength = psc.AnimationManager.GetCurrentAnimatorStateInfo(0).length;
-            
-            yield return new WaitForSeconds(clipLength * 0.8f);
-
-            bufferWindowOpen = false;
-            ResolveCombo(psc);
         }
 
         private IEnumerator DashIe(CombatHitData data, PlayerStateContext psc)
         {
             float elapsed = 0f;
-            psc.Rb.linearVelocity = Vector3.zero;
+            Vector3 dashDir = psc.PlayerTransform.forward; 
 
             while (elapsed < data.DashDuration)
             {
                 psc.Rb.linearVelocity = Vector3.Lerp(
-                    psc.PlayerTransform.forward * data.DashSpeed,
+                    dashDir * data.DashSpeed,
                     Vector3.zero,
                     elapsed / data.DashDuration);
 
@@ -124,7 +119,5 @@ namespace Player.State
             }
             psc.Rb.linearVelocity = Vector3.zero;
         }
-
-        #endregion
     }
 }

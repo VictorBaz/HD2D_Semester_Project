@@ -204,20 +204,21 @@ public class PlayerManager : MonoBehaviour
         if (context.CurrentTargetCarry != null)
         {
             TransitionTo(LocomotionState);
+            print("FULL");
             return;
         }
         
         var targets = DetectionHelper.FindVisibleTargets<ICarryable>(
             transform, 
-            playerData.LockRange, 
-            playerData.LockAngle, 
-            playerData.LockableLayer
+            playerData.CarryRange, 
+            playerData.CarryAngle, 
+            playerData.CarryLayer
         );
 
         targets.RemoveAll(t => !t.CanCarry());
 
         context.CurrentTargetCarry = DetectionHelper.GetBestTarget(transform, targets);
-
+        
         if (context.CurrentTargetCarry != null)
         {
             TransitionTo(CarryState);

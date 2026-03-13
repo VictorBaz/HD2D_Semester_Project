@@ -10,6 +10,7 @@ public class PlayerData : ScriptableObject
     [field: SerializeField] public DashData DashData   { get; private set; }
     [field: SerializeField] public JumpData JumpData   { get; private set; }
     [field: SerializeField] public PlayerResourcesData PlayerResourcesData   { get; private set; }
+    [field: SerializeField] public CarryData CarryData   { get; private set; }
 
     public PlayerDataInstance Init() => new PlayerDataInstance(this);
 }
@@ -59,6 +60,10 @@ public class PlayerDataInstance
     public int Energy;
     public int MaxEnergy;
 
+    public float CarryRange;
+    public float CarryAngle;
+    public LayerMask CarryLayer;
+
     public PlayerDataInstance(PlayerData data)
     {
         MoveSpeedWalking = data.Movement.MoveSpeedWalking;
@@ -102,6 +107,10 @@ public class PlayerDataInstance
         MaxEnergy = data.PlayerResourcesData.MaxEnergy;
         Life = data.PlayerResourcesData.Life;
         MaxLife = data.PlayerResourcesData.MaxLife;
+        
+        CarryRange = data.CarryData.CarryRange;
+        CarryAngle = data.CarryData.CarryAngle;
+        CarryLayer = data.CarryData.CarryLayer;
     }
 
     public float GetAttackClipLength(int index) => ComboHits[index].Clip != null ? ComboHits[index].Clip.length : 0f;

@@ -72,7 +72,9 @@ public class AnimationManager : MonoBehaviour
     public void SetComboIndex(int index)
     {
         animator.SetInteger(ComboIndexHash, index);
-        animator.SetTrigger(MeleeAttack);
+    
+        if (index == 0)
+            animator.SetTrigger(MeleeAttack);
     }
 
     public void SetDash(bool isDashing)

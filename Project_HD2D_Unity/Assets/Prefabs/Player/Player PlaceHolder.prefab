@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 6945632285107405488}
   - component: {fileID: 5011098004673443459}
   - component: {fileID: 6652683228054312222}
-  - component: {fileID: 2260263632553136361}
   - component: {fileID: 5595405388700783575}
   m_Layer: 9
   m_Name: Player PlaceHolder
@@ -88,9 +87,7 @@ MonoBehaviour:
   lockOnSystem: {fileID: 6652683228054312222}
   cameraTransform: {fileID: 0}
   playerHead: {fileID: 5224823794098431500}
-  playerCursor: {fileID: 0}
   rb: {fileID: 3639011257540391852}
-  shootingSystem: {fileID: 2260263632553136361}
   playerDataRaw: {fileID: 11400000, guid: 6e73603580fe6a74d86f03fe582124ee, type: 2}
   stateText: {fileID: 811898364347323894}
   vfxManager: {fileID: 5595405388700783575}
@@ -135,23 +132,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LockOnSystem
   playerTransform: {fileID: 5059742062778784755}
---- !u!114 &2260263632553136361
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 306448382632177375}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f92cb0b9740fab4192fd553be34dcd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ShootingSystem
-  projectilePrefab:
-  - {fileID: 6662875346291001534, guid: d5e46bf9ce47f8641a1185b21fbb68e3, type: 3}
-  - {fileID: 6662875346291001534, guid: 1de6d10cd329b38458e5d158f5adbf55, type: 3}
-  - {fileID: 6662875346291001534, guid: a09fa4b086e48f842ae24825b305c3b5, type: 3}
-  origin: {fileID: 5224823794098431500}
 --- !u!114 &5595405388700783575
 MonoBehaviour:
   m_ObjectHideFlags: 0

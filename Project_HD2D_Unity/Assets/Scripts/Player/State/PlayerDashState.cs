@@ -10,9 +10,8 @@ namespace Player.State
         
         public override string Name { get; protected set; } = "Dash";
 
-        public override bool CanShoot  => false;
-        public override bool CanMove   => false;
-        public override bool CanJump   => false;
+        public override bool CanShoot => false;
+        public override bool CanMove => false;
         public override bool CanAttack => false;
         
         
@@ -24,12 +23,16 @@ namespace Player.State
                 psc.HasDash = true;
             }
             
+            psc.AnimationManager.SetDash(true);
             velocityStock = psc.Rb.linearVelocity;
             HandleAnimation(psc);
             psc.Controller.RunRoutine(DashRoutine(psc));
         }
 
-        public override void ExitState(PlayerStateContext psc) { }
+        public override void ExitState(PlayerStateContext psc)
+        {
+            psc.AnimationManager.SetDash(false);
+        }
 
         public override void UpdateState(PlayerStateContext psc)
         {

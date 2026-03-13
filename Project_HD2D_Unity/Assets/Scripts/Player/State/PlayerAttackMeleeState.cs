@@ -12,7 +12,6 @@ namespace Player.State
         private int comboIndex = 0;
         private Coroutine currentAttackRoutine;
 
-        public override bool CanShoot => false;
         public override bool CanMove => true; 
         public override string Name => "Attack Melee";
         #endregion

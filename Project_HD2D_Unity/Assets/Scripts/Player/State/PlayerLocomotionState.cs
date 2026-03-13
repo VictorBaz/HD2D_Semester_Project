@@ -50,10 +50,6 @@ public class PlayerLocomotionState : PlayerBaseState
         psc.LockOnSystem.HandleRotationLock(psc.Rb);
     }
     
-    private void HandleChargeTick(float chargeRatio)
-    {
-        speedMultiplier = 1f - (chargeRatio * 0.8f); 
-    }
 
     public override bool CanJump(PlayerStateContext psc)
     {

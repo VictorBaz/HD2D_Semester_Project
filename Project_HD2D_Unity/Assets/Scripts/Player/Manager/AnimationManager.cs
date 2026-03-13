@@ -10,12 +10,20 @@ public class AnimationManager : MonoBehaviour
     
     private static readonly int MoveXHash = Animator.StringToHash("moveX");
     private static readonly int MoveYHash = Animator.StringToHash("moveY");
+    
     private static readonly int JumpHash = Animator.StringToHash("Jump");
+    
     private static readonly int IsGroundedHash = Animator.StringToHash("IsGrounded");
+    
     private static readonly int IsAttackingHash = Animator.StringToHash("IsAttacking");
+    
     private static readonly int ComboIndexHash = Animator.StringToHash("ComboIndex");
+    
     private static readonly int InputMagnitudeHash = Animator.StringToHash("InputMagnitude");
+    
     private static readonly int DashingHash = Animator.StringToHash("Dashing");
+    
+    private static readonly int IsCarrying = Animator.StringToHash("IsCarrying");
 
     #endregion
 
@@ -82,6 +90,11 @@ public class AnimationManager : MonoBehaviour
     public void SetDash(bool isDashing)
     {
         animator.SetBool(DashingHash, isDashing);
+    }
+
+    public void SetIsCarrying(bool isCarrying)
+    {
+        animator.SetBool(IsCarrying, isCarrying);
     }
 
     public AnimatorStateInfo GetCurrentAnimatorStateInfo(int layerIndex)

@@ -29,15 +29,21 @@ public class PlayerLocomotionState : PlayerBaseState
     
         HandleMovement(psc); 
         
+        float magnitude = psc.InputManager.MoveInput.magnitude;
+        
+        float animMagnitude = magnitude > psc.PlayerData.RunThreshold ? 1f :
+            magnitude > 0.1f  ? 0.5f : 0f;
+        
+        
         blendInput = GetBlendTreeInput(psc);
         psc.AnimationManager.HandleAnimation(
-            psc.Rb.linearVelocity.magnitude,
+            animMagnitude,
             blendInput,
             psc.Controller.IsGrounded);
         
-        HandleAnimation(psc);
     }
 
+    
     public override void FixedUpdateState(PlayerStateContext psc)
     {
         HandlePhysics(psc,speedMultiplier);
@@ -48,8 +54,11 @@ public class PlayerLocomotionState : PlayerBaseState
     {
         speedMultiplier = 1f - (chargeRatio * 0.8f); 
     }
-    
-    public override bool CanJump   => true;
+
+    public override bool CanJump(PlayerStateContext psc)
+    {
+        return !psc.LockOnSystem.IsLocked;
+    }
     public override bool CanAttack => true;
 
     public override bool CanDash => true;

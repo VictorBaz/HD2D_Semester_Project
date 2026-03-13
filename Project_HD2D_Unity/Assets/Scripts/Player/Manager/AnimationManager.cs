@@ -15,16 +15,20 @@ public class AnimationManager : MonoBehaviour
     private static readonly int IsGroundedHash = Animator.StringToHash("IsGrounded");
     private static readonly int MeleeAttack = Animator.StringToHash("MeleeAttack");
     private static readonly int IsChargingHash = Animator.StringToHash("IsCharging");
+    private static readonly int ComboIndexHash = Animator.StringToHash("ComboIndex");
+    private static readonly int InputMagnitudeHash = Animator.StringToHash("InputMagnitude");
 
     #endregion
 
     #region Public Methods
 
-    public void HandleAnimation(float velocity, Vector2 input, bool isGrounded)
+    public void HandleAnimation(float inputRawMagnitude, Vector2 inputBlendTree, bool isGrounded)
     {
-        UpdateMovement(velocity, input);
+        UpdateMovement(inputBlendTree);
         
         GroundedParameters(isGrounded);
+        
+        UpdateInputMagnitude(inputRawMagnitude);
     }
     
     public bool IsLandingFinished()
@@ -33,10 +37,8 @@ public class AnimationManager : MonoBehaviour
         return !info.IsName("Land");
     }
 
-    private void UpdateMovement(float velocity, Vector2 input)
+    private void UpdateMovement(Vector2 input)
     {
-        animator.SetFloat(VelocityHash, velocity);
-
         if (input.magnitude > 0.1f)
         {
             animator.SetFloat(
@@ -46,6 +48,11 @@ public class AnimationManager : MonoBehaviour
                 MoveYHash, 
                 Mathf.Lerp(animator.GetFloat(MoveYHash), input.y, 15f * Time.deltaTime));
         }
+    }
+
+    public void UpdateInputMagnitude(float magnitude)
+    {
+        animator.SetFloat(InputMagnitudeHash, magnitude);
     }
 
     public void Jump()
@@ -60,6 +67,12 @@ public class AnimationManager : MonoBehaviour
 
     public void AttackMelee()
     {
+        animator.SetTrigger(MeleeAttack);
+    }
+    
+    public void SetComboIndex(int index)
+    {
+        animator.SetInteger(ComboIndexHash, index);
         animator.SetTrigger(MeleeAttack);
     }
     

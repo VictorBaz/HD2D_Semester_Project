@@ -9,6 +9,7 @@ public class PlayerData : ScriptableObject
     [field: SerializeField] public LockOnData LockOn   { get; private set; }
     [field: SerializeField] public DashData DashData   { get; private set; }
     [field: SerializeField] public JumpData JumpData   { get; private set; }
+    [field: SerializeField] public PlayerResourcesData PlayerResourcesData   { get; private set; }
 
     public PlayerDataInstance Init() => new PlayerDataInstance(this);
 }
@@ -25,9 +26,7 @@ public class PlayerDataInstance
     public float PlayerHeight;
     public float MaxSlopeAngle;
 
-    public float DashSpeedAttack;
-    public float DashDurationAttack;
-    public AnimationClip AttackClip;
+    public CombatHitData[] ComboHits;
     public float ComboWindow;
 
     public float ChargeThreshold;
@@ -55,6 +54,11 @@ public class PlayerDataInstance
     public float MaxGravityTime;
     public float JumpCutMultiplier;
 
+    public int Life;
+    public int MaxLife;
+    public int Energy;
+    public int MaxEnergy;
+
     public PlayerDataInstance(PlayerData data)
     {
         MoveSpeedWalking = data.Movement.MoveSpeedWalking;
@@ -69,9 +73,7 @@ public class PlayerDataInstance
         Deceleration = data.Movement.Deceleration;
         RunThreshold = data.Movement.RunThreshold;
 
-        DashSpeedAttack = data.Combat.DashSpeed;
-        DashDurationAttack = data.Combat.DashDuration;
-        AttackClip = data.Combat.AttackClip;
+        ComboHits = data.Combat.ComboHits;
         ComboWindow = data.Combat.ComboWindow;
 
         ChargeThreshold = data.Shooting.ChargeThreshold;
@@ -95,7 +97,21 @@ public class PlayerDataInstance
         GravityMultiplier = data.JumpData.GravityMultiplier;
         MaxGravityTime = data.JumpData.MaxGravityTime;
         JumpCutMultiplier = data.JumpData.JumpCutMultiplier;
+        
+        Energy = data.PlayerResourcesData.Energy;
+        MaxEnergy = data.PlayerResourcesData.MaxEnergy;
+        Life = data.PlayerResourcesData.Life;
+        MaxLife = data.PlayerResourcesData.MaxLife;
     }
 
-    public float GetAttackClipLength() => AttackClip != null ? AttackClip.length : 0f;
+    public float GetAttackClipLength(int index) => ComboHits[index].Clip != null ? ComboHits[index].Clip.length : 0f;
+
+    public bool IsPlayerDead() => Life <= 0;
+    
+    public bool IsEnergyEmpty() => Energy <= 0;
+
+    public void RemoveEnergy() => Energy--;
+    public void AddEnergy() => Energy++;
+    
+    
 }

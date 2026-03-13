@@ -34,13 +34,19 @@ public class AiKO : AiState
         
         yield return new WaitForSeconds(KoTime); 
         
-        if (core.isPlayerInAttackRange)
+        if (core.isPlayerInAttackRange && core.target != null)
         {
             core.ChangeState(core.attackState);
         }
-        else
+        
+        if(core.isPlayerInViewRange && core.target != null)
         {
-            core.ChangeState(core.patrolState); 
+            core.ChangeState(core.chaseState); 
+        }
+
+        if (core.target != null)
+        {
+            core.ChangeState(core.searchState);
         }
     }
     

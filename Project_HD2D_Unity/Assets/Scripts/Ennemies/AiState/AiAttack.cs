@@ -5,7 +5,7 @@ using UnityEngine;
 [System.Serializable]
 public class AiAttack : AiState
 {
-    public float AttackCooldown = 2f;
+    public float AttackCooldown = 1f;
     public float KnockbackStrength = 15f;
     public float AnticipationTime = 0.4f;
     
@@ -61,17 +61,23 @@ public class AiAttack : AiState
 
         if (core.target != null && core.isPlayerInAttackRange)
         {
-            Rigidbody playerRb = core.target.GetComponent<Rigidbody>();
+            Rigidbody playerRb = core.target.GetComponentInParent<Rigidbody>();
+
             if (playerRb != null)
             {
                 Vector3 knockbackDir = (playerRb.transform.position - core.transform.position).normalized;
                 knockbackDir.y = 0.2f;
                 playerRb.AddForce(knockbackDir * KnockbackStrength, ForceMode.Impulse);
+                Debug.Log("Player has been hit");
+            }
+            else
+            {
+                Debug.LogWarning($"Cible trouvée ({core.target.name}), mais aucun Rigidbody trouvé ici ou dans les parents !");
             }
         }
-        
+    
         yield return new WaitForSeconds(AttackCooldown); 
-        
+    
         isExecutingSequence = false;
         attackRoutine = null;
     }

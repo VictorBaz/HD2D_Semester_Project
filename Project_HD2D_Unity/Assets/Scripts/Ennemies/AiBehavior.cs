@@ -167,6 +167,7 @@ public class AiBehavior : MonoBehaviour
             {
                 target = other.gameObject;
                 isPlayerInViewRange = true;
+                print("Player is in view range.");
             }
         }
 

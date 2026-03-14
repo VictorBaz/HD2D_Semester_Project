@@ -26,7 +26,7 @@ public class PlayerManager : MonoBehaviour
     public PlayerBaseState CurrentPlayerState { get; private set; }
     public PlayerLocomotionState LocomotionState { get; private set; }
     public PlayerAirState AirState { get; private set; }
-    public PlayerAttackMeleeState MeleeAttackState { get; private set; }
+    public PlayerAttackState AttackState { get; private set; }
     public PlayerLandingState LandingState { get; private set; }
     public PlayerDashState DashState { get; private set; }
     public PlayerCarryState CarryState { get; private set; }
@@ -45,7 +45,7 @@ public class PlayerManager : MonoBehaviour
     {
         LocomotionState = new PlayerLocomotionState();
         AirState = new PlayerAirState();
-        MeleeAttackState = new PlayerAttackMeleeState();
+        AttackState = new PlayerAttackState();
         LandingState = new PlayerLandingState();
         DashState = new PlayerDashState();
         CarryState = new PlayerCarryState();
@@ -65,7 +65,7 @@ public class PlayerManager : MonoBehaviour
             PlayerData = playerData,
             VfxManager = vfxManager,
             ShootDirection = transform.forward,
-            PlayerHeadTransform = playerHead
+            PlayerHeadTransform = playerHead,
         };
 
         TransitionTo(LocomotionState);
@@ -187,7 +187,7 @@ public class PlayerManager : MonoBehaviour
 
     private void TryAttack()
     {
-        if (CurrentPlayerState is PlayerAttackMeleeState meleeState)
+        if (CurrentPlayerState is PlayerAttackState meleeState)
         {
             meleeState.BufferAttack();
             return;
@@ -195,8 +195,7 @@ public class PlayerManager : MonoBehaviour
 
         if (!CurrentPlayerState.CanAttack) return;
         
-        TransitionTo(MeleeAttackState);
-        
+        TransitionTo(AttackState);
     }
 
     #endregion
@@ -332,7 +331,7 @@ public class PlayerManager : MonoBehaviour
     }
 
     #endregion
-
+    
     #region Debugging
 
     private void DebugState()

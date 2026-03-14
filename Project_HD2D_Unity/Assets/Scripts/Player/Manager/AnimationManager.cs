@@ -3,10 +3,8 @@ using UnityEngine;
 public class AnimationManager : MonoBehaviour
 {
     #region Variables
-    public Camera cam;
-    [SerializeField] private Transform mainTransform;
     [SerializeField] private Animator animator;
-    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private GameObject colliderAttack;
     
     private static readonly int MoveXHash = Animator.StringToHash("moveX");
     private static readonly int MoveYHash = Animator.StringToHash("moveY");
@@ -112,6 +110,14 @@ public class AnimationManager : MonoBehaviour
     {
         return animator.GetCurrentAnimatorStateInfo(layerIndex);
     }
+
+    private void ToggleAttackCollider(bool toggle)
+    {
+        colliderAttack.SetActive(toggle);
+    }
+    
+    public void AttackOn() => ToggleAttackCollider(true);
+    public void AttackOff() => ToggleAttackCollider(false);
     
     #endregion
 }

@@ -1,10 +1,9 @@
 ﻿using System.Collections;
-using Manager;
 using UnityEngine;
 
 namespace Player.State
 {
-    public class PlayerAttackMeleeState : PlayerBaseState
+    public class PlayerAttackState : PlayerBaseState
     {
         #region Variables
         private bool bufferNextAttack = false;
@@ -30,6 +29,7 @@ namespace Player.State
             
             bufferWindowOpen = false;
             bufferNextAttack = false;
+            psc.AnimationManager.AttackOff();
             psc.AnimationManager.ExitAttack();
         }
 

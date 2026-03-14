@@ -66,7 +66,6 @@ public class AiAttack : AiState
             if (player != null)
             {
                 player.TransitionTo(player.HitState);
-                Debug.Log("Player has been hit");
             }
             else
             {

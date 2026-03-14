@@ -6,10 +6,9 @@ public class WeaponHitbox : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.TryGetComponent<IDamageable>(out var target))
-        {
-            target.TakeDamage(damage);
-            print("oulalala");
-        }
+        if (!other.CompareTag("Enemy") || !other.TryGetComponent<IDamageable>(out var target)) return;
+        
+        target.TakeDamage(damage);
+        print("oulalala");
     }
 }

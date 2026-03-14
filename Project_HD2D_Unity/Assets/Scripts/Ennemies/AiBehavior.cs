@@ -1,8 +1,9 @@
+using Interface;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AiBehavior : MonoBehaviour, IDamageable
+public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
 {
     #region States Instances
 
@@ -18,6 +19,8 @@ public class AiBehavior : MonoBehaviour, IDamageable
 
         private AiState currentState;
         [HideInInspector] public AiState previousState;
+        
+        [SerializeField] private Rigidbody rigidBody;
         
     #endregion
 
@@ -202,4 +205,39 @@ public class AiBehavior : MonoBehaviour, IDamageable
         }
 
     #endregion
+
+    public void Carry(Transform playerHead)
+    {
+        rigidBody.linearVelocity = Vector3.zero;
+        rigidBody.angularVelocity = Vector3.zero;
+
+        transform.SetParent(playerHead);
+
+        transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.identity;
+        
+        
+        if (TryGetComponent<Collider>(out var col)) {
+            col.enabled = false; 
+        }
+    }
+
+    public bool IsCarryable()
+    {
+        return currentState == aiKoState;
+    }
+
+    public void Eject()
+    {
+        transform.SetParent(null);
+        
+        if (TryGetComponent<Collider>(out var col)) {
+            col.enabled = true;
+        }
+
+        rigidBody.isKinematic = false;
+        rigidBody.useGravity = true;
+        
+        rigidBody.AddForce(transform.forward * 5f, ForceMode.Impulse);
+    }
 }

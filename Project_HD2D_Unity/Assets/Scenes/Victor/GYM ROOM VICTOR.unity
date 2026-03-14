@@ -736,6 +736,7 @@ GameObject:
   m_Component:
   - component: {fileID: 109969164}
   - component: {fileID: 109969165}
+  - component: {fileID: 109969166}
   m_Layer: 9
   m_Name: AttackCollider
   m_TagString: PlayerAttack
@@ -779,6 +780,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &109969166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 109969163}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6725f34cbecd47869ee7e1647c008ffa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeaponHitbox
+  damage: 10
 --- !u!1001 &133213179
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5063,6 +5077,11 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!54 &754599665 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 6053275285241826347, guid: 2a52f8e5bd47e10418c11400918b18d1, type: 3}
+  m_PrefabInstance: {fileID: 869775818}
+  m_PrefabAsset: {fileID: 0}
 --- !u!43 &776669642
 Mesh:
   m_ObjectHideFlags: 0
@@ -5709,6 +5728,10 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 6
       objectReference: {fileID: 0}
+    - target: {fileID: 7379718704339800893, guid: 2a52f8e5bd47e10418c11400918b18d1, type: 3}
+      propertyPath: rigidBody
+      value: 
+      objectReference: {fileID: 754599665}
     - target: {fileID: 7379718704339800893, guid: 2a52f8e5bd47e10418c11400918b18d1, type: 3}
       propertyPath: obstacleMask.m_Bits
       value: 537

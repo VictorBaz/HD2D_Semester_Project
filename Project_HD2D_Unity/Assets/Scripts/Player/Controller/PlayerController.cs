@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
 
     public bool IsGrounded  { get; private set; }
     public bool IsAttacking { get; private set; }
-    public Rigidbody Rb     => rb;
+    public Rigidbody Rb => rb;
 
     public event Action OnJump;
     public Action OnAttackMelee;
@@ -20,8 +20,8 @@ public class PlayerController : MonoBehaviour
     private bool isInLockMode;
     private Quaternion targetRotation;
 
-    private static readonly int CanJump    = Animator.StringToHash("CanJump");
-    private static readonly int Attacking  = Animator.StringToHash("IsAttacking");
+    private static readonly int CanJump = Animator.StringToHash("CanJump");
+    private static readonly int Attacking = Animator.StringToHash("IsAttacking");
 
     private PlayerDataInstance playerData;
     private float currentSpeed = 0f;
@@ -123,13 +123,9 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region Jump
+    
 
-    public void TryJump()
-    {
-        Jump();
-    }
-
-    private void Jump()
+    public void Jump()
     {
         rb.AddForce(Vector3.up * playerData.JumpForce, ForceMode.Impulse);
         OnJump?.Invoke();
@@ -151,7 +147,7 @@ public class PlayerController : MonoBehaviour
 
     #region Attack
     
-    public void RunRoutine(IEnumerator routine) => StartCoroutine(routine);
+    public Coroutine RunRoutine(IEnumerator routine) => StartCoroutine(routine);
 
     #endregion
 

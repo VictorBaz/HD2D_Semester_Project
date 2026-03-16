@@ -6,21 +6,21 @@ using Random = UnityEngine.Random;
 public class VfxManager : MonoBehaviour
 {
     [SerializeField] private TrailRenderer trailRendererDash;
-    [SerializeField] private VisualEffect linkEffect;
+    /*[SerializeField] private VisualEffect linkEffect;*/
 
-    [SerializeField] private Transform[] linkPoints;
+    /*[SerializeField] private Transform[] linkPoints;*/
 
     private void Awake()
     {
         ToggleDashTrail(false);
-        ToggleLinkEffect(false);
+        /*ToggleLinkEffect(false);*/
     }
     
 
     public void ToggleDashTrail(bool isOn) => trailRendererDash.enabled = isOn;
 
 
-    private void LinkEffectOn(Transform playerHead, Transform targetTransform)
+    /*private void LinkEffectOn(Transform playerHead, Transform targetTransform)
     {
         linkEffect.gameObject.SetActive(true);
         
@@ -60,5 +60,5 @@ public class VfxManager : MonoBehaviour
 
         if (playerHead == null || targetTransform == null) return;
         LinkEffectOn(playerHead, targetTransform);
-    }
+    }*/
 }

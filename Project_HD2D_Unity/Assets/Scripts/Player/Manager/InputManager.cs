@@ -13,8 +13,12 @@ public class InputManager : MonoBehaviour
     public event Action OnLockToggle;
     public event Action OnLockRelease;
     public event Action OnAttackMelee;
-
     public event Action OnJumpReleased;
+
+    public event Action OnEnergyGive;
+    public event Action OnEnergyTake;
+
+    public event Action OnCarry;
 
     public event Action OnDash;
     
@@ -52,7 +56,7 @@ public class InputManager : MonoBehaviour
         playerInputAction.Player.Look.performed += ReceiveShootDirection;
         playerInputAction.Player.Look.canceled += ReceiveShootDirection;
         
-        playerInputAction.Player.Jump.performed += ReceiveJump;
+        playerInputAction.Player.Jump.performed += ReceiveJumpPressed;
         playerInputAction.Player.Jump.canceled += ReceiveJumpReleased;
         
         playerInputAction.Player.Lock.started  += ReceiveLockToggle;
@@ -61,7 +65,11 @@ public class InputManager : MonoBehaviour
         playerInputAction.Player.AttackMelee.performed += ReceiveAttackMelee;
         
         playerInputAction.Player.Dash.started += ReceiveDash;
+
+        playerInputAction.Player.GiveEnergy.started += ReceiveGiveEnergy;
+        playerInputAction.Player.TakeEnergy.started += ReceiveTakeEnergy;
         
+        playerInputAction.Player.Carry.started += ReceiveCarry;
         
         playerInputAction.Enable();
     }
@@ -74,7 +82,7 @@ public class InputManager : MonoBehaviour
         playerInputAction.Player.Look.performed -= ReceiveShootDirection;
         playerInputAction.Player.Look.canceled -= ReceiveShootDirection;
         
-        playerInputAction.Player.Jump.performed -= ReceiveJump;
+        playerInputAction.Player.Jump.performed -= ReceiveJumpPressed;
         playerInputAction.Player.Jump.canceled -= ReceiveJumpReleased;
         
         playerInputAction.Player.Lock.started  -= ReceiveLockToggle;
@@ -84,6 +92,10 @@ public class InputManager : MonoBehaviour
         
         playerInputAction.Player.Dash.started -= ReceiveDash;
         
+        playerInputAction.Player.GiveEnergy.started -= ReceiveGiveEnergy;
+        playerInputAction.Player.TakeEnergy.started -= ReceiveTakeEnergy;
+        
+        playerInputAction.Player.Carry.started -= ReceiveCarry;
         
         playerInputAction.Disable();
     }
@@ -102,7 +114,7 @@ public class InputManager : MonoBehaviour
         ShootInput = ctx.ReadValue<Vector2>();
     }
 
-    private void ReceiveJump(InputAction.CallbackContext ctx)
+    private void ReceiveJumpPressed(InputAction.CallbackContext ctx)
     {
         OnJumpPressed?.Invoke();
     }
@@ -124,6 +136,21 @@ public class InputManager : MonoBehaviour
     private void ReceiveDash(InputAction.CallbackContext ctx)
     {
         OnDash?.Invoke();
+    }
+
+    private void ReceiveGiveEnergy(InputAction.CallbackContext ctx)
+    {
+        OnEnergyGive?.Invoke();
+    }
+
+    private void ReceiveTakeEnergy(InputAction.CallbackContext ctx)
+    {
+        OnEnergyTake?.Invoke();
+    }
+
+    private void ReceiveCarry(InputAction.CallbackContext ctx)
+    {
+        OnCarry?.Invoke();
     }
     
     #endregion

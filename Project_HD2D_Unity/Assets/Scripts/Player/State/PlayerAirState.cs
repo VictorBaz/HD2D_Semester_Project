@@ -7,7 +7,7 @@ namespace Player.State
         private float timeInAir = 0f;
         
         public override string Name => "Air";
-        public override bool CanShoot => false;
+      
 
         public override bool CanDash => true;
 

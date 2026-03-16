@@ -28,6 +28,9 @@
         
         public override string Name => "Landing";
 
-        public override bool CanJump { get; } = true;
+        public override bool CanJump(PlayerStateContext psc)
+        {
+            return !psc.LockOnSystem.IsLocked;
+        }
     }
 }

@@ -32,7 +32,6 @@ namespace Player.State
         }
 
         public override bool CanMove { get; } = false;
-        public override bool CanShoot { get; } = false;
         public override bool CanTakeDamage { get; } = false;
     }
 }

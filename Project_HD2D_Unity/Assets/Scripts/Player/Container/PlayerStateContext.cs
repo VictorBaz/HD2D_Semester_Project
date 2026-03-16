@@ -1,3 +1,4 @@
+using Interface;
 using UnityEngine;
 
 public class PlayerStateContext
@@ -18,4 +19,5 @@ public class PlayerStateContext
     public Vector3 ShootDirection = Vector3.zero;
     public bool JumpReleased = false;
     public bool HasDash = false;
+    public ICarryable CurrentTargetCarry;
 }

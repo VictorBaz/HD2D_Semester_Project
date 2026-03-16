@@ -3,12 +3,6 @@ using UnityEngine;
 
 public class AiAttack : AiState
 {
-    #region Settings
-    public float AttackCooldown = 1f;
-    public float KnockbackStrength = 15f;
-    public float AnticipationTime = 0.4f;
-    #endregion
-
     #region Private Variables
     private bool isExecutingSequence = false;
     private Coroutine attackRoutine;
@@ -18,7 +12,6 @@ public class AiAttack : AiState
 
     public override void EnterState(AiContext actx) 
     { 
-        // On stoppe la navigation de l'agent via le contexte
         if (actx.Agent.isActiveAndEnabled)
             actx.Agent.isStopped = true;
 
@@ -72,7 +65,7 @@ public class AiAttack : AiState
     {
         isExecutingSequence = true;
 
-        yield return new WaitForSeconds(AnticipationTime);
+        yield return new WaitForSeconds(actx.Data.AnticipationTime);
 
         if (actx.Target != null && actx.IsPlayerInAttackRange)
         {
@@ -89,7 +82,7 @@ public class AiAttack : AiState
             }
         }
     
-        yield return new WaitForSeconds(AttackCooldown); 
+        yield return new WaitForSeconds(actx.Data.AttackCooldown); 
     
         isExecutingSequence = false;
         attackRoutine = null;

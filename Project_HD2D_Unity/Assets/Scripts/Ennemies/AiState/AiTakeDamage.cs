@@ -2,8 +2,6 @@ using UnityEngine;
 
 public class AiTakeDamage : AiState
 {
-    public int DamageToApply;
-    public float StunDuration = 0.2f;
     private float timer;
 
     public override string Name => "Taking Damage";
@@ -17,7 +15,7 @@ public class AiTakeDamage : AiState
 
         if (actx.Behavior.KoSlider != null)
         {
-            actx.Behavior.KoSlider.value += DamageToApply;
+            actx.Behavior.KoSlider.value += actx.Data.DamageToApply;
 
             if (actx.Behavior.KoSlider.value >= actx.Behavior.KoSliderMax)
             {
@@ -26,7 +24,7 @@ public class AiTakeDamage : AiState
             }
         }
 
-        timer = StunDuration;
+        timer = actx.Data.StunDuration;
     }
 
     public override void UpdateState(AiContext actx)

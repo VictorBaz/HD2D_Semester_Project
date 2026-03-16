@@ -5751,6 +5751,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 754599665}
     - target: {fileID: 7379718704339800893, guid: 2a52f8e5bd47e10418c11400918b18d1, type: 3}
+      propertyPath: enemyDataRaw
+      value: 
+      objectReference: {fileID: 11400000, guid: d96629e6f36625f49b7913dc1df76deb, type: 2}
+    - target: {fileID: 7379718704339800893, guid: 2a52f8e5bd47e10418c11400918b18d1, type: 3}
       propertyPath: mainCollider
       value: 
       objectReference: {fileID: 754599669}
@@ -11953,29 +11957,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7077882988356412382, guid: 46c9eef2c890f5c42a7bdd7d6e278122, type: 3}
-      propertyPath: pivotPoint
-      value: 
-      objectReference: {fileID: 2021766491}
-    - target: {fileID: 7077882988356412382, guid: 46c9eef2c890f5c42a7bdd7d6e278122, type: 3}
-      propertyPath: normalizedAnimationRange
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8328908607854756785, guid: 46c9eef2c890f5c42a7bdd7d6e278122, type: 3}
       propertyPath: m_Name
       value: vat Variant
       objectReference: {fileID: 0}
-    - target: {fileID: 8328908607854756785, guid: 46c9eef2c890f5c42a7bdd7d6e278122, type: 3}
-      propertyPath: m_Layer
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8328908607854756785, guid: 46c9eef2c890f5c42a7bdd7d6e278122, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2021766492}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 46c9eef2c890f5c42a7bdd7d6e278122, type: 3}
 --- !u!1 &1629846366
 GameObject:
@@ -13425,48 +13414,17 @@ Transform:
   - {fileID: 1363327163}
   m_Father: {fileID: 751384062}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2021766487 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8328908607854756785, guid: 46c9eef2c890f5c42a7bdd7d6e278122, type: 3}
-  m_PrefabInstance: {fileID: 1629236566}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &2021766488 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7077882988356412382, guid: 46c9eef2c890f5c42a7bdd7d6e278122, type: 3}
   m_PrefabInstance: {fileID: 1629236566}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2021766487}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2c09ee7b806b9e24ca69acd1933db4a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::VATManager
---- !u!4 &2021766491 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5316996577766459885, guid: 46c9eef2c890f5c42a7bdd7d6e278122, type: 3}
-  m_PrefabInstance: {fileID: 1629236566}
-  m_PrefabAsset: {fileID: 0}
---- !u!65 &2021766492
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2021766487}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.036103528, y: 0.028921394, z: 0.043607384}
-  m_Center: {x: 0.009048297, y: -0.00065468665, z: 0.006929164}
 --- !u!1 &2025283474
 GameObject:
   m_ObjectHideFlags: 0

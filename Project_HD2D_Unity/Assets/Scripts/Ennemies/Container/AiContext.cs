@@ -14,6 +14,8 @@ public class AiContext
     
     public bool IsPlayerInViewRange;
     public bool IsPlayerInAttackRange;
+
+    public EnemyDataInstance Data;
     
     public void TransitionTo(AiState newState) => Behavior.ChangeState(newState);
 }

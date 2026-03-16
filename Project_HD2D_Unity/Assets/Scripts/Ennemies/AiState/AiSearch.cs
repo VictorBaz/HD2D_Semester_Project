@@ -3,9 +3,6 @@ using UnityEngine.AI;
 
 public class AiSearch : AiState
 {
-    public float searchDuration = 10f;
-    public float searchRadius = 5f;
-    
     private float timer;
     private Vector3 searchCenter;
 
@@ -13,7 +10,7 @@ public class AiSearch : AiState
 
     public override void EnterState(AiContext actx) 
     { 
-        timer = searchDuration;
+        timer = actx.Data.SearchDuration;
         searchCenter = actx.LastKnownPosition;
         
         if (actx.Agent.isActiveAndEnabled)
@@ -49,10 +46,10 @@ public class AiSearch : AiState
 
     private void MoveToRandomPoint(AiContext actx)
     {
-        Vector2 randomCircle = Random.insideUnitCircle * searchRadius;
+        Vector2 randomCircle = Random.insideUnitCircle * actx.Data.SearchRadius;
         Vector3 randomPoint = searchCenter + new Vector3(randomCircle.x, 0, randomCircle.y);
 
-        if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, searchRadius, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, actx.Data.SearchRadius, NavMesh.AllAreas))
         {
             actx.Agent.SetDestination(hit.position);
         }

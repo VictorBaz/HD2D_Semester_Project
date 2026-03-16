@@ -43,6 +43,9 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
     private AiContext context;
     private bool isFlying = false;
 
+    [SerializeField] private EnemyData enemyDataRaw;
+    private EnemyDataInstance data;
+
     [HideInInspector] public AiState previousState;
     [HideInInspector] public EnnemieMovement movement;
     [HideInInspector] public GameObject target;
@@ -56,6 +59,8 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
     #region Unity Lifecycle
     void Awake()
     {
+        data = enemyDataRaw.Init();
+        
         StaticState = new AiStatic();
         PatrolState = new AiPatrol();
         ChaseState = new AiChase();
@@ -78,7 +83,8 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
             Rb = rb,
             Movement = movement,
             SpawnPosition = spawnPosition,
-            LastKnownPosition = lastKnownPosition
+            LastKnownPosition = lastKnownPosition,
+            Data = data
         };
     }
 
@@ -210,7 +216,7 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
     #region IDamageable Implementation
     public void TakeDamage(int value)
     {
-        AiTakeDamage.DamageToApply = value;
+        data.DamageToApply = value;
         ChangeState(AiTakeDamage);
     }
     #endregion

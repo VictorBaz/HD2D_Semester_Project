@@ -3,7 +3,6 @@ using UnityEngine;
 
 public class AiKO : AiState
 {
-    public float KoTime = 15f;
     private Coroutine KoRoutine;
 
     public override string Name => "K-O";
@@ -36,7 +35,7 @@ public class AiKO : AiState
 
     private IEnumerator KoMoment(AiContext actx)
     {
-        yield return new WaitForSeconds(KoTime);
+        yield return new WaitForSeconds(actx.Data.KoTime);
 
         if (actx.IsPlayerInAttackRange && actx.Target != null)
         {

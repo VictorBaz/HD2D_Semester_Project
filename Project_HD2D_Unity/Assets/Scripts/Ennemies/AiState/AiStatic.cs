@@ -1,21 +1,24 @@
 using UnityEngine;
 
-[System.Serializable]
 public class AiStatic : AiState
 {
-    public override void EnterState(AiBehavior core)
+    public override string Name => "Static";
+
+    public override void EnterState(AiContext actx)
     {
-        
-    }
-    public override void UpdateState(AiBehavior core)
-    {
-        if (core.CanSeePlayer()) core.ChangeState(core.chaseState);
+        if (actx.Agent.isActiveAndEnabled)
+        {
+            actx.Agent.isStopped = true;
+        }
     }
 
-    public override void ExitState(AiBehavior core)
+    public override void UpdateState(AiContext actx)
     {
-        
+        if (actx.Behavior.CanSeePlayer())
+        {
+            actx.TransitionTo(actx.Behavior.ChaseState);
+        }
     }
-    
-    public override string Name => "Static";
+
+    public override void ExitState(AiContext actx) { }
 }

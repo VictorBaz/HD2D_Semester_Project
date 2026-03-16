@@ -1,30 +1,39 @@
-using System.Collections;
 using UnityEngine;
 
-[System.Serializable]
 public class AiChase : AiState
 {
-    public override void EnterState(AiBehavior core) { }
+    public override string Name => "Chase";
 
-    public override void UpdateState(AiBehavior core)
+    public override void EnterState(AiContext actx) 
     {
-        if (!core.CanSeePlayer()) 
-        { 
-            core.ChangeState(core.searchState); 
-            return; 
-        }
-        
-        if (core.isPlayerInAttackRange) 
+        if (actx.Agent.isActiveAndEnabled)
         {
-            core.ChangeState(core.attackState);
-        }
-        else 
-        {
-            core.movement.SetTarget(core.target.transform.position);
+            actx.Agent.isStopped = false;
         }
     }
 
-    public override void ExitState(AiBehavior core) { }
+    public override void UpdateState(AiContext actx)
+    {
+        if (!actx.Behavior.CanSeePlayer()) 
+        { 
+            actx.TransitionTo(actx.Behavior.SearchState); 
+            return; 
+        }
+        
+        if (actx.IsPlayerInAttackRange) 
+        {
+            actx.TransitionTo(actx.Behavior.AttackState);
+            return;
+        }
+        
+        if (actx.Target != null && actx.Agent.isActiveAndEnabled)
+        {
+            actx.Agent.SetDestination(actx.Target.transform.position);
+        }
+    }
 
-    public override string Name => "Chase";
+    public override void ExitState(AiContext actx) 
+    {
+  
+    }
 }

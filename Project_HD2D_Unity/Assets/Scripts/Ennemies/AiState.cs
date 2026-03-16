@@ -1,12 +1,11 @@
 using UnityEngine;
 
-[System.Serializable]
 public abstract class AiState
 {
     #region State Methods
-    public abstract void EnterState(AiBehavior aiBehavior);
-    public abstract void UpdateState(AiBehavior aiBehavior);
-    public abstract void ExitState(AiBehavior aiBehavior);
+    public abstract void EnterState(AiContext actx);
+    public abstract void UpdateState(AiContext actx);
+    public abstract void ExitState(AiContext actx);
 
     public virtual string Name { get; private set; }
 

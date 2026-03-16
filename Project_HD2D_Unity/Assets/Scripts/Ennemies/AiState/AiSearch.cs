@@ -1,51 +1,59 @@
 using UnityEngine;
+using UnityEngine.AI;
 
-[System.Serializable]
 public class AiSearch : AiState
 {
-    public float searchDuration = 10f;
-    public float searchRadius = 5f;
-    
     private float timer;
     private Vector3 searchCenter;
 
-    public override void EnterState(AiBehavior core) 
+    public override string Name => "Searching";
+
+    public override void EnterState(AiContext actx) 
     { 
-        timer = searchDuration;
-        searchCenter = core.lastKnownPosition;
-        MoveToRandomPoint(core);
+        timer = actx.Data.SearchDuration;
+        searchCenter = actx.LastKnownPosition;
+        
+        if (actx.Agent.isActiveAndEnabled)
+        {
+            actx.Agent.isStopped = false;
+            MoveToRandomPoint(actx);
+        }
     } 
 
-    public override void UpdateState(AiBehavior core)
+    public override void UpdateState(AiContext actx)
     {
-        if (core.CanSeePlayer()) 
+        if (actx.Behavior.CanSeePlayer()) 
         { 
-            core.ChangeState(core.chaseState); 
+            actx.TransitionTo(actx.Behavior.ChaseState); 
             return; 
         }
 
         timer -= Time.deltaTime;
         
-        if (core.movement.HasReachedDestination())
+        if (actx.Agent.isActiveAndEnabled && !actx.Agent.pathPending)
         {
-            MoveToRandomPoint(core);
+            if (actx.Agent.remainingDistance <= actx.Agent.stoppingDistance)
+            {
+                MoveToRandomPoint(actx);
+            }
         }
         
         if (timer <= 0) 
         {
-            core.ChangeState(core.goToSpawnState);
+            actx.TransitionTo(actx.Behavior.GoToSpawnState);
         }
     }
 
-    private void MoveToRandomPoint(AiBehavior core)
+    private void MoveToRandomPoint(AiContext actx)
     {
-        Vector2 randomCircle = Random.insideUnitCircle * searchRadius;
+        Vector2 randomCircle = Random.insideUnitCircle * actx.Data.SearchRadius;
         Vector3 randomPoint = searchCenter + new Vector3(randomCircle.x, 0, randomCircle.y);
-        
-        core.movement.SetTarget(randomPoint);
+
+        if (NavMesh.SamplePosition(randomPoint, out NavMeshHit hit, actx.Data.SearchRadius, NavMesh.AllAreas))
+        {
+            actx.Agent.SetDestination(hit.position);
+        }
     }
 
-    public override void ExitState(AiBehavior core) { }
-    
-    public override string Name => "Searching";
+    public override void ExitState(AiContext actx) { }
 }

@@ -1,35 +1,43 @@
 using UnityEngine;
 
-[System.Serializable]
 public class AiPatrol : AiState
 {
     private int currentPointIndex;
 
-    public override void EnterState(AiBehavior core) 
+    public override string Name => "Patrol";
+
+    public override void EnterState(AiContext actx) 
     {
-        if (core.patrolPoints.Length > 0)
+        if (actx.Agent.isActiveAndEnabled)
         {
-            core.movement.SetTarget(core.patrolPoints[currentPointIndex].position);
+            actx.Agent.isStopped = false;
+            
+            if (actx.Behavior.patrolPoints.Length > 0)
+            {
+                actx.Agent.SetDestination(actx.Behavior.patrolPoints[currentPointIndex].position);
+            }
         }
     }
 
-    public override void UpdateState(AiBehavior core)
+    public override void UpdateState(AiContext actx)
     {
-        if (core.CanSeePlayer())
+        if (actx.Behavior.CanSeePlayer())
         {
-            core.ChangeState(core.chaseState); 
+            actx.TransitionTo(actx.Behavior.ChaseState); 
             return;
         }
 
-        if (core.patrolPoints.Length == 0) return;
+        if (actx.Behavior.patrolPoints.Length == 0) return;
         
-        if (core.movement.HasReachedDestination())
+        if (actx.Agent.isActiveAndEnabled && !actx.Agent.pathPending)
         {
-            currentPointIndex = (currentPointIndex + 1) % core.patrolPoints.Length;
-            core.movement.SetTarget(core.patrolPoints[currentPointIndex].position);
+            if (actx.Agent.remainingDistance <= actx.Agent.stoppingDistance)
+            {
+                currentPointIndex = (currentPointIndex + 1) % actx.Behavior.patrolPoints.Length;
+                actx.Agent.SetDestination(actx.Behavior.patrolPoints[currentPointIndex].position);
+            }
         }
     }
-    public override void ExitState(AiBehavior core) { }
-    
-    public override string Name => "Patrol";
+
+    public override void ExitState(AiContext actx) { }
 }

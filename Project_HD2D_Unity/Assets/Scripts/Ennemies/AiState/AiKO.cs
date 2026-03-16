@@ -1,54 +1,53 @@
 using System.Collections;
 using UnityEngine;
 
-[System.Serializable]
 public class AiKO : AiState
 {
-    public float KoTime = 5f;
     private Coroutine KoRoutine;
-    
-    public override void EnterState(AiBehavior core)
+
+    public override string Name => "K-O";
+
+    public override void EnterState(AiContext actx)
     {
-        core.movement.StopMovement();
-        core.KoSlider.value = 0; 
-        KoRoutine = core.StartCoroutine(KoMoment(core));
+        if (actx.Agent.isActiveAndEnabled)
+        {
+            actx.Agent.isStopped = true;
+        }
+
+        if (actx.Behavior.KoSlider != null)
+        {
+            actx.Behavior.KoSlider.value = 0;
+        }
+
+        KoRoutine = actx.Behavior.StartCoroutine(KoMoment(actx));
     }
 
-    public override void UpdateState(AiBehavior core)
-    {
-        
-    }
+    public override void UpdateState(AiContext actx) { }
 
-    public override void ExitState(AiBehavior core)
+    public override void ExitState(AiContext actx)
     {
         if (KoRoutine != null)
         {
-            core.StopCoroutine(KoRoutine);
+            actx.Behavior.StopCoroutine(KoRoutine);
             KoRoutine = null;
         }
     }
-    
-    private IEnumerator KoMoment(AiBehavior core)
-    {
-        Debug.Log("L'ennemi est KO...");
-        
-        yield return new WaitForSeconds(KoTime); 
-        
-        if (core.isPlayerInAttackRange && core.target != null)
-        {
-            core.ChangeState(core.attackState);
-        }
-        
-        if(core.isPlayerInViewRange && core.target != null)
-        {
-            core.ChangeState(core.chaseState); 
-        }
 
-        if (core.target != null)
+    private IEnumerator KoMoment(AiContext actx)
+    {
+        yield return new WaitForSeconds(actx.Data.KoTime);
+
+        if (actx.IsPlayerInAttackRange && actx.Target != null)
         {
-            core.ChangeState(core.searchState);
+            actx.TransitionTo(actx.Behavior.AttackState);
+        }
+        else if (actx.IsPlayerInViewRange && actx.Target != null)
+        {
+            actx.TransitionTo(actx.Behavior.ChaseState);
+        }
+        else
+        {
+            actx.TransitionTo(actx.Behavior.GoToSpawnState);
         }
     }
-    
-    public override string Name => "K-O";
 }

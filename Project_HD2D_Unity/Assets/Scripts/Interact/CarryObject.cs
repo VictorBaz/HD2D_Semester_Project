@@ -32,7 +32,8 @@ public class CarryObject : MonoBehaviour, ICarryable
         rb.isKinematic = false;
         rb.useGravity = true;
         
-        if (TryGetComponent<Collider>(out var col)) {
+        if (TryGetComponent<Collider>(out var col)) 
+        {
             col.enabled = true;
         }
         

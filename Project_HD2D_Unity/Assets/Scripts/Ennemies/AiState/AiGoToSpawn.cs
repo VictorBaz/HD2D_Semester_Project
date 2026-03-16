@@ -1,26 +1,34 @@
 using UnityEngine;
 
-[System.Serializable]
 public class AiGoToSpawn : AiState
 {
-    public override void EnterState(AiBehavior core)
+    public override string Name => "Go to spawn";
+
+    public override void EnterState(AiContext actx)
     {
-        core.movement.SetTarget(core.spawnPosition);
-    }
-    public override void UpdateState(AiBehavior core)
-    {
-        if (core.CanSeePlayer())
+        if (actx.Agent.isActiveAndEnabled)
         {
-            core.ChangeState(core.chaseState); return;
+            actx.Agent.isStopped = false;
+            actx.Agent.SetDestination(actx.SpawnPosition);
+        }
+    }
+
+    public override void UpdateState(AiContext actx)
+    {
+        if (actx.Behavior.CanSeePlayer())
+        {
+            actx.TransitionTo(actx.Behavior.ChaseState);
+            return;
         }
 
-        if (core.movement.HasReachedDestination())
+        if (actx.Agent.isActiveAndEnabled && !actx.Agent.pathPending)
         {
-            core.ChangeState(core.patrolState);
+            if (actx.Agent.remainingDistance <= actx.Agent.stoppingDistance)
+            {
+                actx.TransitionTo(actx.Behavior.PatrolState);
+            }
         }
-            
     }
-    public override void ExitState(AiBehavior core) { }
-    
-    public override string Name => "Go to spawn";
+
+    public override void ExitState(AiContext actx) { }
 }

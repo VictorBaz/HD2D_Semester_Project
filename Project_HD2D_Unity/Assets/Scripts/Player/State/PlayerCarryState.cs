@@ -12,13 +12,23 @@ public class PlayerCarryState : PlayerBaseState
 
     public override void ExitState(PlayerStateContext psc)
     {
+        if (psc.CurrentTargetCarry != null)
+        {
+            psc.CurrentTargetCarry.Eject();
+            psc.CurrentTargetCarry = null;
+        }
+        
         psc.AnimationManager.SetIsCarrying(false);
-        psc.CurrentTargetCarry.Eject();
-        psc.CurrentTargetCarry = null;
     }
 
     public override void UpdateState(PlayerStateContext psc)
     {
+        if (psc.CurrentTargetCarry != null && !psc.CurrentTargetCarry.IsCarryable())
+        {
+            psc.StateMachine.TransitionTo(psc.StateMachine.LocomotionState);
+            return;
+        }
+        
         psc.LockOnSystem.CalculLockRotation();
         psc.Controller.SetLockMode(psc.LockOnSystem.IsLocked);
     

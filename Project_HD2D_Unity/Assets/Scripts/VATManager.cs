@@ -15,6 +15,7 @@ public class VATManager : MonoBehaviour
     [Tooltip("Chaque palier correspond à 1 point d'énergie. Indice 0 = 0 énergie.")]
     [SerializeField] private List<float> animationSteps = new List<float> { 0f, 0.3f, 0.7f, 1f };
     [SerializeField] private float transitionSpeed = 2f;
+    [SerializeField] public Animator animator;
 
     [Header("Current State")]
     [SerializeField] private int currentEnergy = 0;
@@ -29,11 +30,11 @@ public class VATManager : MonoBehaviour
     private void Awake()
     {
         propBlock = new MaterialPropertyBlock();
-        
+
         if (animationSteps.Count > 0)
             currentNormalizedValue = animationSteps[0];
     }
-
+    
     private void Update()
     {
         UpdateStep();
@@ -64,8 +65,10 @@ public class VATManager : MonoBehaviour
                 targetValue,
                 transitionSpeed * Time.deltaTime);
         }
-
+        
         float frameValue = currentNormalizedValue * Mathf.Max(0, maxFrames - 1);
+        
+        animator.Play("AnimClip", -1, currentNormalizedValue); 
 
         targetRenderer.GetPropertyBlock(propBlock);
         propBlock.SetFloat(shaderPropertyName, frameValue);
@@ -74,6 +77,11 @@ public class VATManager : MonoBehaviour
 
 
     #endregion
+
+    #region Collider
+
+
+    #endregion 
 
     public bool IsContainingEnergy() => currentEnergy > 0;
     public bool IsAtMaximumEnergy()  => currentEnergy >= animationSteps.Count - 1;

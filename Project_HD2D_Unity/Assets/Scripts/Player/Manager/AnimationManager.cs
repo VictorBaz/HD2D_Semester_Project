@@ -3,10 +3,8 @@ using UnityEngine;
 public class AnimationManager : MonoBehaviour
 {
     #region Variables
-    public Camera cam;
-    [SerializeField] private Transform mainTransform;
     [SerializeField] private Animator animator;
-    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private GameObject colliderAttack;
     
     private static readonly int MoveXHash = Animator.StringToHash("moveX");
     private static readonly int MoveYHash = Animator.StringToHash("moveY");
@@ -23,7 +21,8 @@ public class AnimationManager : MonoBehaviour
     
     private static readonly int DashingHash = Animator.StringToHash("Dashing");
     
-    private static readonly int IsCarrying = Animator.StringToHash("IsCarrying");
+    private static readonly int IsCarryingHash = Animator.StringToHash("IsCarrying");
+    private static readonly int IsHitHash = Animator.StringToHash("IsHit");
 
     #endregion
 
@@ -45,6 +44,11 @@ public class AnimationManager : MonoBehaviour
     public bool IsInAttackAnimation()
     {
         return animator.GetCurrentAnimatorStateInfo(0).IsTag("Attack");
+    }
+
+    public bool IsInHitAnimation()
+    {
+        return animator.GetCurrentAnimatorStateInfo(0).IsTag("Hit");
     }
 
     private void UpdateMovement(Vector2 input)
@@ -94,13 +98,27 @@ public class AnimationManager : MonoBehaviour
 
     public void SetIsCarrying(bool isCarrying)
     {
-        animator.SetBool(IsCarrying, isCarrying);
+        animator.SetBool(IsCarryingHash, isCarrying);
+    }
+
+    public void SetIsHit(bool isHit)
+    {
+        animator.SetBool(IsHitHash, isHit);
+        if(isHit) animator.Update(0);
     }
 
     public AnimatorStateInfo GetCurrentAnimatorStateInfo(int layerIndex)
     {
         return animator.GetCurrentAnimatorStateInfo(layerIndex);
     }
+
+    private void ToggleAttackCollider(bool toggle)
+    {
+        colliderAttack.SetActive(toggle);
+    }
+    
+    public void AttackOn() => ToggleAttackCollider(true);
+    public void AttackOff() => ToggleAttackCollider(false);
     
     #endregion
 }

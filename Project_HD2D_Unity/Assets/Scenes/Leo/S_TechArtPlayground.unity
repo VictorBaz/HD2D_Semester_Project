@@ -1384,6 +1384,7 @@ GameObject:
   - component: {fileID: 2013482014}
   - component: {fileID: 2013482013}
   - component: {fileID: 2013482012}
+  - component: {fileID: 2013482016}
   m_Layer: 0
   m_Name: Grass
   m_TagString: Untagged
@@ -1485,6 +1486,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2013482016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2013482011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cef92c64e01cb94780b3d4fb068d83f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GrassInteractorsToShader
+  grassMat: {fileID: 2100000, guid: 4dfc70ad3bd16384285b174780951e27, type: 2}
+  interactors:
+  - {fileID: 0}
+  radius: 1
+  maxWidth: 0.1
+  debug: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

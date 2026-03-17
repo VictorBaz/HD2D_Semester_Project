@@ -4,6 +4,8 @@ using UnityEngine;
 public class PlayerLocomotionState : PlayerBaseState
 {
     private float speedMultiplier = 1f;
+    private float airTimeBuffer = 0f;
+    private const float MaxAirTimeBeforeFall = 0.2f;
     
     public override void EnterState(PlayerStateContext psc)
     {
@@ -20,8 +22,17 @@ public class PlayerLocomotionState : PlayerBaseState
         
         if (!psc.Controller.IsGrounded)
         {
-            psc.StateMachine.TransitionTo(psc.StateMachine.AirState);
-            return;
+            airTimeBuffer += Time.deltaTime;
+            
+            if (airTimeBuffer > MaxAirTimeBeforeFall || psc.Rb.linearVelocity.y > 1f)
+            {
+                psc.StateMachine.TransitionTo(psc.StateMachine.AirState);
+                return;
+            }
+        }
+        else
+        {
+            airTimeBuffer = 0f; 
         }
     
         psc.LockOnSystem.CalculLockRotation();
@@ -32,14 +43,15 @@ public class PlayerLocomotionState : PlayerBaseState
         float magnitude = psc.InputManager.MoveInput.magnitude;
         
         float animMagnitude = magnitude > psc.PlayerData.RunThreshold ? 1f :
-            magnitude > 0.1f  ? 0.5f : 0f;
+            magnitude > 0.05f  ? 0.5f : 0f;
         
         
         blendInput = GetBlendTreeInput(psc);
         psc.AnimationManager.HandleAnimation(
             animMagnitude,
             blendInput,
-            psc.Controller.IsGrounded);
+            psc.Controller.IsGrounded,
+            psc.Rb.linearVelocity);
         
     }
 

@@ -15,6 +15,7 @@ namespace Player.State
 
         public override void EnterState(PlayerStateContext psc)
         {
+            psc.Rb.useGravity = false;
             timeInAir          = 0f;
             psc.JumpReleased   = false;
         }

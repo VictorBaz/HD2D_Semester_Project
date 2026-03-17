@@ -26,6 +26,8 @@ public class PlayerController : MonoBehaviour
     private PlayerDataInstance playerData;
     private float currentSpeed = 0f;
     
+    private bool isJumping;
+    
     #endregion
 
 
@@ -54,37 +56,52 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyMovement(Vector3 targetDirection, Vector2 moveInput, float speedMultiplier)
     {
-        float targetSpeed  = SelectSpeed(moveInput) * speedMultiplier;
+        bool onSlope = OnSlope();
+        bool isMoving = moveInput.magnitude > 0.01f;
 
-        float acceleration = moveInput.magnitude > 0.1f
-            ? playerData.Acceleration
-            : playerData.Deceleration;
-
-        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * Time.fixedDeltaTime);
-
-        Vector3 targetVelocity   = targetDirection * currentSpeed;
-        Vector3 currentVelocity  = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-        Vector3 smoothedVelocity = Vector3.Lerp(currentVelocity, targetVelocity, 0.2f);
-
-        if (OnSlope() && rb.linearVelocity.y <= 0.5f)
+        if (isJumping || !IsGrounded) 
         {
-            smoothedVelocity  = GetSlopeMoveDirection(smoothedVelocity);
+            rb.useGravity = true; 
+            Vector3 targetVel = targetDirection * currentSpeed;
+        
+            rb.linearVelocity = new Vector3(targetVel.x, rb.linearVelocity.y, targetVel.z);
+            return; 
+        }
+ 
+        rb.useGravity = !onSlope;
+        
+        float targetSpeed = (onSlope ? playerData.MoveSpeedSlope : 
+                                (moveInput.magnitude >= playerData.RunThreshold ? playerData.MoveSpeedRunning : playerData.MoveSpeedWalking)) 
+                            * speedMultiplier;
+
+        float accel = isMoving ? playerData.Acceleration : playerData.Deceleration;
+        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, accel * Time.fixedDeltaTime);
+
+        Vector3 targetVelocity = targetDirection * currentSpeed;
+
+        if (onSlope)
+        {
+            Vector3 slopeDir = GetSlopeMoveDirection(targetVelocity);
+        
+            if (!isMoving && rb.linearVelocity.magnitude < 0.1f)
+            {
+                rb.linearVelocity = Vector3.zero;
+            }
+            else
+            {
+                rb.linearVelocity = slopeDir;
             
-            rb.linearVelocity = smoothedVelocity;
+                rb.AddForce(-slopeHit.normal * 30f, ForceMode.Acceleration);
+            }
         }
         else
         {
-            rb.linearVelocity = new Vector3(
-                smoothedVelocity.x,
-                rb.linearVelocity.y, 
-                smoothedVelocity.z);
+            float yVel = rb.linearVelocity.y;
+            
+            if (IsGrounded && yVel > 0) yVel = 0; 
+
+            rb.linearVelocity = new Vector3(targetVelocity.x, yVel, targetVelocity.z);
         }
-        
-        if (moveInput.magnitude > 0.1f && rb.linearVelocity.y <= 0.1f)
-        {
-            SnapToGround();
-        }
-        
     }
 
     private float SelectSpeed(Vector2 moveInput)
@@ -96,24 +113,6 @@ public class PlayerController : MonoBehaviour
             : playerData.MoveSpeedWalking;
     }
     
-
-    public void SnapToGround()
-    {
-        if (rb.linearVelocity.y > 0.1f) return;
-
-        float snapDistance = playerData.GroundCheckDistance + 0.3f; 
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, snapDistance, playerData.GroundMask))
-        {
-            if (hit.distance > 0.05f)
-            {
-                Vector3 targetPos = transform.position;
-                targetPos.y = hit.point.y + (playerData.PlayerHeight / 2f);
-                transform.position = targetPos;
-
-                rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-            }
-        }
-    }
 
     private void HandleRotation(Transform cam, Vector2 moveInput)
     {
@@ -154,7 +153,8 @@ public class PlayerController : MonoBehaviour
 
     #region Jump
     
-
+    public void SetJumping(bool jumping) => isJumping = jumping;
+    
     public void Jump()
     {
         rb.AddForce(Vector3.up * playerData.JumpForce, ForceMode.Impulse);
@@ -201,6 +201,8 @@ public class PlayerController : MonoBehaviour
 
     #region Slope And Stairs
 
+    
+    
     private bool OnSlope()
     {
         if (Physics.Raycast(transform.position, Vector3.down, out slopeHit,
@@ -214,7 +216,7 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 GetSlopeMoveDirection(Vector3 direction)
     {
-        return Vector3.ProjectOnPlane(direction, slopeHit.normal);
+        return Vector3.ProjectOnPlane(direction, slopeHit.normal).normalized * direction.magnitude;
     }
 
     #endregion

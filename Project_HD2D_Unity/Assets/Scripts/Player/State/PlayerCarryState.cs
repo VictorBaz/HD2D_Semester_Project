@@ -39,11 +39,7 @@ public class PlayerCarryState : PlayerBaseState
         float animMagnitude = magnitude > 0.1f ? 1 : 0f;
         
         
-        blendInput = GetBlendTreeInput(psc);
-        psc.AnimationManager.HandleAnimation(
-            animMagnitude,
-            blendInput,
-            psc.Controller.IsGrounded);
+        HandleAnimation(psc);
     }
 
     public override void FixedUpdateState(PlayerStateContext psc)

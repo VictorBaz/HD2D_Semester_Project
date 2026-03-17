@@ -101,7 +101,8 @@ public abstract class PlayerBaseState
         psc.AnimationManager.HandleAnimation(
             psc.InputManager.MoveInput.magnitude,
             blendInput,
-            psc.Controller.IsGrounded);
+            psc.Controller.IsGrounded,
+            psc.Rb.linearVelocity);
     }
     
 }

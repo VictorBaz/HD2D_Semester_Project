@@ -129,7 +129,7 @@ public class PlayerManager : MonoBehaviour
         TickDashTimer();
         TickJumpTimer();
         
-        Debug.Log(context.Controller.IsGrounded);
+        playerController.SetJumping(jumpCooldownTimer > 0);
     }
 
     private void FixedUpdate()
@@ -350,4 +350,51 @@ public class PlayerManager : MonoBehaviour
     }
 
     #endregion
+    
+    #region Debug & Gizmos
+
+    private void OnDrawGizmos()
+    {
+        bool isRuntime = Application.isPlaying && playerData != null;
+
+        Gizmos.color = isRuntime ? (playerController.IsGrounded ? Color.green : Color.red) : Color.yellow;
+        
+        float height = isRuntime ? playerData.PlayerHeight : playerDataRaw.Movement.PlayerHeight;
+        float checkDist = isRuntime ? playerData.GroundCheckDistance : playerDataRaw.Movement.GroundCheckDistance;
+        float radius = 0.2f; 
+
+        Vector3 rayStart = transform.position - new Vector3(0, (height / 2) - radius, 0);
+        Vector3 rayEnd = rayStart + (Vector3.down * checkDist);
+
+        Gizmos.DrawWireSphere(rayStart, radius);
+        Gizmos.DrawLine(rayStart, rayEnd);
+        Gizmos.DrawWireSphere(rayEnd, radius);
+
+        Gizmos.color = Color.blue;
+        float carryRange = isRuntime ? playerData.CarryRange : playerDataRaw.CarryData.CarryRange;
+        float carryAngle = isRuntime ? playerData.CarryAngle : playerDataRaw.CarryData.CarryAngle;
+
+        DrawWireArc(transform.position, transform.forward, carryAngle, carryRange);
+    }
+
+    private void DrawWireArc(Vector3 center, Vector3 forward, float angle, float radius)
+    {
+        Vector3 leftRayRotation = Quaternion.AngleAxis(-angle, Vector3.up) * forward;
+        Vector3 rightRayRotation = Quaternion.AngleAxis(angle, Vector3.up) * forward;
+
+        Gizmos.DrawLine(center, center + leftRayRotation * radius);
+        Gizmos.DrawLine(center, center + rightRayRotation * radius);
+        
+        int segments = 10;
+        Vector3 previousPoint = center + leftRayRotation * radius;
+        for (int i = 1; i <= segments; i++)
+        {
+            float currentAngle = Mathf.Lerp(-angle, angle, (float)i / segments);
+            Vector3 nextPoint = center + (Quaternion.AngleAxis(currentAngle, Vector3.up) * forward) * radius;
+            Gizmos.DrawLine(previousPoint, nextPoint);
+            previousPoint = nextPoint;
+        }
+    }
+
+#endregion
 }

@@ -23,16 +23,18 @@ public class AnimationManager : MonoBehaviour
     
     private static readonly int IsCarryingHash = Animator.StringToHash("IsCarrying");
     private static readonly int IsHitHash = Animator.StringToHash("IsHit");
+    private static readonly int VelocityY = Animator.StringToHash("VelocityY");
 
     #endregion
 
     #region Public Methods
 
-    public void HandleAnimation(float inputRawMagnitude, Vector2 inputBlendTree, bool isGrounded)
+    public void HandleAnimation(float inputRawMagnitude, Vector2 inputBlendTree, bool isGrounded,Vector3 vel)
     {
         UpdateMovement(inputBlendTree);
         GroundedParameters(isGrounded);
         UpdateInputMagnitude(inputRawMagnitude);
+        UpdateVelocityHash(vel.y);
     }
     
     public bool IsLandingFinished()
@@ -119,6 +121,11 @@ public class AnimationManager : MonoBehaviour
     
     public void AttackOn() => ToggleAttackCollider(true);
     public void AttackOff() => ToggleAttackCollider(false);
+
+    public void UpdateVelocityHash(float velY)
+    {
+        animator.SetFloat(VelocityY,velY);
+    }
     
     #endregion
 }

@@ -2,10 +2,12 @@ using System;
 using Enum;
 using UnityEngine;
 
-[Serializable]
+[System.Serializable]
 public class CameraSettings
 {
     public Vector3 CameraPosition;
     public CameraPlayerState CameraPlayerState;
     public float holdDuration;
+    
+    public Rail ActiveRail; 
 }

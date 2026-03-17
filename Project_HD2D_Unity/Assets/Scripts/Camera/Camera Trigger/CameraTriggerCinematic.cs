@@ -9,6 +9,10 @@ public class CameraTriggerCinematic : CameraTriggerBase
 
     private bool enter = false;
     
+    protected override Color GizmoColor => new Color(0, 0.5f, 1, 0.2f);
+    
+    protected override string Name => "Cinematic Camera Gizmo";
+    
     protected override void Trigger()
     {
         bool isCinematic = !enter;
@@ -22,5 +26,12 @@ public class CameraTriggerCinematic : CameraTriggerBase
         };
 
         EventManager.TriggerCamera(settings);
+    }
+    
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.darkBlue;
+        Gizmos.DrawLine(transform.position, cameraPosition);
+        Gizmos.DrawSphere(cameraPosition, 1f);
     }
 }

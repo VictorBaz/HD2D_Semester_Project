@@ -4,6 +4,7 @@
     {
         Fix,
         FollowPlayer,
-        Cinematic
+        Cinematic,
+        Rail
     }
 }

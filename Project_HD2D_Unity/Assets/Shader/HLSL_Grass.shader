@@ -4,6 +4,9 @@ Shader "Custom/HLSL_Grass"
     {
         _BaseColor("Base Color", Color) = (1, 1, 1, 1)
         _TipColor("Tip Color", Color) = (1, 1, 1, 1)
+        _BaseColorCorrupted("Base Color Corrupted", Color) = (0.2, 0.8, 0.2, 1)
+        _TipColorCorrupted("Tip Color Corrupted", Color) = (0.6, 1, 0.3, 1)
+        _Corrupt("Corruption", Range(0,1)) = 0
         _BladeTexture("Blade Texture", 2D) = "white" {}
 
         _BladeWidthMin("Blade Width (Min)", Range(0, 0.1)) = 0.02
@@ -60,6 +63,9 @@ Shader "Custom/HLSL_Grass"
             CBUFFER_START(UnityPerMaterial)
                 float4 _BaseColor;
                 float4 _TipColor;
+                float4 _BaseColorCorrupted;
+                float4 _TipColorCorrupted;
+                float _Corrupt;
 
                 float _BladeWidthMin;
                 float _BladeWidthMax;
@@ -321,8 +327,11 @@ Shader "Custom/HLSL_Grass"
             {
                 float4 albedo = SAMPLE_TEXTURE2D(_BladeTexture, sampler_BladeTexture, i.uv);
                 // here make a lerp from _baseTexture to _tipcolor instead of base color
-				float4 tint   = lerp(_BaseColor, _TipColor, i.uv.y);
-                float4 color  = albedo * tint;
+				float4 normalTint    = lerp(_BaseColor, _TipColor, i.uv.y);
+                float4 corruptedTint = lerp(_BaseColorCorrupted, _TipColorCorrupted, i.uv.y);
+                float4 tint          = lerp(normalTint, corruptedTint, _Corrupt);
+
+                float4 color = albedo * tint;
 
                 #if defined(_MAIN_LIGHT_SHADOWS) || defined(_MAIN_LIGHT_SHADOWS_CASCADE) || defined(_MAIN_LIGHT_SHADOWS_SCREEN)
                     float4 shadowCoord = TransformWorldToShadowCoord(i.worldPos);

@@ -28,6 +28,14 @@ public abstract class PlayerBaseState
     
     protected virtual void CalculateTargetDirection(PlayerStateContext psc)
     {
+        Vector2 moveInput = psc.InputManager.MoveInput;
+        
+        if (moveInput.magnitude <GameConstants.DEAD_STICK) 
+        {
+            targetDirection = Vector3.zero;
+            return;
+        }
+        
         Vector3 camForward = psc.CameraTransform.forward;
         camForward.y = 0; camForward.Normalize();
 

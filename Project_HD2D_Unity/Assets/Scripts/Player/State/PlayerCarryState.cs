@@ -34,17 +34,21 @@ public class PlayerCarryState : PlayerBaseState
     
         HandleMovement(psc); 
         
-        float magnitude = psc.Rb.linearVelocity.magnitude;
+        float magnitude = psc.InputManager.MoveInput.magnitude;
         
-        float animMagnitude = magnitude > 0.1f ? 1 : 0f;
+        float animMagnitude = magnitude > GameConstants.DEAD_STICK ? 1 : 0f;
         
         
-        HandleAnimation(psc);
+        blendInput = GetBlendTreeInput(psc);
+        psc.AnimationManager.HandleAnimation(
+            animMagnitude,
+            blendInput,
+            psc.Controller.IsGrounded,
+            psc.Rb.linearVelocity);
     }
 
     public override void FixedUpdateState(PlayerStateContext psc)
     {
         HandlePhysics(psc,0.5f);
-        psc.LockOnSystem.HandleRotationLock(psc.Rb);
     }
 }

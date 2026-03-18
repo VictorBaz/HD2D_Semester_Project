@@ -97,7 +97,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""type"": ""PassThrough"",
                     ""id"": ""f49b987e-47b4-4c32-97eb-e47f934ae672"",
                     ""expectedControlType"": """",
-                    ""processors"": """",
+                    ""processors"": ""StickDeadzone(min=0.2)"",
                     ""interactions"": """",
                     ""initialStateCheck"": false
                 },

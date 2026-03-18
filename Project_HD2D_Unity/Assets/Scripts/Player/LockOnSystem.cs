@@ -33,7 +33,7 @@ public class LockOnSystem : MonoBehaviour
         }
     }
 
-    public void HandleRotationLock(Rigidbody rb)
+    /*public void HandleRotationLock(Rigidbody rb)
     {
         if (!IsLocked) return;
         
@@ -44,7 +44,7 @@ public class LockOnSystem : MonoBehaviour
         }
         
         rb.MoveRotation(targetRotation);
-    }
+    }*/
 
     public void CalculLockRotation()
     {

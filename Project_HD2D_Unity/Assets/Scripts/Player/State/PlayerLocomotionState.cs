@@ -32,7 +32,7 @@ public class PlayerLocomotionState : PlayerBaseState
         {
             airTimeBuffer = 0f; 
         }
-    
+        
         psc.LockOnSystem.CalculLockRotation();
         psc.Controller.SetLockMode(psc.LockOnSystem.IsLocked);
     
@@ -41,7 +41,7 @@ public class PlayerLocomotionState : PlayerBaseState
         float magnitude = psc.InputManager.MoveInput.magnitude;
         
         float animMagnitude = magnitude > psc.PlayerData.RunThreshold ? 1f :
-            magnitude > 0.05f  ? 0.5f : 0f;
+            magnitude > GameConstants.DEAD_STICK  ? 0.5f : 0f;
         
         
         blendInput = GetBlendTreeInput(psc);
@@ -57,7 +57,6 @@ public class PlayerLocomotionState : PlayerBaseState
     public override void FixedUpdateState(PlayerStateContext psc)
     {
         HandlePhysics(psc);
-        psc.LockOnSystem.HandleRotationLock(psc.Rb);
     }
     
 

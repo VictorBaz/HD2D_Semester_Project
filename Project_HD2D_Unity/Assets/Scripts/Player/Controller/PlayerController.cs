@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
     private float currentSpeed = 0f;
     
     private bool isJumping;
+    [SerializeField] private LockOnSystem lockOnSystem;
     
     #endregion
 
@@ -114,21 +115,35 @@ public class PlayerController : MonoBehaviour
     }
     
 
+
     private void HandleRotation(Transform cam, Vector2 moveInput)
     {
-        if (isInLockMode && IsAttacking) return;
+        if (lockOnSystem.IsLocked) 
+        {
+            Vector3 targetPos = lockOnSystem.CurrentTarget.GetLockTransform().position;
+            Vector3 lookDir = (targetPos - transform.position).normalized;
+            lookDir.y = 0;
 
-        Vector3 targetDirection = cam.forward * moveInput.y + cam.right * moveInput.x;
-        targetDirection.Normalize();
-        targetDirection.y = 0;
+            if (lookDir != Vector3.zero)
+            {
+                targetRotation = Quaternion.LookRotation(lookDir);
+                return;
+            }
+        }
 
-        if (targetDirection == Vector3.zero)
-            targetDirection = transform.forward;
+        if (moveInput.sqrMagnitude > 0.01f)
+        {
+            Vector3 camForward = cam.forward;
+            Vector3 camRight = cam.right;
+            camForward.y = 0; camRight.y = 0;
 
-        targetRotation = Quaternion.Slerp(
-            transform.rotation,
-            Quaternion.LookRotation(targetDirection),
-            playerData.RotationSpeed * Time.fixedDeltaTime);
+            Vector3 moveDir = (camForward * moveInput.y + camRight * moveInput.x).normalized;
+
+            if (moveDir != Vector3.zero)
+            {
+                targetRotation = Quaternion.LookRotation(moveDir);
+            }
+        }
     }
 
     #endregion

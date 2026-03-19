@@ -6,60 +6,80 @@ public class CombatDataEditor : Editor
 {
     public override void OnInspectorGUI()
     {
-        base.OnInspectorGUI();
+        base.OnInspectorGUI(); 
 
         CombatData data = (CombatData)target;
+        if (data.ComboHits == null || data.ComboHits.Length == 0) return;
 
-        if (data.ComboHits == null) return;
-
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Validation des Timings", EditorStyles.boldLabel);
+        EditorGUILayout.Space(10);
+        EditorGUILayout.LabelField("Visualisation des Timings", EditorStyles.boldLabel);
+        EditorGUILayout.Space(5);
 
         for (int i = 0; i < data.ComboHits.Length; i++)
         {
             var hit = data.ComboHits[i];
+            string label = $"Combo {i} : {(hit.Clip != null ? hit.Clip.name : "Pas d'anim")}";
             
-            if (hit.Clip == null)
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            EditorGUILayout.LabelField(label, EditorStyles.miniBoldLabel);
+
+            if (hit.Clip != null)
             {
-                EditorGUILayout.HelpBox($"Combo {i} : Pas d'AnimationClip assigné.", MessageType.Warning);
-                continue;
+                GUILayout.Space(5);
+                
+                float animLen = hit.Clip.length;
+
+                DrawTimelineRow("Dash", animLen, hit.DashStartOffset, hit.DashDuration, new Color(0.3f, 0.7f, 1f, 0.8f));
+
+                DrawTimelineRow("Hitbox", animLen, hit.HitboxStartOffset, hit.HitboxActiveDuration, new Color(1f, 0.3f, 0.3f, 0.8f));
+
+                CheckErrors(hit, animLen, i);
+            }
+            else
+            {
+                EditorGUILayout.HelpBox("Veuillez assigner un Animation Clip.", MessageType.Info);
             }
 
-            float animLength = hit.Clip.length;
-            float totalHitboxTime = hit.HitboxStartOffset + hit.HitboxActiveDuration;
-
-            if (totalHitboxTime > animLength)
-            {
-                EditorGUILayout.HelpBox(
-                    $"ERREUR Combo {i} : La hitbox finit à {totalHitboxTime}s, mais l'anim ne dure que {animLength}s !", 
-                    MessageType.Error);
-            }
-
-            if (hit.DashDuration > animLength)
-            {
-                EditorGUILayout.HelpBox(
-                    $"WARNING Combo {i} : Le dash dure plus longtemps ({hit.DashDuration}s) que l'animation ({animLength}s).", 
-                    MessageType.Warning);
-            }
-            
-            Rect rect = GUILayoutUtility.GetRect(10, 20);
-            GUILayout.Space(5);
-            DrawTimeline(rect, animLength, hit.HitboxStartOffset, hit.HitboxActiveDuration);
+            EditorGUILayout.EndVertical();
+            EditorGUILayout.Space(5);
         }
     }
 
-    private void DrawTimeline(Rect rect, float total, float start, float duration)
+    private void DrawTimelineRow(string label, float total, float start, float duration, Color barColor)
     {
-        EditorGUI.DrawRect(rect, new Color(0.2f, 0.2f, 0.2f)); 
+        Rect rect = EditorGUILayout.GetControlRect(false, 20);
         
-        float widthStart = (start / total) * rect.width;
-        float widthActive = (duration / total) * rect.width;
+        Rect labelRect = new Rect(rect.x, rect.y, rect.width * 0.15f, rect.height);
+        EditorGUI.LabelField(labelRect, label, EditorStyles.miniLabel);
+
+        Rect barAreaRect = new Rect(rect.x + rect.width * 0.15f, rect.y, rect.width * 0.85f, rect.height);
         
-        Rect activeRect = new Rect(rect.x + widthStart, rect.y, widthActive, rect.height);
+        EditorGUI.DrawRect(barAreaRect, new Color(0.15f, 0.15f, 0.15f)); 
+
+        float startFactor = Mathf.Clamp01(start / total);
+        float durationFactor = Mathf.Clamp01(duration / total);
         
-        Color barColor = (start + duration > total) ? Color.red : Color.green;
-        EditorGUI.DrawRect(activeRect, barColor);
+        if (startFactor + durationFactor > 1f) durationFactor = 1f - startFactor;
+
+        Rect activeBarRect = new Rect(
+            barAreaRect.x + (startFactor * barAreaRect.width),
+            barAreaRect.y + 2,
+            durationFactor * barAreaRect.width,
+            barAreaRect.height - 4
+        );
+
+        EditorGUI.DrawRect(activeBarRect, barColor);
         
-        EditorGUI.LabelField(rect, $"  Timeline: {total:F2}s", EditorStyles.miniLabel);
+        EditorGUI.LabelField(barAreaRect, $"  {start:F2}s -> {(start+duration):F2}s / {total:F2}s", EditorStyles.whiteMiniLabel);
+    }
+
+    private void CheckErrors(CombatHitData hit, float animLen, int index)
+    {
+        if (hit.DashStartOffset + hit.DashDuration > animLen)
+            EditorGUILayout.HelpBox($"ALERTE : Le Dash dépasse la fin de l'animation !", MessageType.Error);
+
+        if (hit.HitboxStartOffset + hit.HitboxActiveDuration > animLen)
+            EditorGUILayout.HelpBox($"ERREUR : La Hitbox frappe dans le vide (après l'anim) !", MessageType.Error);
+        
     }
 }

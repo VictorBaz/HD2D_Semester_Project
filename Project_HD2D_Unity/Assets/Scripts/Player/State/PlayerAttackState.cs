@@ -70,17 +70,59 @@ namespace Player.State
         private IEnumerator AttackMeleeIe(PlayerStateContext psc)
         {
             CombatHitData hit = psc.PlayerData.ComboHits[comboIndex];
-
-            yield return DashIe(hit, psc);
-
-            yield return new WaitUntil(() => psc.AnimationManager.IsInAttackAnimation());
-
+            psc.AnimationManager.SetComboIndex(comboIndex);
             bufferWindowOpen = true;
 
-            float clipLength = psc.AnimationManager.GetCurrentAnimatorStateInfo(0).length;
+            float elapsed = 0f;
+            Vector3 dashDir = psc.PlayerTransform.forward;
+            bool hitboxIsActive = false;
             
-            yield return new WaitForSeconds(clipLength * 0.7f);
+            float actionDuration = Mathf.Max(
+                hit.DashStartOffset + hit.DashDuration, 
+                hit.HitboxStartOffset + hit.HitboxActiveDuration
+            );
 
+            while (elapsed < actionDuration)
+            {
+                elapsed += Time.deltaTime;
+                
+                if (elapsed >= hit.DashStartOffset && elapsed <= (hit.DashStartOffset + hit.DashDuration))
+                {
+                    
+                    float localDashTime = (elapsed - hit.DashStartOffset) / hit.DashDuration;
+                    
+                    psc.Rb.linearVelocity = Vector3.Lerp(
+                        dashDir * hit.DashSpeed,
+                        Vector3.zero,
+                        localDashTime);
+                }
+                else
+                {
+                    
+                    psc.Rb.linearVelocity = Vector3.zero;
+                }
+
+                bool shouldHitboxBeActive = elapsed >= hit.HitboxStartOffset && 
+                                            elapsed <= (hit.HitboxStartOffset + hit.HitboxActiveDuration);
+
+                if (shouldHitboxBeActive && !hitboxIsActive)
+                {
+                    psc.AnimationManager.AttackOn();
+                    hitboxIsActive = true;
+                }
+                else if (!shouldHitboxBeActive && hitboxIsActive)
+                {
+                    psc.AnimationManager.AttackOff();
+                    hitboxIsActive = false;
+                }
+
+                yield return null;
+            }
+
+            psc.Rb.linearVelocity = Vector3.zero;
+            psc.AnimationManager.AttackOff();
+            
+            yield return new WaitForSeconds(0.1f); 
             bufferWindowOpen = false;
             ResolveCombo(psc);
         }
@@ -101,22 +143,6 @@ namespace Player.State
             }
         }
 
-        private IEnumerator DashIe(CombatHitData data, PlayerStateContext psc)
-        {
-            float elapsed = 0f;
-            Vector3 dashDir = psc.PlayerTransform.forward; 
-
-            while (elapsed < data.DashDuration)
-            {
-                psc.Rb.linearVelocity = Vector3.Lerp(
-                    dashDir * data.DashSpeed,
-                    Vector3.zero,
-                    elapsed / data.DashDuration);
-
-                elapsed += Time.deltaTime;
-                yield return null;
-            }
-            psc.Rb.linearVelocity = Vector3.zero;
-        }
+        
     }
 }

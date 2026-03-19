@@ -20,6 +20,7 @@ public class CombatHitData
     
     [Header("Mouvement")]
     public float DashSpeed;
+    public float DashStartOffset;
     public float DashDuration;
 
     [Header("Timings Hitbox")]

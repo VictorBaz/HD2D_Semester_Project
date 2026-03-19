@@ -1,6 +1,5 @@
 using System.Collections;
 using Interface;
-using Manager;
 using TMPro;
 using UnityEngine;
 using UnityEngine.AI;

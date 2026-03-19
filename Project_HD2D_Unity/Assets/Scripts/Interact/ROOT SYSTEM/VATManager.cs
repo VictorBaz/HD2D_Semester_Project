@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class VATManager : MonoBehaviour
+public class VATManager : MonoBehaviour, IRootLink
 {
     #region Variables
 
@@ -23,8 +23,7 @@ public class VATManager : MonoBehaviour
     private float currentNormalizedValue = 0f;
     private MaterialPropertyBlock propBlock;
     
-    [Header("Root")]
-    [SerializeField] private List<Root> roots;
+    private Root root;
 
     #endregion
 
@@ -33,7 +32,6 @@ public class VATManager : MonoBehaviour
     private void Awake()
     {
         InitMat();
-        InitRoots();
     }
     
     private void Update()
@@ -52,20 +50,17 @@ public class VATManager : MonoBehaviour
         if (animationSteps.Count > 0)
             currentNormalizedValue = animationSteps[0];
     }
-    
-    private void InitRoots()
+
+    public void SetRoot(Root root)
     {
-        foreach (Root root in roots)
-        {
-            root.SetVATManager(this);
-        }
+        this.root = root;
     }
 
     #endregion
 
     #region VAT
 
-    public void SetEnergy(int energy)
+    private void SetEnergy(int energy)
     {
         currentEnergy = Mathf.Clamp(energy, 0, animationSteps.Count - 1);
     }

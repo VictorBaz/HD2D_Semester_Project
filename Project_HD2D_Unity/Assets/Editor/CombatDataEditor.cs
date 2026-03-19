@@ -28,10 +28,10 @@ public class CombatDataEditor : Editor
                 GUILayout.Space(5);
                 
                 float animLen = hit.Clip.length;
+                
+                DrawTimelineRow("Dash", animLen, hit.DashStartOffset, hit.DashDuration,Color.darkBlue);
 
-                DrawTimelineRow("Dash", animLen, hit.DashStartOffset, hit.DashDuration, new Color(0.3f, 0.7f, 1f, 0.8f));
-
-                DrawTimelineRow("Hitbox", animLen, hit.HitboxStartOffset, hit.HitboxActiveDuration, new Color(1f, 0.3f, 0.3f, 0.8f));
+                DrawTimelineRow("Hitbox", animLen, hit.HitboxStartOffset, hit.HitboxActiveDuration, Color.darkGreen);
 
                 CheckErrors(hit, animLen, i);
             }

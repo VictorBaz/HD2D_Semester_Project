@@ -40,4 +40,8 @@ public class AiPatrol : AiState
     }
 
     public override void ExitState(AiContext actx) { }
+    
+    public override bool CanAttack => true;
+    public override bool CanMove => true;
+    public override bool CanTakeDamage => true;
 }

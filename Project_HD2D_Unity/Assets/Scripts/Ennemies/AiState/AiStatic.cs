@@ -21,4 +21,8 @@ public class AiStatic : AiState
     }
 
     public override void ExitState(AiContext actx) { }
+    
+    public override bool CanAttack => false;
+    public override bool CanMove => false;
+    public override bool CanTakeDamage => false;
 }

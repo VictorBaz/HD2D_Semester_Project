@@ -36,4 +36,8 @@ public class AiChase : AiState
     {
   
     }
+    
+    public override bool CanAttack => true;
+    public override bool CanMove => true;
+    public override bool CanTakeDamage => true;
 }

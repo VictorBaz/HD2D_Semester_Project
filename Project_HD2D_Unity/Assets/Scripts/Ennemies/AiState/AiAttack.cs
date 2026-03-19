@@ -3,23 +3,32 @@ using UnityEngine;
 
 public class AiAttack : AiState
 {
-    #region Private Variables
-    private bool isExecutingSequence = false;
-    private Coroutine attackRoutine;
-    #endregion
-
+    private float attackTimer;
+    private float attackCooldown;
+    
     public override string Name => "Attacking";
 
-    public override void EnterState(AiContext actx) 
-    { 
+    public override void EnterState(AiContext actx)
+    {
+        attackTimer = 0f;
+        attackCooldown = actx.Data.AttackCooldown;
+        
         if (actx.Agent.isActiveAndEnabled)
-            actx.Agent.isStopped = true;
-
-        isExecutingSequence = false;
+            actx.Agent.isStopped = CanMove;
+        
     }
 
     public override void UpdateState(AiContext actx)
     {
+        
+        attackTimer -= Time.deltaTime;
+
+        if (attackTimer <= 0f)
+        {
+            actx.AnimManager.EnterAttack();
+            attackTimer = attackCooldown; 
+        }
+        
         if (actx.Target != null)
         {
             Vector3 lookDir = (actx.Target.transform.position - actx.Behavior.transform.position).normalized;
@@ -33,8 +42,7 @@ public class AiAttack : AiState
                 );
             }
         }
-
-        if (isExecutingSequence) return;
+        
 
         if (actx.Target == null) 
         { 
@@ -48,43 +56,17 @@ public class AiAttack : AiState
             return;
         }
         
-        attackRoutine = actx.Behavior.StartCoroutine(AttackSequence(actx));
     }
 
     public override void ExitState(AiContext actx) 
     { 
-        if (attackRoutine != null) actx.Behavior.StopCoroutine(attackRoutine);
         
         if (actx.Agent.isActiveAndEnabled)
             actx.Agent.isStopped = false;
 
-        isExecutingSequence = false;
+        actx.AnimManager.ExitAttack();
     }
-
-    private IEnumerator AttackSequence(AiContext actx)
-    {
-        isExecutingSequence = true;
-
-        yield return new WaitForSeconds(actx.Data.AnticipationTime);
-
-        if (actx.Target != null && actx.IsPlayerInAttackRange)
-        {
-            PlayerManager player = actx.Target.GetComponentInParent<PlayerManager>();
-
-            if (player != null)
-            {
-                player.TransitionTo(player.HitState);
-                Debug.Log($"[IA] Touche le joueur !");
-            }
-            else
-            {
-                Debug.LogWarning($"[IA] Cible détectée ({actx.Target.name}), mais aucun PlayerManager trouvé !");
-            }
-        }
     
-        yield return new WaitForSeconds(actx.Data.AttackCooldown); 
-    
-        isExecutingSequence = false;
-        attackRoutine = null;
-    }
+    public override bool CanMove => false;
+    public override bool CanTakeDamage => false;
 }

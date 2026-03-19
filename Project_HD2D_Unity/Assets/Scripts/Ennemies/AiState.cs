@@ -8,6 +8,12 @@ public abstract class AiState
     public abstract void ExitState(AiContext actx);
 
     public virtual string Name { get; private set; }
+    
+    public virtual bool CanAttack => false;
+    public virtual bool CanMove => true;
+    public virtual bool CanTakeDamage => true;
+    public virtual bool IsFalling => false;
+    
 
     #endregion
 }

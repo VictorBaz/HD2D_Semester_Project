@@ -50,4 +50,8 @@ public class AiKO : AiState
             actx.TransitionTo(actx.Behavior.GoToSpawnState);
         }
     }
+    
+    public override bool CanAttack => false;
+    public override bool CanMove => false;
+    public override bool CanTakeDamage => false;
 }

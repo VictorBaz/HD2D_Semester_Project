@@ -38,4 +38,7 @@ public class AiTakeDamage : AiState
     }
 
     public override void ExitState(AiContext actx) { }
+    
+    public override bool CanMove => false;
+    public override bool CanTakeDamage => false;
 }

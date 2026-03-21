@@ -8,6 +8,7 @@ public class AiStatic : AiState
     {
         if (actx.Agent.isActiveAndEnabled)
         {
+            actx.Behavior.SetPhysicalMode(false);
             actx.Agent.isStopped = true;
         }
     }

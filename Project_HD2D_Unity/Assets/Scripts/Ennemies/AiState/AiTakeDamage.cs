@@ -8,11 +8,15 @@ public class AiTakeDamage : AiState
 
     public override void EnterState(AiContext actx)
     {
-        if (actx.Agent.isActiveAndEnabled)
-        {
-            actx.Agent.isStopped = true;
-        }
+        actx.Behavior.SetPhysicalMode(true);
+        
+        actx.Rb.AddForce(actx.HitDirection * 5f, ForceMode.Impulse);
 
+        actx.AnimManager.SetIsHit(true);
+        
+        
+        
+        //TODO CHANGE LOGIC
         if (actx.Behavior.KoSlider != null)
         {
             actx.Behavior.KoSlider.value += actx.Data.DamageToApply;
@@ -24,7 +28,6 @@ public class AiTakeDamage : AiState
             }
         }
 
-        actx.Rb.AddForce(actx.HitDirection * 5f, ForceMode.Impulse);
         
         timer = actx.Data.StunDuration;
     }
@@ -39,7 +42,10 @@ public class AiTakeDamage : AiState
         }
     }
 
-    public override void ExitState(AiContext actx) { }
+    public override void ExitState(AiContext actx)
+    {
+        actx.AnimManager.SetIsHit(false);
+    }
     
     public override bool CanMove => false;
     public override bool CanTakeDamage => false;

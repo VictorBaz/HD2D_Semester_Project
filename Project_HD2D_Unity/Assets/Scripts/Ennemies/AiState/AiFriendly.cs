@@ -10,6 +10,9 @@ public class AiFriendly : AiState
     
     public override void EnterState(AiContext actx)
     {
+        actx.Behavior.SetPhysicalMode(false);
+        actx.Agent.isStopped = false;
+        
         searchCenter = actx.Agent.transform.position;
         waitTimer = 0f;
         MoveToRandomPoint(actx);

@@ -8,9 +8,11 @@ public class AiDrop : AiState
 
     public override void EnterState(AiContext actx) 
     {
-        isGrounded = false;
-        if (actx.Agent != null) actx.Agent.enabled = false;
-        
+        actx.Behavior.SetPhysicalMode(true);
+    
+        actx.Rb.isKinematic = false; 
+        actx.Rb.useGravity = true;
+    
         actx.AnimManager.SetFalling(true);
     }
 

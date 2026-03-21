@@ -15,6 +15,7 @@ public class AiSearch : AiState
         
         if (actx.Agent.isActiveAndEnabled)
         {
+            actx.Behavior.SetPhysicalMode(false);
             actx.Agent.isStopped = false;
             MoveToRandomPoint(actx);
         }

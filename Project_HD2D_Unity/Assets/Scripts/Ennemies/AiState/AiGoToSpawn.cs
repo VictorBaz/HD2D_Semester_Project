@@ -8,6 +8,7 @@ public class AiGoToSpawn : AiState
     {
         if (actx.Agent.isActiveAndEnabled)
         {
+            actx.Behavior.SetPhysicalMode(false);
             actx.Agent.isStopped = false;
             actx.Agent.SetDestination(actx.SpawnPosition);
         }

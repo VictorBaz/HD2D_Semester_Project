@@ -10,6 +10,7 @@ public class AiPatrol : AiState
     {
         if (actx.Agent.isActiveAndEnabled)
         {
+            actx.Behavior.SetPhysicalMode(false);
             actx.Agent.isStopped = false;
             
             if (actx.Behavior.patrolPoints.Length > 0)

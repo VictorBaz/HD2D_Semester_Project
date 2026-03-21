@@ -16,8 +16,8 @@ public class AiAttack : AiState
     {
         attackRoutine = null;
         
-        if (actx.Agent.isActiveAndEnabled) 
-            actx.Agent.isStopped = true;
+        actx.Behavior.SetPhysicalMode(false);
+        actx.Agent.isStopped = true;
         
         isPreparingAttack = false;
         
@@ -26,20 +26,19 @@ public class AiAttack : AiState
 
     public override void UpdateState(AiContext actx)
     {
+        if (actx.Target == null) 
+        { 
+            actx.TransitionTo(actx.Behavior.SearchState); 
+            return; 
+        }
+
         if (isPreparingAttack || isCooldown || attackRoutine == null)
         {
             RotateTowardsTarget(actx);
         }
 
         if (attackRoutine != null) return;
-
         if (isCooldown) return;
-
-        if (actx.Target == null) 
-        { 
-            actx.TransitionTo(actx.Behavior.SearchState); 
-            return; 
-        }
 
         if (!actx.IsPlayerInAttackRange)
         {
@@ -89,8 +88,12 @@ public class AiAttack : AiState
 
     private void RotateTowardsTarget(AiContext actx)
     {
+        if (actx.Target == null) return;
+        
         Vector3 lookDir = (actx.Target.transform.position - actx.Behavior.transform.position).normalized;
+        
         lookDir.y = 0;
+        
         if (lookDir != Vector3.zero)
         {
             actx.Behavior.transform.rotation = Quaternion.Slerp(

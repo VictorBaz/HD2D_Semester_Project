@@ -8,19 +8,14 @@ public class AiKO : AiState
 
     public override void EnterState(AiContext actx)
     {
-        if (actx.Agent.isActiveAndEnabled)
-        {
-            actx.Agent.isStopped = true;
-        }
-
-        koTimer = actx.Data.KoTime;
-
-        if (actx.Behavior.KoSlider != null)
-        {
-            actx.Behavior.KoSlider.value = 0;
-        }
+        actx.Behavior.SetPhysicalMode(true); 
         
+        actx.Rb.linearVelocity = Vector3.zero;
+        
+        actx.Rb.isKinematic = true; 
+
         actx.AnimManager.SetKO(true);
+        koTimer = actx.Data.KoTime;
     }
 
     public override void UpdateState(AiContext actx)

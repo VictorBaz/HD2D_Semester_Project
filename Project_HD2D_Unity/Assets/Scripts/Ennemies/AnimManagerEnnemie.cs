@@ -34,9 +34,9 @@ public class AnimManagerEnnemie : MonoBehaviour
 
     #region Combat
     
-    public void SetIsHit()
+    public void SetIsHit(bool isHit)
     {
-        animator.SetTrigger(IsHitHash);
+        animator.SetBool(IsHitHash,isHit);
     }
 
     public void TriggerAttack()

@@ -193,7 +193,7 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
 
     private void OnViewEntered(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag(GameConstants.PLAYER_TAG))
         {
             target = other.gameObject;
             isPlayerInViewRange = true;
@@ -202,7 +202,7 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
 
     private void OnViewExited(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag(GameConstants.PLAYER_TAG))
         {
             target = null;
             isPlayerInViewRange = false;
@@ -211,18 +211,20 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
 
     private void OnAttackEntered(Collider other)
     {
-        if (other.CompareTag("Player")) isPlayerInAttackRange = true;
+        if (other.CompareTag(GameConstants.PLAYER_TAG)) isPlayerInAttackRange = true;
     }
 
     private void OnAttackExited(Collider other)
     {
-        if (other.CompareTag("Player")) isPlayerInAttackRange = false;
+        if (other.CompareTag(GameConstants.PLAYER_TAG)) isPlayerInAttackRange = false;
     }
     #endregion
 
     #region IDamageable Implementation
     public void TakeDamage(int value,Vector3 hitDirection)
     {
+        if (!currentState.CanTakeDamage) return;
+        
         context.HitDirection = hitDirection;
         data.DamageToApply = value;
         ChangeState(AiTakeDamage);
@@ -237,17 +239,16 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
 
     public void Carry(Transform anchor)
     {
-        if (agent != null) agent.enabled = false;
-
-        rb.isKinematic = true;
+        agent.enabled = false;
+    
+        rb.isKinematic = true; 
         rb.useGravity = false;
-        
+
         transform.SetParent(anchor);
         transform.localPosition = Vector3.zero;
         transform.localRotation = Quaternion.identity;
-
+    
         mainCollider.enabled = false;
-
         isCarry = true;
     }
 
@@ -270,21 +271,23 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
         }
     }
     
-    
-    private void ReactivateAI()
-    {
-        
-        rb.isKinematic = true; 
-        
-        if (agent != null)
-        {
-            agent.enabled = true;
-            agent.Warp(transform.position);
-        }
-    }
 
     public bool IsCarry() => isCarry;
 
     #endregion
+    
+    public void SetPhysicalMode(bool usePhysics)
+    {
+        if (usePhysics)
+        {
+            agent.enabled = false;
+            rb.isKinematic = true; 
+        }
+        else
+        {
+            rb.isKinematic = true;
+            if (agent != null) agent.enabled = true;
+        }
+    }
 
 }

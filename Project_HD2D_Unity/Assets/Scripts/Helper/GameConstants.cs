@@ -6,4 +6,5 @@
     public const float ANIM_RUN_THRESHOLD = 0.8f;
     
     public const float GRAVITY_FORCE = 9.81f;
+    public const string PLAYER_TAG = "Player";
 }

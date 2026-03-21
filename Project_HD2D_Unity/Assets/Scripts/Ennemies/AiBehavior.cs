@@ -38,7 +38,6 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
 
     [Header("UI & Feedback")]
     public Slider KoSlider;
-    public int KoSliderMax = 100;
     public TMP_Text StateTxt;
 
     private AiState currentState;
@@ -97,8 +96,10 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
 
     void Start()
     {
-        if (KoSlider != null) KoSlider.maxValue = KoSliderMax;
+        if (KoSlider != null) KoSlider.maxValue = data.MaxKo;
         if (StateTxt != null) StateTxt.text = "INIT";
+
+        KoSlider.value = data.CurrentKo;
         
         ChangeState(PatrolState);
     }
@@ -221,13 +222,28 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
     #endregion
 
     #region IDamageable Implementation
-    public void TakeDamage(int value,Vector3 hitDirection)
+    public void TakeDamage(int amount, Vector3 direction)
     {
         if (!currentState.CanTakeDamage) return;
         
-        context.HitDirection = hitDirection;
-        data.DamageToApply = value;
+        data.CurrentKo += amount;
+        
+        Debug.Log($"{data.CurrentKo} / {data.MaxKo}");
+        
+        if (KoSlider != null)
+        {
+            KoSlider.maxValue = data.MaxKo;
+            this.UpdateSlider(KoSlider, data.CurrentKo);
+        }
+
+        context.HitDirection = direction;
         ChangeState(AiTakeDamage);
+    }
+    
+    public void ResetKo()
+    {
+        data.CurrentKo = 0;
+        if (KoSlider != null) KoSlider.value = 0f;
     }
     #endregion
 
@@ -276,17 +292,24 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
 
     #endregion
     
+    
     public void SetPhysicalMode(bool usePhysics)
     {
         if (usePhysics)
         {
             agent.enabled = false;
-            rb.isKinematic = true; 
+            rb.isKinematic = false; 
+            rb.useGravity = true;
         }
         else
         {
             rb.isKinematic = true;
-            if (agent != null) agent.enabled = true;
+            
+            if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 2.0f, NavMesh.AllAreas))
+            {
+                agent.enabled = true;
+                agent.Warp(hit.position);
+            }
         }
     }
 

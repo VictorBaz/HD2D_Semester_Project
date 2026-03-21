@@ -14,7 +14,6 @@ public class WeaponHitbox : MonoBehaviour
         if (target != null)
         {
             target.TakeDamage(damage, transform.forward);
-            Debug.Log("Touché !");
         }
     }
 }

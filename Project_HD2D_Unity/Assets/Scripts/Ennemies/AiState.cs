@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public abstract class AiState
@@ -13,7 +14,10 @@ public abstract class AiState
     public virtual bool CanMove => true;
     public virtual bool CanTakeDamage => true;
     public virtual bool IsFalling => false;
+
     
 
+    
+    
     #endregion
 }

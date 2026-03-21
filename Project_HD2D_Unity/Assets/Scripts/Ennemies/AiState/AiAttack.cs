@@ -17,7 +17,11 @@ public class AiAttack : AiState
         attackRoutine = null;
         
         actx.Behavior.SetPhysicalMode(false);
-        actx.Agent.isStopped = true;
+        
+        if (actx.Agent.isActiveAndEnabled && actx.Agent.isOnNavMesh)
+        {
+            actx.Agent.isStopped = true;
+        }
         
         isPreparingAttack = false;
         

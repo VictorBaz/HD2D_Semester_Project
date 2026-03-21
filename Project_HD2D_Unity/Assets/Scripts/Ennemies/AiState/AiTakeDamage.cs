@@ -14,22 +14,14 @@ public class AiTakeDamage : AiState
 
         actx.AnimManager.SetIsHit(true);
         
-        
-        
-        //TODO CHANGE LOGIC
-        if (actx.Behavior.KoSlider != null)
+        if (actx.Data.IsKoFull())
         {
-            actx.Behavior.KoSlider.value += actx.Data.DamageToApply;
-
-            if (actx.Behavior.KoSlider.value >= actx.Behavior.KoSliderMax)
-            {
-                actx.TransitionTo(actx.Behavior.AiKoState);
-                return;
-            }
+            actx.TransitionTo(actx.Behavior.AiKoState);
+            return;
         }
 
-        
         timer = actx.Data.StunDuration;
+
     }
 
     public override void UpdateState(AiContext actx)

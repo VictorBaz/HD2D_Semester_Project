@@ -8,9 +8,10 @@ public class AiKO : AiState
 
     public override void EnterState(AiContext actx)
     {
+        actx.Rb.linearVelocity = Vector3.zero;
+        
         actx.Behavior.SetPhysicalMode(true); 
         
-        actx.Rb.linearVelocity = Vector3.zero;
         
         actx.Rb.isKinematic = true; 
 
@@ -24,11 +25,14 @@ public class AiKO : AiState
 
         if (actx.Behavior.KoSlider != null)
         {
-            actx.Behavior.KoSlider.value = 1f - (koTimer / actx.Data.KoTime);
+            actx.Behavior.KoSlider.value = 
+                (koTimer / actx.Data.KoTime) 
+                * actx.Data.MaxKo;
         }
 
         if (koTimer <= 0)
         {
+            actx.Behavior.ResetKo();
             DetermineNextState(actx);
         }
     }
@@ -38,6 +42,14 @@ public class AiKO : AiState
         if (actx.Behavior.IsCarry())
         {
             actx.Behavior.Eject(true);
+            return;
+        }
+
+        bool isStillInAir = !Physics.Raycast(actx.Behavior.transform.position, Vector3.down, 1.1f);
+
+        if (isStillInAir)
+        {
+            actx.TransitionTo(actx.Behavior.AiDropState);
         }
         else
         {

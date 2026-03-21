@@ -21,6 +21,9 @@ public class EnemyDataInstance
     public float AttackDashDuration;
     
     public float KoTime;
+    public int MaxKo;
+    public int MinKo;
+    public int CurrentKo;
 
     public float SearchDuration;
     public float SearchRadius;
@@ -38,11 +41,19 @@ public class EnemyDataInstance
         
         
         KoTime = data.AiKOData.KoTime;
+        MaxKo = data.AiKOData.MaxKo;
+        MinKo = data.AiKOData.MinKo;
+        CurrentKo = data.AiKOData.CurrentKo;
 
         SearchDuration = data.AiSearchData.searchDuration;
         SearchRadius = data.AiSearchData.searchRadius;
 
         DamageToApply = data.AiTakeDamageData.DamageToApply;
         StunDuration = data.AiTakeDamageData.StunDuration;
+    }
+
+    public bool IsKoFull()
+    {
+        return CurrentKo >= MaxKo;
     }
 }

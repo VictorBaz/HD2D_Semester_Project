@@ -7,7 +7,11 @@ public class AiChase : AiState
     public override void EnterState(AiContext actx) 
     {
         actx.Behavior.SetPhysicalMode(false);
-        actx.Agent.isStopped = false;
+        
+        if (actx.Agent.isActiveAndEnabled && actx.Agent.isOnNavMesh)
+        {
+            actx.Agent.isStopped = false;
+        }
     }
 
     public override void UpdateState(AiContext actx)

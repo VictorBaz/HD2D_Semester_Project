@@ -28,6 +28,7 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
 
     #region Gizmos
 
+#if UNITY_EDITOR
     private void OnDrawGizmos()
     {
         GUIStyle style = new GUIStyle
@@ -42,6 +43,8 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
 
         Handles.Label(transform.position,"ROOT",style);
     }
+#endif
+    
 
     #endregion
 

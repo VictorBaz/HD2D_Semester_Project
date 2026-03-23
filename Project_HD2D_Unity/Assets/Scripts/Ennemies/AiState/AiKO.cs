@@ -65,5 +65,5 @@ public class AiKO : AiState
 
     public override bool CanAttack => false;
     public override bool CanMove => false;
-    public override bool CanTakeDamage => false; 
+    public override bool CanTakeDamage => false;
 }

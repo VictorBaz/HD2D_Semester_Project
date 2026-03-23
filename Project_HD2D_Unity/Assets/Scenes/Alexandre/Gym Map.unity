@@ -10682,11 +10682,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraManager
   cameraTransform: {fileID: 63745558}
   playerTransform: {fileID: 1507779746}
-  travelDuration: 1
-  offsetCamera: {x: -5.5, y: 5, z: -5}
-  smoothTime: 0.1
-  cameraState: 1
   childTransform: {fileID: 495359374}
+  offsetCamera: {x: -5.5, y: 5, z: -5}
+  smoothTimeFix: 0.3
+  smoothTimeFollow: 0.3
+  smoothTimeRail: 0.3
+  travelDuration: 1
+  CollisionLayers:
+    serializedVersion: 2
+    m_Bits: 521
+  CollisionPadding: 0.2
 --- !u!4 &1612547003
 Transform:
   m_ObjectHideFlags: 0
@@ -11577,6 +11582,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponHitbox
   damage: 10
+  TagName: 
 --- !u!65 &1919790350
 BoxCollider:
   m_ObjectHideFlags: 0

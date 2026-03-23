@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -71,16 +72,14 @@ public class LockOnSystem : MonoBehaviour
         }
     }
 
-    private void TryLock()
+    public void TryLock()
     {
         lockableTargets = FindLockableTargets();
-
         if (lockableTargets.Count == 0) return;
-
         CurrentTarget = GetBestLockableTarget(lockableTargets);
     }
 
-    private void Unlock()
+    public void Unlock()
     {
         CurrentTarget = null;
     }

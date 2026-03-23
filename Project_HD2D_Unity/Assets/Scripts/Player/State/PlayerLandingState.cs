@@ -2,9 +2,11 @@
 {
     public class PlayerLandingState : PlayerBaseState
     {
+        
+        
         public override void EnterState(PlayerStateContext psc)
         {
-            
+         
         }
 
         public override void ExitState(PlayerStateContext psc)
@@ -14,7 +16,8 @@
 
         public override void UpdateState(PlayerStateContext psc)
         {
-            psc.StateMachine.TransitionTo(new PlayerLocomotionState());
+            if (psc.AnimationManager.IsLandingFinished())
+                psc.StateMachine.TransitionTo(psc.StateMachine.LocomotionState);
         }
 
         public override void FixedUpdateState(PlayerStateContext psc)
@@ -24,5 +27,10 @@
         
         
         public override string Name => "Landing";
+
+        public override bool CanJump(PlayerStateContext psc)
+        {
+            return !psc.LockOnSystem.IsLocked;
+        }
     }
 }

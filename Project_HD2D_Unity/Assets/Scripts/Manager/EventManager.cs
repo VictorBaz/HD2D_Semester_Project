@@ -6,11 +6,15 @@ namespace Manager
 {
     public static class EventManager
     {
+        public static event Action OnEject;
+        
         public static event Action<GridObject, Vector3Int> OnObjectRegister;
         
         public static event Action<GridObject, Vector3Int> OnObjectUnregister;
 
-        public static event Action<CameraSettings> OnCameraTrigger; 
+        public static event Action<CameraSettings> OnCameraTrigger;
+
+        public static event Action<bool> OnEnergyInteract;
         
         public static event Action OnCameraShake;
         /// <summary>
@@ -42,6 +46,16 @@ namespace Manager
         public static void CameraShake()
         {
             OnCameraShake?.Invoke();
+        }
+
+        public static void EnergyInteract(bool value)
+        {
+            OnEnergyInteract?.Invoke(value);   
+        }
+        
+        public static void Eject()
+        {
+            OnEject?.Invoke();
         }
     }
 }

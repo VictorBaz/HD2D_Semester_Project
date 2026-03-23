@@ -12,7 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8262b32fa3b53c241a2646ae9763d9cd, type: 3}
   m_Name: CombatData
   m_EditorClassIdentifier: Assembly-CSharp::CombatData
-  <DashSpeed>k__BackingField: 8
-  <DashDuration>k__BackingField: 0.35
-  <AttackClip>k__BackingField: {fileID: 7400000, guid: 2d8fd6a8499d6684d957de09ac8d3c95, type: 2}
-  <ComboWindow>k__BackingField: 0.5
+  <ComboHits>k__BackingField:
+  - DashSpeed: 15
+    DashDuration: 0.1
+    Clip: {fileID: 7400000, guid: 58a95d5abb991d6438e102d4e5feca35, type: 2}
+  - DashSpeed: 15
+    DashDuration: 0.1
+    Clip: {fileID: 7400000, guid: 7a110343ce47a1d4e8274d0e97fc8e07, type: 2}
+  - DashSpeed: 15
+    DashDuration: 0.1
+    Clip: {fileID: 7400000, guid: f10a072f6d6ba3344a95fcba0d77bf86, type: 2}
+  <ComboWindow>k__BackingField: 0.8

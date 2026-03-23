@@ -4,24 +4,26 @@ public abstract class PlayerBaseState
 {
     protected  Vector3 targetDirection = Vector3.zero;
     protected Vector2 blendInput = Vector2.zero;
-    protected Vector3 shootDirection = Vector3.zero;
     
     public abstract void EnterState(PlayerStateContext psc);
     public abstract void ExitState(PlayerStateContext psc);
     public abstract void UpdateState(PlayerStateContext psc);
     public abstract void FixedUpdateState(PlayerStateContext psc);
     
-    public virtual bool CanJump => false;
+    public virtual bool CanJump(PlayerStateContext psc) => false;
     public virtual bool CanAttack => false;
     public virtual bool CanMove => true;
-    public virtual bool CanShoot => true;
+    public virtual bool CanTakeDamage => true;
+    public virtual bool CanDash => false;
+
+    public virtual bool CanCarry => false;
     
     public virtual string Name { get; protected set; }
     
     protected void HandlePhysics(PlayerStateContext psc, float speedMultiplier = 1f)
     {
         if (!CanMove) return;
-        psc.Controller.UpdatePlayerControllerPhysics(targetDirection, speedMultiplier);
+        psc.Controller.UpdatePlayerControllerPhysics(targetDirection,psc.InputManager.MoveInput,speedMultiplier);
     }
     
     protected virtual void CalculateTargetDirection(PlayerStateContext psc)
@@ -70,7 +72,7 @@ public abstract class PlayerBaseState
     
     protected Vector3 CalculateShootDirection(PlayerStateContext psc)
     {
-        if (psc.InputManager.ShootInput.magnitude < psc.PlayerData.InputDeadzone) return shootDirection;
+        if (psc.InputManager.ShootInput.magnitude < psc.PlayerData.InputDeadzone) return psc.ShootDirection;
 
         Vector3 camRight = psc.CameraTransform.right;
         camRight.y = 0f; camRight.Normalize();
@@ -93,19 +95,13 @@ public abstract class PlayerBaseState
         psc.Controller.UpdatePlayerController(psc.CameraTransform, psc.InputManager.MoveInput);
     }
     
-    protected void HandleCursor(PlayerStateContext psc)
-    {
-        shootDirection = CalculateShootDirection(psc); 
-        psc.PlayerCursor.HandleRotation(shootDirection);
-        psc.ShootingSystem.SetShootDirection(shootDirection);
-    }
-    
     protected void HandleAnimation(PlayerStateContext psc)
     {
         blendInput = GetBlendTreeInput(psc);
         psc.AnimationManager.HandleAnimation(
-            psc.Rb.linearVelocity.magnitude,
+            psc.InputManager.MoveInput.magnitude,
             blendInput,
             psc.Controller.IsGrounded);
     }
+    
 }

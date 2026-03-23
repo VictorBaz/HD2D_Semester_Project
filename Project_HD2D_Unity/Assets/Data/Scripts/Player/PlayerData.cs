@@ -7,6 +7,10 @@ public class PlayerData : ScriptableObject
     [field: SerializeField] public CombatData Combat   { get; private set; }
     [field: SerializeField] public ShootingData Shooting { get; private set; }
     [field: SerializeField] public LockOnData LockOn   { get; private set; }
+    [field: SerializeField] public DashData DashData   { get; private set; }
+    [field: SerializeField] public JumpData JumpData   { get; private set; }
+    [field: SerializeField] public PlayerResourcesData PlayerResourcesData   { get; private set; }
+    [field: SerializeField] public CarryData CarryData   { get; private set; }
 
     public PlayerDataInstance Init() => new PlayerDataInstance(this);
 }
@@ -14,17 +18,16 @@ public class PlayerData : ScriptableObject
 [System.Serializable]
 public class PlayerDataInstance
 {
-    public float MoveSpeed;
+    public float MoveSpeedWalking;
+    public float MoveSpeedRunning;
+    public float MoveSpeedSlope;
     public float RotationSpeed;
-    public float JumpForce;
     public LayerMask GroundMask;
     public float GroundCheckDistance;
     public float PlayerHeight;
     public float MaxSlopeAngle;
 
-    public float DashSpeed;
-    public float DashDuration;
-    public AnimationClip AttackClip;
+    public CombatHitData[] ComboHits;
     public float ComboWindow;
 
     public float ChargeThreshold;
@@ -37,20 +40,45 @@ public class PlayerDataInstance
     public float LockAngle;
     public LayerMask LockableLayer;
     public float LockOnRotationSpeed;
+    public float Acceleration;
+    public float Deceleration;
+    public float RunThreshold;
+    
+    public float DashSpeed;
+    public float DashDuration;
+    public float DashCooldown;
+
+    public float JumpForce;
+    public float JumpCooldown;
+    public float MaxVerticalVelocity;
+    public float GravityMultiplier;
+    public float MaxGravityTime;
+    public float JumpCutMultiplier;
+
+    public int Life;
+    public int MaxLife;
+    public int Energy;
+    public int MaxEnergy;
+
+    public float CarryRange;
+    public float CarryAngle;
+    public LayerMask CarryLayer;
 
     public PlayerDataInstance(PlayerData data)
     {
-        MoveSpeed = data.Movement.MoveSpeed;
+        MoveSpeedWalking = data.Movement.MoveSpeedWalking;
+        MoveSpeedRunning = data.Movement.MoveSpeedRunning;
+        MoveSpeedSlope = data.Movement.MoveSpeedSlope;
         RotationSpeed = data.Movement.RotationSpeed;
-        JumpForce = data.Movement.JumpForce;
         GroundMask = data.Movement.GroundMask;
         GroundCheckDistance = data.Movement.GroundCheckDistance;
         PlayerHeight = data.Movement.PlayerHeight;
         MaxSlopeAngle = data.Movement.MaxSlopeAngle;
+        Acceleration = data.Movement.Acceleration;
+        Deceleration = data.Movement.Deceleration;
+        RunThreshold = data.Movement.RunThreshold;
 
-        DashSpeed = data.Combat.DashSpeed;
-        DashDuration = data.Combat.DashDuration;
-        AttackClip = data.Combat.AttackClip;
+        ComboHits = data.Combat.ComboHits;
         ComboWindow = data.Combat.ComboWindow;
 
         ChargeThreshold = data.Shooting.ChargeThreshold;
@@ -63,7 +91,36 @@ public class PlayerDataInstance
         LockAngle = data.LockOn.LockAngle;
         LockableLayer = data.LockOn.LockableLayer;
         LockOnRotationSpeed = data.LockOn.RotationSpeed;
+
+        DashDuration = data.DashData.DashDuration;
+        DashSpeed = data.DashData.DashSpeed;
+        DashCooldown = data.DashData.DashCooldown;
+
+        JumpForce = data.JumpData.JumpForce;
+        JumpCooldown = data.JumpData.JumpCooldown;
+        MaxVerticalVelocity = data.JumpData.MaxVerticalVelocity;
+        GravityMultiplier = data.JumpData.GravityMultiplier;
+        MaxGravityTime = data.JumpData.MaxGravityTime;
+        JumpCutMultiplier = data.JumpData.JumpCutMultiplier;
+        
+        Energy = data.PlayerResourcesData.Energy;
+        MaxEnergy = data.PlayerResourcesData.MaxEnergy;
+        Life = data.PlayerResourcesData.Life;
+        MaxLife = data.PlayerResourcesData.MaxLife;
+        
+        CarryRange = data.CarryData.CarryRange;
+        CarryAngle = data.CarryData.CarryAngle;
+        CarryLayer = data.CarryData.CarryLayer;
     }
 
-    public float GetAttackClipLength() => AttackClip != null ? AttackClip.length : 0f;
+    public float GetAttackClipLength(int index) => ComboHits[index].Clip != null ? ComboHits[index].Clip.length : 0f;
+
+    public bool IsPlayerDead() => Life <= 0;
+    
+    public bool IsEnergyEmpty() => Energy <= 0;
+
+    public void RemoveEnergy() => Energy--;
+    public void AddEnergy() => Energy++;
+    
+    
 }

@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
 
     public bool IsGrounded  { get; private set; }
     public bool IsAttacking { get; private set; }
-    public Rigidbody Rb     => rb;
+    public Rigidbody Rb => rb;
 
     public event Action OnJump;
     public Action OnAttackMelee;
@@ -20,10 +20,11 @@ public class PlayerController : MonoBehaviour
     private bool isInLockMode;
     private Quaternion targetRotation;
 
-    private static readonly int CanJump    = Animator.StringToHash("CanJump");
-    private static readonly int Attacking  = Animator.StringToHash("IsAttacking");
+    private static readonly int CanJump = Animator.StringToHash("CanJump");
+    private static readonly int Attacking = Animator.StringToHash("IsAttacking");
 
     private PlayerDataInstance playerData;
+    private float currentSpeed = 0f;
     
     #endregion
 
@@ -36,9 +37,9 @@ public class PlayerController : MonoBehaviour
         HandleRotation(cam, moveInput);
     }
 
-    public void UpdatePlayerControllerPhysics(Vector3 targetDirection, float speedMultiplier)
+    public void UpdatePlayerControllerPhysics(Vector3 targetDirection, Vector2 moveInput, float speedMultiplier)
     {
-        ApplyMovement(targetDirection,speedMultiplier);
+        ApplyMovement(targetDirection, moveInput, speedMultiplier);
 
         if (targetRotation != Quaternion.identity)
         {
@@ -51,26 +52,41 @@ public class PlayerController : MonoBehaviour
 
     #region Movement
 
-    private void ApplyMovement(Vector3 targetDirection, float speedMultiplier)
+    private void ApplyMovement(Vector3 targetDirection, Vector2 moveInput, float speedMultiplier)
     {
-        if (IsAttacking) return;
+        float targetSpeed  = SelectSpeed(moveInput) * speedMultiplier;
 
-        Vector3 targetVelocity = targetDirection * playerData.MoveSpeed * speedMultiplier;
-        Vector3 currentVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+        float acceleration = moveInput.magnitude > 0.1f
+            ? playerData.Acceleration
+            : playerData.Deceleration;
+
+        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, acceleration * Time.fixedDeltaTime);
+
+        Vector3 targetVelocity   = targetDirection * currentSpeed;
+        Vector3 currentVelocity  = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         Vector3 smoothedVelocity = Vector3.Lerp(currentVelocity, targetVelocity, 0.2f);
 
-        if (OnSlope())
+        if (OnSlope() && rb.linearVelocity.y <= 0.1f)
         {
-            smoothedVelocity    = GetSlopeMoveDirection(smoothedVelocity);
-            rb.linearVelocity   = smoothedVelocity;
+            smoothedVelocity  = GetSlopeMoveDirection(smoothedVelocity);
+            rb.linearVelocity = smoothedVelocity;
         }
         else
         {
             rb.linearVelocity = new Vector3(
                 smoothedVelocity.x,
-                rb.linearVelocity.y,
+                rb.linearVelocity.y, 
                 smoothedVelocity.z);
         }
+    }
+
+    private float SelectSpeed(Vector2 moveInput)
+    {
+        if (OnSlope()) return playerData.MoveSpeedSlope;
+
+        return moveInput.magnitude >= playerData.RunThreshold
+            ? playerData.MoveSpeedRunning
+            : playerData.MoveSpeedWalking;
     }
 
     private void HandleRotation(Transform cam, Vector2 moveInput)
@@ -96,10 +112,14 @@ public class PlayerController : MonoBehaviour
 
     private void CheckGround()
     {
-        Vector3 rayStart = transform.position - new Vector3(0, playerData.PlayerHeight / 2, 0);
-        IsGrounded = Physics.Raycast(
+        float sphereRadius = 0.2f;
+        Vector3 rayStart = transform.position - new Vector3(0, (playerData.PlayerHeight / 2) - sphereRadius, 0);
+        
+        IsGrounded = Physics.SphereCast(
             rayStart,
+            sphereRadius,
             -Vector3.up,
+            out _,
             playerData.GroundCheckDistance,
             playerData.GroundMask);
     }
@@ -107,14 +127,9 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region Jump
+    
 
-    public void TryJump()
-    {
-        if (IsGrounded && !IsAttacking && !IsLanding() && !IsInAir())
-            Jump();
-    }
-
-    private void Jump()
+    public void Jump()
     {
         rb.AddForce(Vector3.up * playerData.JumpForce, ForceMode.Impulse);
         OnJump?.Invoke();
@@ -136,7 +151,7 @@ public class PlayerController : MonoBehaviour
 
     #region Attack
     
-    public void RunRoutine(IEnumerator routine) => StartCoroutine(routine);
+    public Coroutine RunRoutine(IEnumerator routine) => StartCoroutine(routine);
 
     #endregion
 

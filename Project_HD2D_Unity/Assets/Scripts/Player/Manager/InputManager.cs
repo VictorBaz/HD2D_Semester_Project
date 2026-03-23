@@ -11,10 +11,14 @@ public class InputManager : MonoBehaviour
 
     public event Action OnJumpPressed;
     public event Action OnLockToggle;
+    public event Action OnLockRelease;
     public event Action OnAttackMelee;
+    public event Action OnJumpReleased;
 
-    public event Action OnShootStart;
-    public event Action OnShootStop;
+    public event Action OnEnergyGive;
+    public event Action OnEnergyTake;
+
+    public event Action OnCarry;
 
     public event Action OnDash;
     
@@ -52,17 +56,20 @@ public class InputManager : MonoBehaviour
         playerInputAction.Player.Look.performed += ReceiveShootDirection;
         playerInputAction.Player.Look.canceled += ReceiveShootDirection;
         
-        playerInputAction.Player.Jump.performed += ReceiveJump;
+        playerInputAction.Player.Jump.performed += ReceiveJumpPressed;
+        playerInputAction.Player.Jump.canceled += ReceiveJumpReleased;
         
-        playerInputAction.Player.Lock.performed += ReceiveLockToggle;
+        playerInputAction.Player.Lock.started  += ReceiveLockToggle;
+        playerInputAction.Player.Lock.canceled += ReceiveLockRelease;
         
         playerInputAction.Player.AttackMelee.performed += ReceiveAttackMelee;
-
-        playerInputAction.Player.Shoot.started += ReceiveShootStart;
-        playerInputAction.Player.Shoot.canceled += ReceiveShootStop;
-        
         
         playerInputAction.Player.Dash.started += ReceiveDash;
+
+        playerInputAction.Player.GiveEnergy.started += ReceiveGiveEnergy;
+        playerInputAction.Player.TakeEnergy.started += ReceiveTakeEnergy;
+        
+        playerInputAction.Player.Carry.started += ReceiveCarry;
         
         playerInputAction.Enable();
     }
@@ -75,16 +82,20 @@ public class InputManager : MonoBehaviour
         playerInputAction.Player.Look.performed -= ReceiveShootDirection;
         playerInputAction.Player.Look.canceled -= ReceiveShootDirection;
         
-        playerInputAction.Player.Jump.performed -= ReceiveJump;
+        playerInputAction.Player.Jump.performed -= ReceiveJumpPressed;
+        playerInputAction.Player.Jump.canceled -= ReceiveJumpReleased;
         
-        playerInputAction.Player.Lock.performed -= ReceiveLockToggle;
+        playerInputAction.Player.Lock.started  -= ReceiveLockToggle;
+        playerInputAction.Player.Lock.canceled -= ReceiveLockRelease;
         
         playerInputAction.Player.AttackMelee.performed -= ReceiveAttackMelee;
         
-        playerInputAction.Player.Shoot.started -= ReceiveShootStart;
-        playerInputAction.Player.Shoot.canceled -= ReceiveShootStop;
-        
         playerInputAction.Player.Dash.started -= ReceiveDash;
+        
+        playerInputAction.Player.GiveEnergy.started -= ReceiveGiveEnergy;
+        playerInputAction.Player.TakeEnergy.started -= ReceiveTakeEnergy;
+        
+        playerInputAction.Player.Carry.started -= ReceiveCarry;
         
         playerInputAction.Disable();
     }
@@ -103,34 +114,43 @@ public class InputManager : MonoBehaviour
         ShootInput = ctx.ReadValue<Vector2>();
     }
 
-    private void ReceiveJump(InputAction.CallbackContext ctx)
+    private void ReceiveJumpPressed(InputAction.CallbackContext ctx)
     {
         OnJumpPressed?.Invoke();
     }
+    
+    private void ReceiveJumpReleased(InputAction.CallbackContext ctx)
+        => OnJumpReleased?.Invoke();
 
     private void ReceiveLockToggle(InputAction.CallbackContext ctx)
-    {
-        OnLockToggle?.Invoke();
-    }
+        => OnLockToggle?.Invoke();
+
+    private void ReceiveLockRelease(InputAction.CallbackContext ctx)
+        => OnLockRelease?.Invoke();
 
     private void ReceiveAttackMelee(InputAction.CallbackContext ctx)
     {
         OnAttackMelee?.Invoke();
     }
 
-    private void ReceiveShootStart(InputAction.CallbackContext ctx)
-    {
-        OnShootStart?.Invoke();
-    }
-    
-    private void ReceiveShootStop(InputAction.CallbackContext ctx)
-    {
-        OnShootStop?.Invoke();
-    }
-
     private void ReceiveDash(InputAction.CallbackContext ctx)
     {
         OnDash?.Invoke();
+    }
+
+    private void ReceiveGiveEnergy(InputAction.CallbackContext ctx)
+    {
+        OnEnergyGive?.Invoke();
+    }
+
+    private void ReceiveTakeEnergy(InputAction.CallbackContext ctx)
+    {
+        OnEnergyTake?.Invoke();
+    }
+
+    private void ReceiveCarry(InputAction.CallbackContext ctx)
+    {
+        OnCarry?.Invoke();
     }
     
     #endregion

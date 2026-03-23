@@ -1,17 +1,29 @@
+using Interface;
 using UnityEngine;
 
 public class PlayerStateContext
 {
-    public PlayerController Controller;
     public AnimationManager AnimationManager;
     public LockOnSystem LockOnSystem;
     public InputManager InputManager;
+    public VfxManager VfxManager;
+    
+    public PlayerController Controller;
+    
     public Rigidbody Rb;
+    
     public Transform CameraTransform;
     public Transform PlayerTransform;
-    public PlayerManager StateMachine;
-    public PlayerCursor PlayerCursor;
-    public ShootingSystem ShootingSystem;
+    public Transform PlayerHeadTransform;
+    
     public PlayerDataInstance PlayerData;
-    public VfxManager VfxManager;
+    
+    public Vector3 ShootDirection = Vector3.zero;
+    
+    public bool JumpReleased = false;
+    public bool HasDash = false;
+    
+    public ICarryable CurrentTargetCarry;
+    
+    public PlayerManager StateMachine;
 }

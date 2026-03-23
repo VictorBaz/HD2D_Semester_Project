@@ -154,6 +154,33 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""GiveEnergy"",
+                    ""type"": ""Button"",
+                    ""id"": ""e23ded37-5230-40cf-81de-871b97e01823"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""TakeEnergy"",
+                    ""type"": ""Button"",
+                    ""id"": ""7067b38b-ceed-400f-9412-83a5c3f81205"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Carry"",
+                    ""type"": ""Button"",
+                    ""id"": ""f82c3de2-6239-40ba-b8e4-44b1d6e76806"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -303,7 +330,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""7dcfe26a-163a-42b2-8476-b5dc18030ecb"",
-                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -325,7 +352,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""074df46d-5ae6-43c6-a00f-1c1c7a229ed2"",
-                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""path"": ""<Gamepad>/buttonWest"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -347,7 +374,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""a3a9a3c7-bab5-47e4-aba2-c6b13891297e"",
-                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""path"": ""<Gamepad>/buttonEast"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -431,6 +458,83 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""action"": ""Dash"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""608bbcc4-419a-447b-a9a1-7ee281e157e6"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dash"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c713c33c-f1c7-475d-b6dc-80194099210e"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""GiveEnergy"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b31b1714-c1a6-4d62-9703-6562730cce7d"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""GiveEnergy"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d918c150-55d0-46f1-af1e-6d4088551a39"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TakeEnergy"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4a3c1f46-541f-4e6a-a819-64a60be7bb39"",
+                    ""path"": ""<Gamepad>/buttonSouth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""TakeEnergy"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bd11495f-4e97-4dec-8a91-025af205a3e5"",
+                    ""path"": ""<Gamepad>/buttonEast"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Carry"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9c21dc12-e4fe-4b00-9d68-f043a79af5a7"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Carry"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -446,6 +550,9 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         m_Player_Shoot = m_Player.FindAction("Shoot", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
         m_Player_Dash = m_Player.FindAction("Dash", throwIfNotFound: true);
+        m_Player_GiveEnergy = m_Player.FindAction("GiveEnergy", throwIfNotFound: true);
+        m_Player_TakeEnergy = m_Player.FindAction("TakeEnergy", throwIfNotFound: true);
+        m_Player_Carry = m_Player.FindAction("Carry", throwIfNotFound: true);
     }
 
     ~@PlayerInputAction()
@@ -533,6 +640,9 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Shoot;
     private readonly InputAction m_Player_Look;
     private readonly InputAction m_Player_Dash;
+    private readonly InputAction m_Player_GiveEnergy;
+    private readonly InputAction m_Player_TakeEnergy;
+    private readonly InputAction m_Player_Carry;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -572,6 +682,18 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Dash".
         /// </summary>
         public InputAction @Dash => m_Wrapper.m_Player_Dash;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/GiveEnergy".
+        /// </summary>
+        public InputAction @GiveEnergy => m_Wrapper.m_Player_GiveEnergy;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/TakeEnergy".
+        /// </summary>
+        public InputAction @TakeEnergy => m_Wrapper.m_Player_TakeEnergy;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Carry".
+        /// </summary>
+        public InputAction @Carry => m_Wrapper.m_Player_Carry;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -619,6 +741,15 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @Dash.started += instance.OnDash;
             @Dash.performed += instance.OnDash;
             @Dash.canceled += instance.OnDash;
+            @GiveEnergy.started += instance.OnGiveEnergy;
+            @GiveEnergy.performed += instance.OnGiveEnergy;
+            @GiveEnergy.canceled += instance.OnGiveEnergy;
+            @TakeEnergy.started += instance.OnTakeEnergy;
+            @TakeEnergy.performed += instance.OnTakeEnergy;
+            @TakeEnergy.canceled += instance.OnTakeEnergy;
+            @Carry.started += instance.OnCarry;
+            @Carry.performed += instance.OnCarry;
+            @Carry.canceled += instance.OnCarry;
         }
 
         /// <summary>
@@ -651,6 +782,15 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @Dash.started -= instance.OnDash;
             @Dash.performed -= instance.OnDash;
             @Dash.canceled -= instance.OnDash;
+            @GiveEnergy.started -= instance.OnGiveEnergy;
+            @GiveEnergy.performed -= instance.OnGiveEnergy;
+            @GiveEnergy.canceled -= instance.OnGiveEnergy;
+            @TakeEnergy.started -= instance.OnTakeEnergy;
+            @TakeEnergy.performed -= instance.OnTakeEnergy;
+            @TakeEnergy.canceled -= instance.OnTakeEnergy;
+            @Carry.started -= instance.OnCarry;
+            @Carry.performed -= instance.OnCarry;
+            @Carry.canceled -= instance.OnCarry;
         }
 
         /// <summary>
@@ -740,5 +880,26 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnDash(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "GiveEnergy" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnGiveEnergy(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "TakeEnergy" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnTakeEnergy(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Carry" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCarry(InputAction.CallbackContext context);
     }
 }

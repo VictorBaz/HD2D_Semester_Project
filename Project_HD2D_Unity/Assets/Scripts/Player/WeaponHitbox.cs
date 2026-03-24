@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections.Generic; // Nécessaire pour la Liste
+using System.Collections.Generic;
 
 public class WeaponHitbox : MonoBehaviour
 {

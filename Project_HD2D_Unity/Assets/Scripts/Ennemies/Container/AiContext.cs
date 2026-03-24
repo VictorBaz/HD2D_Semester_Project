@@ -21,6 +21,8 @@ public class AiContext
     
     public Vector3 HitDirection;
     
+    public LayerMask LayerMaskEnemy;
+    
     public void TransitionTo(AiState newState) => Behavior.ChangeState(newState);
     
     public bool IsNavReady => Agent != null && Agent.isActiveAndEnabled && Agent.isOnNavMesh;

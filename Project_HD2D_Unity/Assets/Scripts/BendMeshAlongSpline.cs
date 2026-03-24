@@ -139,9 +139,25 @@ public class ArrayCurveSplineMesh : MonoBehaviour
                 combinedNormals.Add(n);
 
                 if (srcUVs != null && srcUVs.Length == srcVerts.Length)
-                    combinedUVs.Add(srcUVs[i] );
+                {
+                    Vector2 uv = srcUVs[i];
+
+                    float localAlong = GetAxis(srcVerts[i], forwardAxis) - minAlong;
+                    float globalAlong = (copyIndex * segmentLength) + localAlong;
+                    float totalLength = count * segmentLength;
+
+                    uv.y = globalAlong / totalLength;
+
+                    combinedUVs.Add(uv);
+                }
                 else
-                    combinedUVs.Add(Vector2.zero);
+                {
+                    float localAlong = GetAxis(srcVerts[i], forwardAxis) - minAlong;
+                    float globalAlong = (copyIndex * segmentLength) + localAlong;
+                    float totalLength = count * segmentLength;
+
+                    combinedUVs.Add(new Vector2(0f, globalAlong / totalLength));
+                }
             }
 
             for (int i = 0; i < srcTriangles.Length; i++)

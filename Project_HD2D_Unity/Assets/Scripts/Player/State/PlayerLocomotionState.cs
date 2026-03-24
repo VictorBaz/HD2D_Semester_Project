@@ -25,7 +25,6 @@ public class PlayerLocomotionState : PlayerBaseState
             
             if (airTimeBuffer > psc.PlayerData.CoyotteTime || psc.Rb.linearVelocity.y > 1f)
             {
-                Debug.Log($"Buffer : {airTimeBuffer > psc.PlayerData.CoyotteTime} \n Falling : {psc.Rb.linearVelocity.y > 1f}");
                 psc.StateMachine.TransitionTo(psc.StateMachine.AirState);
                 return;
             }

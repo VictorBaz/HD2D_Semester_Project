@@ -284,11 +284,10 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
         ApplyMovementMode(true); 
 
         Vector3 forceDirection = transform.forward + Vector3.up; 
-        rb.AddForce(forceDirection * 2f, ForceMode.Impulse);
+        rb.AddForce(forceDirection * 5f, ForceMode.Impulse);
 
         isCarry = false;
 
-        print("coucou");
         ChangeState(AiDropState); 
     }
     

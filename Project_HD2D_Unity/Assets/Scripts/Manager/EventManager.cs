@@ -48,14 +48,6 @@ namespace Manager
             OnCameraShake?.Invoke();
         }
 
-        public static void EnergyInteract(bool value)
-        {
-            OnEnergyInteract?.Invoke(value);   
-        }
         
-        public static void Eject()
-        {
-            OnEject?.Invoke();
-        }
     }
 }

@@ -865,7 +865,7 @@ Transform:
   m_GameObject: {fileID: 63745557}
   serializedVersion: 2
   m_LocalRotation: {x: 0.31598538, y: 0.3596048, z: -0.13088542, w: 0.8681629}
-  m_LocalPosition: {x: 50.26, y: 3.84, z: -6.07}
+  m_LocalPosition: {x: -14.52, y: 27.95, z: -14.52}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3274,7 +3274,7 @@ Transform:
   m_GameObject: {fileID: 495359371}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -10682,11 +10682,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraManager
   cameraTransform: {fileID: 63745558}
   playerTransform: {fileID: 1507779746}
-  travelDuration: 1
-  offsetCamera: {x: -5.5, y: 5, z: -5}
-  smoothTime: 0.1
-  cameraState: 1
   childTransform: {fileID: 495359374}
+  offsetCamera: {x: -5.5, y: 5, z: -5}
+  smoothTimeFix: 0.3
+  smoothTimeFollow: 0.3
+  smoothTimeRail: 0.3
+  travelDuration: 1
+  CollisionLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  CollisionPadding: 0.2
+  startingState: 1
 --- !u!4 &1612547003
 Transform:
   m_ObjectHideFlags: 0
@@ -11577,6 +11583,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponHitbox
   damage: 10
+  TagName: 
 --- !u!65 &1919790350
 BoxCollider:
   m_ObjectHideFlags: 0

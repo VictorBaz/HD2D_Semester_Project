@@ -5,9 +5,9 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     #region Variables
-
     public bool IsGrounded  { get; private set; }
     public bool IsAttacking { get; private set; }
+    public bool IsJumping => isJumping;
     public Rigidbody Rb => rb;
 
     public event Action OnJump;
@@ -15,29 +15,33 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private Rigidbody rb;
     [SerializeField] private Animator animator;
+    [SerializeField] private LockOnSystem lockOnSystem;
 
     private RaycastHit slopeHit;
     private bool isInLockMode;
     private Quaternion targetRotation;
 
-    private static readonly int CanJump = Animator.StringToHash("CanJump");
-    private static readonly int Attacking = Animator.StringToHash("IsAttacking");
-
     private PlayerDataInstance playerData;
     private float currentSpeed = 0f;
     
+    // Variable restaurée
     private bool isJumping;
-    [SerializeField] private LockOnSystem lockOnSystem;
-    
     #endregion
 
+    private void Awake()
+    {
+        if (rb != null) rb.useGravity = false; 
+    }
 
     #region Public Methods
-
     public void UpdatePlayerController(Transform cam, Vector2 moveInput)
     {
         CheckGround();
         HandleRotation(cam, moveInput);
+
+        // LOGIQUE : On active la gravité seulement si on est en l'air ou si on est en train de sauter
+        // Cela empêche le Rigidbody de "pousser" vers le bas quand on est immobile sur une pente
+        rb.useGravity = !IsGrounded || isJumping;
     }
 
     public void UpdatePlayerControllerPhysics(Vector3 targetDirection, Vector2 moveInput, float speedMultiplier)
@@ -51,177 +55,69 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // Méthode restaurée pour ton PlayerManager
+    public void SetJumping(bool jumping)
+    {
+        isJumping = jumping;
+    }
     #endregion
 
     #region Movement
-
     private void ApplyMovement(Vector3 targetDirection, Vector2 moveInput, float speedMultiplier)
     {
-        bool onSlope = OnSlope();
         bool isMoving = moveInput.magnitude > 0.01f;
+        bool onSlope = OnSlope();
 
-        if (isJumping || !IsGrounded) 
+        float targetSpeed = 0f;
+        if (isMoving)
         {
-            rb.useGravity = true; 
-            Vector3 targetVel = targetDirection * currentSpeed;
-        
-            rb.linearVelocity = new Vector3(targetVel.x, rb.linearVelocity.y, targetVel.z);
-            return; 
+            if (onSlope) targetSpeed = playerData.MoveSpeedSlope;
+            else if (moveInput.magnitude >= playerData.RunThreshold) targetSpeed = playerData.MoveSpeedRunning;
+            else targetSpeed = playerData.MoveSpeedWalking;
         }
- 
-        rb.useGravity = !onSlope;
-        
-        float targetSpeed = (onSlope ? playerData.MoveSpeedSlope : 
-                                (moveInput.magnitude >= playerData.RunThreshold ? playerData.MoveSpeedRunning : playerData.MoveSpeedWalking)) 
-                            * speedMultiplier;
+        targetSpeed *= speedMultiplier;
 
         float accel = isMoving ? playerData.Acceleration : playerData.Deceleration;
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, accel * Time.fixedDeltaTime);
 
         Vector3 targetVelocity = targetDirection * currentSpeed;
 
-        if (onSlope)
+        if (IsGrounded && !isJumping)
         {
-            Vector3 slopeDir = GetSlopeMoveDirection(targetVelocity);
-        
-            if (!isMoving && rb.linearVelocity.magnitude < 0.1f)
+            if (onSlope)
             {
-                rb.linearVelocity = Vector3.zero;
+                rb.linearVelocity = GetSlopeMoveDirection(targetVelocity);
             }
             else
             {
-                rb.linearVelocity = slopeDir;
-            
-                rb.AddForce(-slopeHit.normal * 30f, ForceMode.Acceleration);
+                rb.linearVelocity = new Vector3(targetVelocity.x, 0f, targetVelocity.z);
+            }
+
+            // ANTI-GLISSADE : Si aucune commande de mouvement, on fige le Rigidbody au sol
+            if (!isMoving && currentSpeed < 0.1f)
+            {
+                rb.linearVelocity = Vector3.zero;
             }
         }
         else
         {
-            float yVel = rb.linearVelocity.y;
-            
-            if (IsGrounded && yVel > 0) yVel = 0; 
-
-            rb.linearVelocity = new Vector3(targetVelocity.x, yVel, targetVelocity.z);
+            // En l'air (ou saut), on laisse la gravité Unity (Y) s'appliquer
+            rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
         }
     }
-
-    private float SelectSpeed(Vector2 moveInput)
-    {
-        if (OnSlope()) return playerData.MoveSpeedSlope;
-
-        return moveInput.magnitude >= playerData.RunThreshold
-            ? playerData.MoveSpeedRunning
-            : playerData.MoveSpeedWalking;
-    }
-    
-
-
-    private void HandleRotation(Transform cam, Vector2 moveInput)
-    {
-        if (lockOnSystem.IsLocked) 
-        {
-            Vector3 targetPos = lockOnSystem.CurrentTarget.GetLockTransform().position;
-            Vector3 lookDir = (targetPos - transform.position).normalized;
-            lookDir.y = 0;
-
-            if (lookDir != Vector3.zero)
-            {
-                targetRotation = Quaternion.LookRotation(lookDir);
-                return;
-            }
-        }
-
-        if (moveInput.sqrMagnitude > 0.01f)
-        {
-            Vector3 camForward = cam.forward;
-            Vector3 camRight = cam.right;
-            camForward.y = 0; camRight.y = 0;
-
-            Vector3 moveDir = (camForward * moveInput.y + camRight * moveInput.x).normalized;
-
-            if (moveDir != Vector3.zero)
-            {
-                targetRotation = Quaternion.LookRotation(moveDir);
-            }
-        }
-    }
-
     #endregion
 
-    #region Ground Check
-
+    #region Ground & Slopes (Ton code original conservé)
     private void CheckGround()
     {
         float sphereRadius = 0.2f;
         Vector3 rayStart = transform.position - new Vector3(0, (playerData.PlayerHeight / 2) - sphereRadius, 0);
-        
-        IsGrounded = Physics.SphereCast(
-            rayStart,
-            sphereRadius,
-            -Vector3.up,
-            out _,
-            playerData.GroundCheckDistance,
-            playerData.GroundMask);
+        IsGrounded = Physics.SphereCast(rayStart, sphereRadius, -Vector3.up, out _, playerData.GroundCheckDistance, playerData.GroundMask);
     }
 
-    #endregion
-
-    #region Jump
-    
-    public void SetJumping(bool jumping) => isJumping = jumping;
-    
-    public void Jump()
-    {
-        rb.AddForce(Vector3.up * playerData.JumpForce, ForceMode.Impulse);
-        OnJump?.Invoke();
-    }
-
-    private bool IsLanding() => animator.GetCurrentAnimatorStateInfo(0).IsName("Land");
-    private bool IsInAir()   => animator.GetCurrentAnimatorStateInfo(0).IsName("Fall");
-
-    #endregion
-
-    #region Lock
-
-    public void SetLockMode(bool locked)
-    {
-        isInLockMode = locked;
-    }
-
-    #endregion
-
-    #region Attack
-    
-    public Coroutine RunRoutine(IEnumerator routine) => StartCoroutine(routine);
-
-    #endregion
-
-    #region Constraints
-
-    public void ToggleFixPlayerPosition(bool fixedPosition)
-    {
-        if (fixedPosition)
-        {
-            rb.linearVelocity = Vector3.zero;
-            rb.constraints    = RigidbodyConstraints.FreezePosition;
-        }
-        else
-        {
-            rb.constraints = RigidbodyConstraints.None;
-            rb.constraints = RigidbodyConstraints.FreezeRotation;
-        }
-    }
-
-    #endregion
-
-    #region Slope And Stairs
-
-    
-    
     private bool OnSlope()
     {
-        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit,
-                playerData.PlayerHeight * 0.5f + 0.2f, playerData.GroundMask))
+        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerData.PlayerHeight * 0.5f + 0.2f, playerData.GroundMask))
         {
             float angle = Vector3.Angle(Vector3.up, slopeHit.normal);
             return angle < playerData.MaxSlopeAngle && angle != 0;
@@ -233,12 +129,53 @@ public class PlayerController : MonoBehaviour
     {
         return Vector3.ProjectOnPlane(direction, slopeHit.normal).normalized * direction.magnitude;
     }
-
     #endregion
 
-    public void InitData(PlayerDataInstance data)
+    #region Rotation & Utility
+    private void HandleRotation(Transform cam, Vector2 moveInput)
     {
-        playerData = data;
+        if (lockOnSystem.IsLocked) 
+        {
+            Vector3 targetPos = lockOnSystem.CurrentTarget.GetLockTransform().position;
+            Vector3 lookDir = (targetPos - transform.position).normalized;
+            lookDir.y = 0;
+            if (lookDir != Vector3.zero) targetRotation = Quaternion.LookRotation(lookDir);
+            return;
+        }
+
+        if (moveInput.sqrMagnitude > 0.01f)
+        {
+            Vector3 camForward = cam.forward;
+            Vector3 camRight = cam.right;
+            camForward.y = 0; camRight.y = 0;
+            Vector3 moveDir = (camForward * moveInput.y + camRight * moveInput.x).normalized;
+            if (moveDir != Vector3.zero) targetRotation = Quaternion.LookRotation(moveDir);
+        }
     }
-   
+
+    public void Jump()
+    {
+        isJumping = true;
+        rb.useGravity = true;
+        rb.AddForce(Vector3.up * playerData.JumpForce, ForceMode.Impulse);
+        OnJump?.Invoke();
+    }
+
+    public void InitData(PlayerDataInstance data) => playerData = data;
+    public void SetLockMode(bool locked) => isInLockMode = locked;
+    public Coroutine RunRoutine(IEnumerator routine) => StartCoroutine(routine);
+
+    public void ToggleFixPlayerPosition(bool fixedPosition)
+    {
+        if (fixedPosition)
+        {
+            rb.linearVelocity = Vector3.zero;
+            rb.constraints = RigidbodyConstraints.FreezePosition;
+        }
+        else
+        {
+            rb.constraints = RigidbodyConstraints.FreezeRotation;
+        }
+    }
+    #endregion
 }

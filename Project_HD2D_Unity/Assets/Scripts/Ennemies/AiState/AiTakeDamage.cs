@@ -40,5 +40,5 @@ public class AiTakeDamage : AiState
     }
     
     public override bool CanMove => false;
-    public override bool CanTakeDamage => false;
+    public override bool CanTakeDamage => true;
 }

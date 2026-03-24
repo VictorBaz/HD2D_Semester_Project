@@ -6,8 +6,8 @@ namespace Player.State
     {
         private float timeInAir = 0f;
         private float jumpStartTime;
-        private Vector3 jumpStartPosition;
         private bool isFalling;
+        private float requiredJumpGravity; 
         
         public override string Name => "Air";
         public override bool CanDash => true;
@@ -16,123 +16,84 @@ namespace Player.State
         {
             psc.AnimationManager.SetFalling(true);
             timeInAir = 0f;
+            jumpStartTime = Time.time;
             psc.JumpReleased = false;
-            
+
             if (psc.Controller.IsJumping) 
             {
                 isFalling = false;
-                psc.Controller.SetGravity(false);
-                jumpStartTime = Time.time;
-                jumpStartPosition = psc.PlayerTransform.position;
+                psc.Controller.SetGravity(false); 
+
+                float h = psc.PlayerData.JumpHeight;
+                float t = psc.PlayerData.JumpDuration;
+                requiredJumpGravity = (2f * h) / (t * t);
+
+                float jumpVelocity = requiredJumpGravity * t;
+
+                psc.Rb.linearVelocity = new Vector3(psc.Rb.linearVelocity.x, jumpVelocity, psc.Rb.linearVelocity.z);
             }
             else
             {
                 StartFalling(psc);
-                jumpStartTime = Time.time - 1f; 
             }
-        }
-
-        public override void ExitState(PlayerStateContext psc)
-        {
-            timeInAir = 0f;
-            psc.JumpReleased = false;
-            psc.Controller.SetGravity(true);
-            psc.Controller.SetJumping(false);
-            psc.AnimationManager.SetFalling(false);
-        }
-
-        public override void UpdateState(PlayerStateContext psc)
-        {
-            float elapsed = Time.time - jumpStartTime;
-
-            if (psc.Controller.IsGrounded && elapsed > 0.1f) 
-            {
-                if (elapsed < psc.PlayerData.JumpDuration * 0.6f && !isFalling)
-                {
-                    psc.StateMachine.TransitionTo(psc.StateMachine.LocomotionState);
-                }
-                else if (isFalling || psc.Rb.linearVelocity.y <= 0.1f)
-                {
-                    psc.StateMachine.TransitionTo(psc.StateMachine.LandingState);
-                }
-                
-                return;
-            }
-
-            if (psc.JumpReleased && !isFalling)
-            {
-                StartFalling(psc);
-            }
-
-            timeInAir += Time.deltaTime;
-
-            psc.LockOnSystem.CalculLockRotation();
-            psc.Controller.SetLockMode(psc.LockOnSystem.IsLocked);
-
-            HandleMovement(psc);
-            HandleAnimation(psc);
         }
 
         public override void FixedUpdateState(PlayerStateContext psc)
         {
-            float airControl;
-
             if (!isFalling)
             {
-                float currentHeightReached = Mathf.Abs(psc.Rb.position.y - jumpStartPosition.y);
-                float heightRatio = Mathf.Clamp01(currentHeightReached / psc.PlayerData.JumpHeight);
-
-                airControl = Mathf.Lerp(0.2f, 1f, heightRatio);
-
-                HandleJumpAscent(psc);
+                psc.Rb.AddForce(Vector3.down * requiredJumpGravity, ForceMode.Acceleration);
+                
+                if (psc.Rb.linearVelocity.y <= 0.1f) StartFalling(psc);
             }
             else
             {
-                airControl = 1f; 
                 ApplyFallGravity(psc);
             }
 
+            float airControl = Mathf.Lerp(1f, 0.4f, Mathf.Abs(psc.Rb.linearVelocity.y) / 10f);
             HandlePhysics(psc, airControl);
         }
 
-        private void HandleJumpAscent(PlayerStateContext psc)
+        private void ApplyFallGravity(PlayerStateContext psc)
         {
-            float elapsed = Time.time - jumpStartTime;
-            float t = elapsed / psc.PlayerData.JumpDuration;
+            float timeFalling = Time.time - (jumpStartTime + psc.PlayerData.JumpDuration);
+            float gravityRatio = Mathf.Clamp01(timeFalling / psc.PlayerData.MaxGravityTime);
+            
+            float currentMultiplier = Mathf.Lerp(1f, psc.PlayerData.GravityMultiplier, gravityRatio);
+            psc.Rb.AddForce(Vector3.down * currentMultiplier * Physics.gravity.magnitude, ForceMode.Acceleration);
+        }
 
-            if (t >= 1.0f)
+        public override void UpdateState(PlayerStateContext psc)
+        {
+            if (psc.JumpReleased && !isFalling && psc.Rb.linearVelocity.y > 0)
             {
+                psc.Rb.linearVelocity = new Vector3(psc.Rb.linearVelocity.x, psc.Rb.linearVelocity.y * 0.5f, psc.Rb.linearVelocity.z);
                 StartFalling(psc);
+            }
+
+            if (psc.Controller.IsGrounded && (Time.time - jumpStartTime) > 0.1f) 
+            {
+                psc.StateMachine.TransitionTo(psc.StateMachine.LandingState);
                 return;
             }
-    
-            float heightOffset = Mathf.Sin(t * Mathf.PI * 0.5f) * psc.PlayerData.JumpHeight;
-            float targetY = jumpStartPosition.y + heightOffset;
 
-            Vector3 currentPos = psc.Rb.position;
-            Vector3 nextPos = new Vector3(currentPos.x, targetY, currentPos.z);
-    
-            psc.Rb.MovePosition(nextPos);
+            timeInAir += Time.deltaTime;
+            HandleMovement(psc);
+            HandleAnimation(psc);
         }
 
         private void StartFalling(PlayerStateContext psc)
         {
             isFalling = true;
-            psc.Controller.SetGravity(true);
+            psc.Controller.SetGravity(true); 
             psc.Controller.SetJumping(false);
-            psc.JumpReleased = false;
-
-            if (psc.Rb.linearVelocity.y > 0)
-            {
-                psc.Rb.linearVelocity = new Vector3(psc.Rb.linearVelocity.x, 0f, psc.Rb.linearVelocity.z);
-            }
         }
 
-        private void ApplyFallGravity(PlayerStateContext psc)
+        public override void ExitState(PlayerStateContext psc)
         {
-            float gravityScale = Mathf.Lerp(1f, psc.PlayerData.GravityMultiplier, timeInAir / psc.PlayerData.MaxGravityTime);
-            psc.Rb.AddForce(Vector3.down * gravityScale * Physics.gravity.magnitude, ForceMode.Acceleration);
+            psc.Controller.SetGravity(true);
+            psc.AnimationManager.SetFalling(false);
         }
-        
     }
 }

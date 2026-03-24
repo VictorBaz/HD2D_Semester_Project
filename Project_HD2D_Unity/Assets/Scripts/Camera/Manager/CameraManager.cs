@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using Enum;
 using Manager;
@@ -34,6 +35,8 @@ public class CameraManager : MonoBehaviour
     private Coroutine shakeCoroutine;
 
     public float TravelDuration => travelDuration;
+    
+    [SerializeField] private CameraPlayerState startingState;
     #endregion
 
     #region Unity Lifecycle
@@ -63,7 +66,7 @@ public class CameraManager : MonoBehaviour
             CollisionPadding = this.CollisionPadding,
         };
 
-        TransitionTo(FixState);
+        TransitionTo(ConvertEnumToState(startingState));
     }
 
     private void OnEnable()
@@ -193,7 +196,23 @@ public class CameraManager : MonoBehaviour
             }
         }
     }
-    
-    
+
+    private CameraBaseState ConvertEnumToState(CameraPlayerState state)
+    {
+        switch (state)
+        {
+            case CameraPlayerState.Fix:
+                return FixState;
+            case CameraPlayerState.FollowPlayer:
+                return FollowState;
+            case CameraPlayerState.Cinematic:
+                return CinematicState;
+            case CameraPlayerState.Rail:
+                return RailState;
+            default:
+                return FollowState;
+        }
+        
+    }
     
 }

@@ -90,7 +90,8 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
             SpawnPosition = spawnPosition,
             LastKnownPosition = lastKnownPosition,
             Data = data,
-            AnimManager = AnimationManagerEnnemie
+            AnimManager = AnimationManagerEnnemie,
+            LayerMaskEnemy = this.gameObject.layer,
             
         };
     }
@@ -124,6 +125,8 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
         context.LastKnownPosition = lastKnownPosition;
         
         currentState?.UpdateState(context);
+        
+        Debug.Log(currentState.Name);
         
         Debug.DrawRay(lastKnownPosition, Vector3.up * 2f, Color.yellow);
     }
@@ -243,7 +246,8 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
             KoSlider.maxValue = data.MaxKo;
             this.UpdateSlider(KoSlider, data.CurrentKo);
         }
-
+        
+        
         context.HitDirection = direction;
         ChangeState(AiTakeDamage);
     }
@@ -284,11 +288,10 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
         ApplyMovementMode(true); 
 
         Vector3 forceDirection = transform.forward + Vector3.up; 
-        rb.AddForce(forceDirection * 2f, ForceMode.Impulse);
+        rb.AddForce(forceDirection * 5f, ForceMode.Impulse);
 
         isCarry = false;
 
-        print("coucou");
         ChangeState(AiDropState); 
     }
     
@@ -322,6 +325,13 @@ public class AiBehavior : MonoBehaviour, IDamageable, ICarryable
                 agent.Warp(hit.position);
             }
         }
+    }
+    
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.lawnGreen;
+        Vector3 start = transform.position + (Vector3.up * 0.1f);
+        Gizmos.DrawLine(start, start + Vector3.down * 1.2f);
     }
 
 }

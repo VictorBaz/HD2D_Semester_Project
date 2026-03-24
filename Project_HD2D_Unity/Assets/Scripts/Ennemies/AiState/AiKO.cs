@@ -8,7 +8,6 @@ public class AiKO : AiState
 
     public override void EnterState(AiContext actx)
     {
-        //actx.Rb.linearVelocity = Vector3.zero;
         actx.Behavior.ApplyMovementMode(true); 
         actx.Rb.isKinematic = true; 
 
@@ -45,9 +44,11 @@ public class AiKO : AiState
             return; 
         }
 
-        bool isStillInAir = !Physics.Raycast(actx.Behavior.transform.position, Vector3.down, 1.2f);
+        Vector3 rayOrigin = actx.Behavior.transform.position + Vector3.up * 0.5f;
+    
+        bool isTouchingGround = Physics.Raycast(rayOrigin, Vector3.down, 0.7f,actx.LayerMaskEnemy);
 
-        if (isStillInAir)
+        if (!isTouchingGround)
         {
             actx.TransitionTo(actx.Behavior.AiDropState);
         }

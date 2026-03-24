@@ -8,6 +8,7 @@ public class DebugLockSystem : MonoBehaviour
     
     private void Update()
     {
+        
         if (lockOnSystem.IsLocked)
         {
             lockOnPrefab.SetActive(true);

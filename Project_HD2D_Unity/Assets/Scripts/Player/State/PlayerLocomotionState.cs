@@ -22,8 +22,9 @@ public class PlayerLocomotionState : PlayerBaseState
         {
             airTimeBuffer += Time.deltaTime;
             
-            if (airTimeBuffer > psc.PlayerData.MaxAirTimeBeforeFall || psc.Rb.linearVelocity.y > 1f)
+            if (airTimeBuffer > psc.PlayerData.CoyotteTime || psc.Rb.linearVelocity.y > 1f)
             {
+                Debug.Log($"Buffer : {airTimeBuffer > psc.PlayerData.CoyotteTime} \n Falling : {psc.Rb.linearVelocity.y > 1f}");
                 psc.StateMachine.TransitionTo(psc.StateMachine.AirState);
                 return;
             }

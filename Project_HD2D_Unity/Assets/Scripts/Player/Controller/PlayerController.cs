@@ -24,7 +24,6 @@ public class PlayerController : MonoBehaviour
     private PlayerDataInstance playerData;
     private float currentSpeed = 0f;
     
-    // Variable restaurée
     private bool isJumping;
     #endregion
 
@@ -39,8 +38,6 @@ public class PlayerController : MonoBehaviour
         CheckGround();
         HandleRotation(cam, moveInput);
 
-        // LOGIQUE : On active la gravité seulement si on est en l'air ou si on est en train de sauter
-        // Cela empêche le Rigidbody de "pousser" vers le bas quand on est immobile sur une pente
         rb.useGravity = !IsGrounded || isJumping;
     }
 
@@ -55,7 +52,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Méthode restaurée pour ton PlayerManager
     public void SetJumping(bool jumping)
     {
         isJumping = jumping;
@@ -93,7 +89,6 @@ public class PlayerController : MonoBehaviour
                 rb.linearVelocity = new Vector3(targetVelocity.x, 0f, targetVelocity.z);
             }
 
-            // ANTI-GLISSADE : Si aucune commande de mouvement, on fige le Rigidbody au sol
             if (!isMoving && currentSpeed < 0.1f)
             {
                 rb.linearVelocity = Vector3.zero;
@@ -101,7 +96,6 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            // En l'air (ou saut), on laisse la gravité Unity (Y) s'appliquer
             rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
         }
     }
@@ -164,18 +158,6 @@ public class PlayerController : MonoBehaviour
     public void InitData(PlayerDataInstance data) => playerData = data;
     public void SetLockMode(bool locked) => isInLockMode = locked;
     public Coroutine RunRoutine(IEnumerator routine) => StartCoroutine(routine);
-
-    public void ToggleFixPlayerPosition(bool fixedPosition)
-    {
-        if (fixedPosition)
-        {
-            rb.linearVelocity = Vector3.zero;
-            rb.constraints = RigidbodyConstraints.FreezePosition;
-        }
-        else
-        {
-            rb.constraints = RigidbodyConstraints.FreezeRotation;
-        }
-    }
+    
     #endregion
 }

@@ -24,6 +24,7 @@ public class AnimationManager : MonoBehaviour
     private static readonly int IsCarryingHash = Animator.StringToHash("IsCarrying");
     private static readonly int IsHitHash = Animator.StringToHash("IsHit");
     private static readonly int VelocityY = Animator.StringToHash("VelocityY");
+    private static readonly int IsFallingHash = Animator.StringToHash("IsFalling");
 
     #endregion
 
@@ -107,6 +108,12 @@ public class AnimationManager : MonoBehaviour
     {
         animator.SetBool(IsHitHash, isHit);
         if(isHit) animator.Update(0);
+    }
+
+    public void SetIsFalling(bool isFalling)
+    {
+        animator.SetBool(IsFallingHash, isFalling);
+        animator.Update(0);
     }
 
     public AnimatorStateInfo GetCurrentAnimatorStateInfo(int layerIndex)

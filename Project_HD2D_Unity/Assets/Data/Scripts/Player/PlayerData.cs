@@ -26,7 +26,7 @@ public class PlayerDataInstance
     public float GroundCheckDistance;
     public float PlayerHeight;
     public float MaxSlopeAngle;
-    public float MaxAirTimeBeforeFall;
+    public float CoyotteTime;
 
     public CombatHitData[] ComboHits;
     public float ComboWindow;
@@ -80,7 +80,7 @@ public class PlayerDataInstance
         Acceleration = data.Movement.Acceleration;
         Deceleration = data.Movement.Deceleration;
         RunThreshold = data.Movement.RunThreshold;
-        MaxAirTimeBeforeFall = data.Movement.MaxAirTimeBeforeFall;
+        CoyotteTime = data.Movement.CoyotteTime;
 
         ComboHits = data.Combat.ComboHits;
         ComboWindow = data.Combat.ComboWindow;
@@ -101,10 +101,8 @@ public class PlayerDataInstance
         DashCooldown = data.DashData.DashCooldown;
         
         JumpCooldown = data.JumpData.JumpCooldown;
-        MaxVerticalVelocity = data.JumpData.MaxVerticalVelocity;
         GravityMultiplier = data.JumpData.GravityMultiplier;
         MaxGravityTime = data.JumpData.MaxGravityTime;
-        JumpCutMultiplier = data.JumpData.JumpCutMultiplier;
         JumpHeight = data.JumpData.JumpHeight;  
         JumpDuration = data.JumpData.JumpDuration;
         

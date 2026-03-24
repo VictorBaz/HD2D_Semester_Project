@@ -14,11 +14,10 @@ namespace Player.State
 
         public override void EnterState(PlayerStateContext psc)
         {
+            psc.AnimationManager.SetIsFalling(true);
             timeInAir = 0f;
             psc.JumpReleased = false;
             
-            // FIX : On ne lance la montée QUE si on vient de presser Jump
-            // Si on vient d'un Dash ou d'une chute, IsJumping sera false.
             if (psc.Controller.IsJumping) 
             {
                 isFalling = false;
@@ -28,9 +27,8 @@ namespace Player.State
             }
             else
             {
-                // On tombe directement (cas du Dash fini en l'air ou chute de rebord)
                 StartFalling(psc);
-                jumpStartTime = Time.time - 1f; // On simule un saut vieux pour le Landing
+                jumpStartTime = Time.time - 1f; 
             }
         }
 
@@ -40,6 +38,7 @@ namespace Player.State
             psc.JumpReleased = false;
             psc.Rb.useGravity = true; 
             psc.Controller.SetJumping(false);
+            psc.AnimationManager.SetIsFalling(false);
         }
 
         public override void UpdateState(PlayerStateContext psc)
@@ -76,16 +75,24 @@ namespace Player.State
 
         public override void FixedUpdateState(PlayerStateContext psc)
         {
-            HandlePhysics(psc, CalculateAirControl(psc));
+            float airControl;
 
             if (!isFalling)
             {
+                float currentHeightReached = Mathf.Abs(psc.Rb.position.y - jumpStartPosition.y);
+                float heightRatio = Mathf.Clamp01(currentHeightReached / psc.PlayerData.JumpHeight);
+
+                airControl = Mathf.Lerp(0.2f, 1f, heightRatio);
+
                 HandleJumpAscent(psc);
             }
             else
             {
+                airControl = 1f; 
                 ApplyFallGravity(psc);
             }
+
+            HandlePhysics(psc, airControl);
         }
 
         private void HandleJumpAscent(PlayerStateContext psc)
@@ -126,11 +133,6 @@ namespace Player.State
             float gravityScale = Mathf.Lerp(1f, psc.PlayerData.GravityMultiplier, timeInAir / psc.PlayerData.MaxGravityTime);
             psc.Rb.AddForce(Vector3.down * gravityScale * Physics.gravity.magnitude, ForceMode.Acceleration);
         }
-
-        private float CalculateAirControl(PlayerStateContext psc)
-        {
-            float verticalVelocity = Mathf.Abs(psc.Rb.linearVelocity.y);
-            return Mathf.Lerp(1f, 0.2f, verticalVelocity / psc.PlayerData.MaxVerticalVelocity);
-        }
+        
     }
 }

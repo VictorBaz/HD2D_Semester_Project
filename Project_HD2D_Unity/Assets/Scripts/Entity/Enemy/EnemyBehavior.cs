@@ -24,7 +24,7 @@ public class EnemyBehavior : MonoBehaviour, IDamageableEnemy, ICarryable
     [SerializeField] private Rigidbody rb;
     [SerializeField] private NavMeshAgent agent;
     [SerializeField] private Collider mainCollider;
-    [SerializeField] private AnimManagerEnnemie AnimationManagerEnnemie;
+    [SerializeField] private EnemyAnimationManager enemyAnimationManager;
 
     [Header("Triggers")]
     [SerializeField] private Trigger viewRangeTrigger;
@@ -43,7 +43,7 @@ public class EnemyBehavior : MonoBehaviour, IDamageableEnemy, ICarryable
     [SerializeField] private Image feedbackRenderer;
 
     private EnemyBaseState _currentBaseState;
-    private AiContext context;
+    private EnemyContext context;
     private bool isCarry = false;
 
     [SerializeField] private EnemyData enemyDataRaw;
@@ -82,7 +82,7 @@ public class EnemyBehavior : MonoBehaviour, IDamageableEnemy, ICarryable
         
         SubscribeEvents();
         
-        context = new AiContext
+        context = new EnemyContext
         {
             Behavior = this,
             Agent = agent,
@@ -91,7 +91,7 @@ public class EnemyBehavior : MonoBehaviour, IDamageableEnemy, ICarryable
             SpawnPosition = spawnPosition,
             LastKnownPosition = lastKnownPosition,
             Data = data,
-            AnimManager = AnimationManagerEnnemie,
+            AnimManager = enemyAnimationManager,
             LayerMaskEnemy = this.gameObject.layer,
             
         };

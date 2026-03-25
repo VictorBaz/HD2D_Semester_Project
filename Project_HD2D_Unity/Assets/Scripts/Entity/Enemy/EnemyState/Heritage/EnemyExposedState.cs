@@ -7,23 +7,23 @@ public class EnemyExposedState : EnemyBaseState
 
     public override string Name => "Exposed";
 
-    public override void EnterState(AiContext actx)
+    public override void EnterState(EnemyContext actx)
     {
         actx.AnimManager.SetExposed(true);
         timerExposedMax = actx.Data.ExposedTime;
     }
 
-    public override void UpdateState(AiContext actx)
+    public override void UpdateState(EnemyContext actx)
     {
         TimerExposed(actx);
     }
 
-    public override void ExitState(AiContext actx)
+    public override void ExitState(EnemyContext actx)
     {
         actx.AnimManager.SetExposed(false);
     }
 
-    private void TimerExposed(AiContext actx)
+    private void TimerExposed(EnemyContext actx)
     {
         timerExposed += Time.deltaTime; 
 

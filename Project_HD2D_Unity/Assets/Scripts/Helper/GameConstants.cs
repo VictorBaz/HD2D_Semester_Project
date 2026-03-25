@@ -1,6 +1,8 @@
 ﻿public static class GameConstants
 {
-    public const float DEAD_STICK = 0.2f;
+    public const float DEAD_STICK = 0.25f;
+    public const float DEAD_STICK_SQUARE = 0.0625f; 
+    public const float SNAP_BACK = 0.16f;
     
     public const float ANIM_WALK_THRESHOLD = 0.16f; 
     public const float ANIM_RUN_THRESHOLD = 0.8f;

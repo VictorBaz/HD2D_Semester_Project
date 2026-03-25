@@ -33,7 +33,6 @@ public abstract class PlayerBaseState
         
         if (moveInput.magnitude <GameConstants.DEAD_STICK) 
         {
-            targetDirection = Vector3.zero;
             return;
         }
         

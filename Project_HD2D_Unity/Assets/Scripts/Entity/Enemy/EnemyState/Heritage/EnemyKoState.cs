@@ -6,7 +6,7 @@ public class EnemyKoState : EnemyBaseState
 
     public override string Name => "K-O";
 
-    public override void EnterState(AiContext actx)
+    public override void EnterState(EnemyContext actx)
     {
         actx.Behavior.ApplyMovementMode(true); 
         actx.Rb.isKinematic = true; 
@@ -19,7 +19,7 @@ public class EnemyKoState : EnemyBaseState
         }
     }
 
-    public override void UpdateState(AiContext actx)
+    public override void UpdateState(EnemyContext actx)
     {
         koTimer -= Time.deltaTime;
 
@@ -36,7 +36,7 @@ public class EnemyKoState : EnemyBaseState
         }
     }
 
-    private void DetermineNextState(AiContext actx)
+    private void DetermineNextState(EnemyContext actx)
     {
         if (actx.Behavior.IsCarry())
         {
@@ -59,7 +59,7 @@ public class EnemyKoState : EnemyBaseState
     }
     
 
-    public override void ExitState(AiContext actx)
+    public override void ExitState(EnemyContext actx)
     {
         actx.AnimManager.SetKO(false);
     }

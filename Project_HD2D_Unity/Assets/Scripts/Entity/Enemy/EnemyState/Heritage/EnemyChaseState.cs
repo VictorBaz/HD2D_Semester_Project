@@ -4,7 +4,7 @@ public class EnemyChaseState : EnemyBaseState
 {
     public override string Name => "Chase";
 
-    public override void EnterState(AiContext actx) 
+    public override void EnterState(EnemyContext actx) 
     {
         actx.Behavior.ApplyMovementMode(false); 
         actx.ResumeAgent();
@@ -12,7 +12,7 @@ public class EnemyChaseState : EnemyBaseState
         actx.UpdateAgentSpeed(actx.Data.ChaseSpeed,actx.Data.Acceleration,actx.Data.StoppingDistance);
     }
 
-    public override void UpdateState(AiContext actx)
+    public override void UpdateState(EnemyContext actx)
     {
         if (!actx.Behavior.CanSeePlayer()) 
         { 
@@ -32,7 +32,7 @@ public class EnemyChaseState : EnemyBaseState
         }
     }
 
-    public override void ExitState(AiContext actx) 
+    public override void ExitState(EnemyContext actx) 
     {
   
     }

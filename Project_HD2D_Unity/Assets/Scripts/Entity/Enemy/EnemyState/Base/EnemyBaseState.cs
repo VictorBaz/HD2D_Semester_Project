@@ -4,9 +4,9 @@ using UnityEngine;
 public abstract class EnemyBaseState
 {
     #region State Methods
-    public abstract void EnterState(AiContext actx);
-    public abstract void UpdateState(AiContext actx);
-    public abstract void ExitState(AiContext actx);
+    public abstract void EnterState(EnemyContext actx);
+    public abstract void UpdateState(EnemyContext actx);
+    public abstract void ExitState(EnemyContext actx);
 
     public virtual string Name { get; private set; }
     

@@ -12,7 +12,7 @@ public class EnemyAttackState : EnemyBaseState
 
     public override string Name => "Attacking";
 
-    public override void EnterState(AiContext actx)
+    public override void EnterState(EnemyContext actx)
     {
         actx.Behavior.ApplyMovementMode(false);
         actx.StopAgent(); 
@@ -22,7 +22,7 @@ public class EnemyAttackState : EnemyBaseState
         CanBeParry = false;
     }
 
-    public override void UpdateState(AiContext actx)
+    public override void UpdateState(EnemyContext actx)
     {
         if (actx.Target == null) 
         { 
@@ -47,7 +47,7 @@ public class EnemyAttackState : EnemyBaseState
         attackRoutine = actx.Behavior.StartCoroutine(AttackSequence(actx));
     }
 
-    private IEnumerator AttackSequence(AiContext actx)
+    private IEnumerator AttackSequence(EnemyContext actx)
     {
         var data = actx.Data;
         isPreparingAttack = true;
@@ -56,7 +56,7 @@ public class EnemyAttackState : EnemyBaseState
         
         isPreparingAttack = false;
         actx.AnimManager.TriggerAttack(); 
-        actx.AnimManager.AttackOn();
+        actx.AnimManager.ToggleAttackCollider(true);
 
         CanBeParry = true;
         
@@ -71,14 +71,14 @@ public class EnemyAttackState : EnemyBaseState
                 actx.Behavior.transform.position += strikeDir * data.AttackDashSpeed * Time.deltaTime;
 
             if (elapsed >= data.HitboxActiveDuration)
-                actx.AnimManager.AttackOff();
+                actx.AnimManager.ToggleAttackCollider(false);
 
             yield return null;
         }
 
         CanBeParry = false;
         
-        actx.AnimManager.AttackOff();
+        actx.AnimManager.ToggleAttackCollider(false);
 
         isCooldown = true;
 
@@ -89,7 +89,7 @@ public class EnemyAttackState : EnemyBaseState
         isCooldown = false;  
     }
 
-    private void RotateTowardsTarget(AiContext actx)
+    private void RotateTowardsTarget(EnemyContext actx)
     {
         if (actx.Target == null) return;
         
@@ -107,12 +107,12 @@ public class EnemyAttackState : EnemyBaseState
         }
     }
 
-    public override void ExitState(AiContext actx) 
+    public override void ExitState(EnemyContext actx) 
     { 
         if (attackRoutine != null) 
             actx.Behavior.StopCoroutine(attackRoutine);
         
-        actx.AnimManager.AttackOff();
+        actx.AnimManager.ToggleAttackCollider(false);
         isPreparingAttack = false;
         isCooldown = false; 
         

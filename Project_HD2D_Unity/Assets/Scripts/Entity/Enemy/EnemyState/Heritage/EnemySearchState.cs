@@ -8,7 +8,7 @@ public class EnemySearchState : EnemyBaseState
 
     public override string Name => "Searching";
 
-    public override void EnterState(AiContext actx) 
+    public override void EnterState(EnemyContext actx) 
     { 
         timer = actx.Data.SearchDuration;
         searchCenter = actx.LastKnownPosition;
@@ -18,7 +18,7 @@ public class EnemySearchState : EnemyBaseState
         MoveToRandomPoint(actx);
     } 
 
-    public override void UpdateState(AiContext actx)
+    public override void UpdateState(EnemyContext actx)
     {
         if (actx.Behavior.CanSeePlayer()) 
         { 
@@ -39,7 +39,7 @@ public class EnemySearchState : EnemyBaseState
         }
     }
 
-    private void MoveToRandomPoint(AiContext actx)
+    private void MoveToRandomPoint(EnemyContext actx)
     {
         Vector2 randomCircle = Random.insideUnitCircle * actx.Data.SearchRadius;
         Vector3 randomPoint = searchCenter + new Vector3(randomCircle.x, 0, randomCircle.y);
@@ -50,7 +50,7 @@ public class EnemySearchState : EnemyBaseState
         }
     }
 
-    public override void ExitState(AiContext actx) { }
+    public override void ExitState(EnemyContext actx) { }
     
     public override bool CanAttack => true;
     public override bool CanMove => true;

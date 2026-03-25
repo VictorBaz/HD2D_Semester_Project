@@ -6,12 +6,12 @@ public class EnemyHitState : EnemyBaseState
 
     public override string Name => "Taking Damage";
 
-    public override void EnterState(AiContext actx)
+    public override void EnterState(EnemyContext actx)
     {
         actx.Behavior.ApplyMovementMode(true);
     
         actx.Rb.AddForce(actx.HitDirection * 5f, ForceMode.Impulse);
-        actx.AnimManager.SetIsHit(true);
+        actx.AnimManager.SetHit(true);
     
         actx.Data.CurrentKo += actx.Data.DamageToApply;
 
@@ -24,7 +24,7 @@ public class EnemyHitState : EnemyBaseState
         timer = actx.Data.StunDuration;
     }
 
-    public override void UpdateState(AiContext actx)
+    public override void UpdateState(EnemyContext actx)
     {
         timer -= Time.deltaTime;
 
@@ -34,9 +34,9 @@ public class EnemyHitState : EnemyBaseState
         }
     }
 
-    public override void ExitState(AiContext actx)
+    public override void ExitState(EnemyContext actx)
     {
-        actx.AnimManager.SetIsHit(false);
+        actx.AnimManager.SetHit(false);
     }
     
     public override bool CanMove => false;

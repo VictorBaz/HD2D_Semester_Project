@@ -10,14 +10,14 @@ public class EnemyDropState : EnemyBaseState
     public override bool CanMove => false;
     public override bool CanTakeDamage => false; 
 
-    public override void EnterState(AiContext actx) 
+    public override void EnterState(EnemyContext actx) 
     {
         isGrounded = false;
         actx.Behavior.ApplyMovementMode(true);
         actx.AnimManager.SetFalling(true);
     }
 
-    public override void UpdateState(AiContext actx) 
+    public override void UpdateState(EnemyContext actx) 
     {
         if (!isGrounded && Physics.Raycast(actx.Behavior.transform.position, Vector3.down, out RaycastHit hit, 1.2f))
         {
@@ -29,7 +29,7 @@ public class EnemyDropState : EnemyBaseState
         }
     }
 
-    private void LandingSequence(AiContext actx)
+    private void LandingSequence(EnemyContext actx)
     {
         actx.Behavior.ApplyMovementMode(false); 
 
@@ -48,7 +48,7 @@ public class EnemyDropState : EnemyBaseState
         }
     }
 
-    public override void ExitState(AiContext actx)
+    public override void ExitState(EnemyContext actx)
     {
         actx.AnimManager.SetFalling(false);
     }

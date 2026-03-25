@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
 
-public class AiContext
+public class EnemyContext
 {
     public EnemyBehavior Behavior;
     public NavMeshAgent Agent;
     public Rigidbody Rb;
     public EnemyMovement Movement;
     
-    public AnimManagerEnnemie AnimManager;
+    public EnemyAnimationManager AnimManager;
     
     public GameObject Target;
     public Vector3 SpawnPosition;

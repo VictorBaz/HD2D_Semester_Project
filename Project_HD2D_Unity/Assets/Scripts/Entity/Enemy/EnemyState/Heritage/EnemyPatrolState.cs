@@ -6,7 +6,7 @@ public class EnemyPatrolState : EnemyBaseState
 
     public override string Name => "Patrol";
 
-    public override void EnterState(AiContext actx) 
+    public override void EnterState(EnemyContext actx) 
     {
         actx.Behavior.ApplyMovementMode(false);
         
@@ -18,7 +18,7 @@ public class EnemyPatrolState : EnemyBaseState
             actx.SetDestination(actx.Behavior.patrolPoints[currentPointIndex].position);
     }
 
-    public override void UpdateState(AiContext actx)
+    public override void UpdateState(EnemyContext actx)
     {
         actx.AnimManager.UpdateMovement(actx.Agent.speed);
 
@@ -39,7 +39,7 @@ public class EnemyPatrolState : EnemyBaseState
         
     }
 
-    public override void ExitState(AiContext actx) { }
+    public override void ExitState(EnemyContext actx) { }
     
     public override bool CanAttack => true;
     public override bool CanMove => true;

@@ -30,11 +30,20 @@ public class PlayerController : MonoBehaviour
     private bool isJumping;
     #endregion
 
+    #region Unity Lifecycle
+
     private void Awake()
     {
         if (rb != null) rb.useGravity = false; 
     }
+    
+    private void Start() 
+    {
+        targetRotation = transform.rotation;
+    }
 
+    #endregion
+    
     #region Public Methods
     public void UpdatePlayerController(Transform cam, Vector2 moveInput)
     {
@@ -64,7 +73,7 @@ public class PlayerController : MonoBehaviour
     #region Movement
     private void ApplyMovement(Vector3 targetDirection, Vector2 moveInput, float speedMultiplier)
     {
-        bool isMoving = moveInput.magnitude > 0.01f;
+        bool isMoving = moveInput.sqrMagnitude > GameConstants.DEAD_STICK_SQUARE;
         bool onSlope = OnSlope();
 
         float targetSpeed = 0f;
@@ -89,12 +98,13 @@ public class PlayerController : MonoBehaviour
             }
             else
             {
-                rb.linearVelocity = new Vector3(targetVelocity.x, 0f, targetVelocity.z);
+                rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
             }
 
             if (!isMoving && currentSpeed < 0.1f)
             {
-                rb.linearVelocity = Vector3.zero;
+                currentSpeed = 0f;
+                rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
             }
         }
         else
@@ -104,7 +114,7 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
-    #region Ground & Slopes (Ton code original conservé)
+    #region Ground & Slopes
     private void CheckGround()
     {
         float sphereRadius = 0.2f;
@@ -136,17 +146,25 @@ public class PlayerController : MonoBehaviour
             Vector3 targetPos = lockOnSystem.CurrentTarget.GetLockTransform().position;
             Vector3 lookDir = (targetPos - transform.position).normalized;
             lookDir.y = 0;
-            if (lookDir != Vector3.zero) targetRotation = Quaternion.LookRotation(lookDir);
+        
+            if (lookDir.sqrMagnitude > GameConstants.DEAD_STICK_SQUARE) 
+                targetRotation = Quaternion.LookRotation(lookDir);
             return;
         }
 
-        if (moveInput.sqrMagnitude > 0.01f)
+        if (moveInput.sqrMagnitude > GameConstants.SNAP_BACK) 
         {
             Vector3 camForward = cam.forward;
             Vector3 camRight = cam.right;
-            camForward.y = 0; camRight.y = 0;
+            camForward.y = 0; 
+            camRight.y = 0;
+        
             Vector3 moveDir = (camForward * moveInput.y + camRight * moveInput.x).normalized;
-            if (moveDir != Vector3.zero) targetRotation = Quaternion.LookRotation(moveDir);
+        
+            if (moveDir.sqrMagnitude > 0.001f) 
+            {
+                targetRotation = Quaternion.LookRotation(moveDir);
+            }
         }
     }
 

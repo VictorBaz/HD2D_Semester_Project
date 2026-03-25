@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyBaseKoState : EnemyBaseState
+public class EnemyKoState : EnemyBaseState
 {
     private float koTimer;
 
@@ -50,11 +50,11 @@ public class EnemyBaseKoState : EnemyBaseState
 
         if (!isTouchingGround)
         {
-            actx.TransitionTo(actx.Behavior.BaseDropState);
+            actx.TransitionTo(actx.Behavior.DropState);
         }
         else
         {
-            actx.TransitionTo(actx.Behavior.BaseGoToSpawnState);
+            actx.TransitionTo(actx.Behavior.GoToSpawnState);
         }
     }
     

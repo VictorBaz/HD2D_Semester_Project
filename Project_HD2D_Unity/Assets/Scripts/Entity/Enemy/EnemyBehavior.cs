@@ -9,16 +9,16 @@ public class EnemyBehavior : MonoBehaviour, IDamageableEnemy, ICarryable
 {
     #region Variables
     //public AiStatic StaticState { get; private set; }
-    public EnemyBasePatrolState BasePatrolState { get; private set; }
-    public EnemyBaseChaseState BaseChaseState { get; private set; }
-    public EnemyBaseAttackState BaseAttackState { get; private set; }
-    public EnemyBaseSearchState BaseSearchState { get; private set; }
-    public EnemyBaseGoToSpawnState BaseGoToSpawnState { get; private set; }
-    public EnemyBaseKoState BaseKoState { get; private set; }
-    public EnemyBaseHitState EnemyBaseHit { get; private set; }
-    public EnemyBaseDropState BaseDropState { get; private set; }
-    public EnemyBaseFriendlyState BaseFriendlyState { get; private set; }
-    public EnemyBaseExposedState BaseExposedState { get; private set; }
+    public EnemyPatrolState PatrolState { get; private set; }
+    public EnemyChaseState ChaseState { get; private set; }
+    public EnemyAttackState AttackState { get; private set; }
+    public EnemySearchState SearchState { get; private set; }
+    public EnemyGoToSpawnState GoToSpawnState { get; private set; }
+    public EnemyKoState KoState { get; private set; }
+    public EnemyHitState EnemyHit { get; private set; }
+    public EnemyDropState DropState { get; private set; }
+    public EnemyFriendlyState FriendlyState { get; private set; }
+    public EnemyExposedState ExposedState { get; private set; }
 
     [Header("Core Components")]
     [SerializeField] private Rigidbody rb;
@@ -65,16 +65,16 @@ public class EnemyBehavior : MonoBehaviour, IDamageableEnemy, ICarryable
     {
         data = enemyDataRaw.Init();
         
-        BasePatrolState = new EnemyBasePatrolState();
-        BaseChaseState = new EnemyBaseChaseState();
-        BaseAttackState = new EnemyBaseAttackState();
-        BaseSearchState = new EnemyBaseSearchState();
-        BaseGoToSpawnState = new EnemyBaseGoToSpawnState();
-        BaseKoState = new EnemyBaseKoState();
-        EnemyBaseHit = new EnemyBaseHitState();
-        BaseDropState = new EnemyBaseDropState();
-        BaseFriendlyState = new EnemyBaseFriendlyState();
-        BaseExposedState = new EnemyBaseExposedState();
+        PatrolState = new EnemyPatrolState();
+        ChaseState = new EnemyChaseState();
+        AttackState = new EnemyAttackState();
+        SearchState = new EnemySearchState();
+        GoToSpawnState = new EnemyGoToSpawnState();
+        KoState = new EnemyKoState();
+        EnemyHit = new EnemyHitState();
+        DropState = new EnemyDropState();
+        FriendlyState = new EnemyFriendlyState();
+        ExposedState = new EnemyExposedState();
 
         movement = GetComponent<EnemyMovement>();
         spawnPosition = transform.position;
@@ -108,14 +108,14 @@ public class EnemyBehavior : MonoBehaviour, IDamageableEnemy, ICarryable
         agent.stoppingDistance = data.StoppingDistance;
         agent.acceleration = 12f;
         
-        ChangeState(BasePatrolState);
+        ChangeState(PatrolState);
     }
 
     void OnEnable()
     {
         if (movement != null) movement.StopMovement();
         transform.position = spawnPosition;
-        ChangeState(BasePatrolState);
+        ChangeState(PatrolState);
     }
 
     void Update() 
@@ -250,15 +250,15 @@ public class EnemyBehavior : MonoBehaviour, IDamageableEnemy, ICarryable
         
         
         context.HitDirection = direction;
-        ChangeState(EnemyBaseHit);
+        ChangeState(EnemyHit);
     }
 
     public Transform GetTransform() => transform;
     
     public void GettingParry()
     {
-        if (_currentBaseState is not EnemyBaseAttackState { CanBeParry: true }) return;
-        ChangeState(BaseExposedState);
+        if (_currentBaseState is not EnemyAttackState { CanBeParry: true }) return;
+        ChangeState(ExposedState);
         print("Getting parry");
 
     }
@@ -273,7 +273,7 @@ public class EnemyBehavior : MonoBehaviour, IDamageableEnemy, ICarryable
     #region ICarryable Implementation
     public bool IsCarryable()
     {
-        return _currentBaseState == BaseKoState;
+        return _currentBaseState == KoState;
     }
 
     public void Carry(Transform anchor)
@@ -303,7 +303,7 @@ public class EnemyBehavior : MonoBehaviour, IDamageableEnemy, ICarryable
 
         isCarry = false;
 
-        ChangeState(BaseDropState); 
+        ChangeState(DropState); 
     }
     
 

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyBaseDropState : EnemyBaseState
+public class EnemyDropState : EnemyBaseState
 {
     public override string Name => "Falling";
     private bool isGrounded = false;
@@ -37,14 +37,14 @@ public class EnemyBaseDropState : EnemyBaseState
 
         if (isStillKO)
         {
-            actx.TransitionTo(actx.Behavior.BaseKoState);
+            actx.TransitionTo(actx.Behavior.KoState);
         }
         else 
         {
             if (actx.Target != null)
-                actx.TransitionTo(actx.Behavior.BaseChaseState);
+                actx.TransitionTo(actx.Behavior.ChaseState);
             else
-                actx.TransitionTo(actx.Behavior.BasePatrolState);
+                actx.TransitionTo(actx.Behavior.PatrolState);
         }
     }
 

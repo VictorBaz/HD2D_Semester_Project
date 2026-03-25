@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyBaseStaticState : EnemyBaseState
+public class EnemyStaticState : EnemyBaseState
 {
     public override string Name => "Static";
 
@@ -14,7 +14,7 @@ public class EnemyBaseStaticState : EnemyBaseState
     {
         if (actx.Behavior.CanSeePlayer())
         {
-            actx.TransitionTo(actx.Behavior.BaseChaseState);
+            actx.TransitionTo(actx.Behavior.ChaseState);
         }
     }
 

@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class EnemyBaseAttackState : EnemyBaseState
+public class EnemyAttackState : EnemyBaseState
 {
     private Coroutine attackRoutine;
 
@@ -26,7 +26,7 @@ public class EnemyBaseAttackState : EnemyBaseState
     {
         if (actx.Target == null) 
         { 
-            actx.TransitionTo(actx.Behavior.BaseSearchState); 
+            actx.TransitionTo(actx.Behavior.SearchState); 
             return; 
         }
 
@@ -40,7 +40,7 @@ public class EnemyBaseAttackState : EnemyBaseState
 
         if (!actx.IsPlayerInAttackRange)
         {
-            actx.TransitionTo(actx.Behavior.BaseChaseState);
+            actx.TransitionTo(actx.Behavior.ChaseState);
             return;
         }
 

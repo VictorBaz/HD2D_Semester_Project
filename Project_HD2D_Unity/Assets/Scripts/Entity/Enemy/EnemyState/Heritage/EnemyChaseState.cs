@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyBaseChaseState : EnemyBaseState
+public class EnemyChaseState : EnemyBaseState
 {
     public override string Name => "Chase";
 
@@ -16,13 +16,13 @@ public class EnemyBaseChaseState : EnemyBaseState
     {
         if (!actx.Behavior.CanSeePlayer()) 
         { 
-            actx.TransitionTo(actx.Behavior.BaseSearchState); 
+            actx.TransitionTo(actx.Behavior.SearchState); 
             return; 
         }
     
         if (actx.IsPlayerInAttackRange) 
         {
-            actx.TransitionTo(actx.Behavior.BaseAttackState);
+            actx.TransitionTo(actx.Behavior.AttackState);
             return;
         }
     

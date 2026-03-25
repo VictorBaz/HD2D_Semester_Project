@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyBaseSearchState : EnemyBaseState
+public class EnemySearchState : EnemyBaseState
 {
     private float timer;
     private Vector3 searchCenter;
@@ -22,7 +22,7 @@ public class EnemyBaseSearchState : EnemyBaseState
     {
         if (actx.Behavior.CanSeePlayer()) 
         { 
-            actx.TransitionTo(actx.Behavior.BaseChaseState); 
+            actx.TransitionTo(actx.Behavior.ChaseState); 
             return; 
         }
 
@@ -35,7 +35,7 @@ public class EnemyBaseSearchState : EnemyBaseState
     
         if (timer <= 0) 
         {
-            actx.TransitionTo(actx.Behavior.BaseGoToSpawnState);
+            actx.TransitionTo(actx.Behavior.GoToSpawnState);
         }
     }
 

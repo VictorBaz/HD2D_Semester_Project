@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyBaseFriendlyState : EnemyBaseState
+public class EnemyFriendlyState : EnemyBaseState
 {
     private Vector3 searchCenter;
     private float waitTimer;

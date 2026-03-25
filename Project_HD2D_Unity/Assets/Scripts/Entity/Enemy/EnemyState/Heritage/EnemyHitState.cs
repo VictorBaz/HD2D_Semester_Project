@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyBaseHitState : EnemyBaseState
+public class EnemyHitState : EnemyBaseState
 {
     private float timer;
 
@@ -17,7 +17,7 @@ public class EnemyBaseHitState : EnemyBaseState
 
         if (actx.Data.IsKoFull())
         {
-            actx.TransitionTo(actx.Behavior.BaseKoState);
+            actx.TransitionTo(actx.Behavior.KoState);
             return;
         }
 

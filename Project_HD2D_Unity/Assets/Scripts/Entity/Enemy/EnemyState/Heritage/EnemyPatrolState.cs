@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyBasePatrolState : EnemyBaseState
+public class EnemyPatrolState : EnemyBaseState
 {
     private int currentPointIndex;
 
@@ -24,7 +24,7 @@ public class EnemyBasePatrolState : EnemyBaseState
 
         if (actx.Behavior.CanSeePlayer())
         {
-            actx.TransitionTo(actx.Behavior.BaseChaseState); return;
+            actx.TransitionTo(actx.Behavior.ChaseState); return;
         }
 
         if (actx.IsNavReady && !actx.Agent.pathPending)

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EnemyBaseGoToSpawnState : EnemyBaseState
+public class EnemyGoToSpawnState : EnemyBaseState
 {
     public override string Name => "Go to spawn";
 
@@ -15,13 +15,13 @@ public class EnemyBaseGoToSpawnState : EnemyBaseState
     {
         if (actx.Behavior.CanSeePlayer())
         {
-            actx.TransitionTo(actx.Behavior.BaseChaseState);
+            actx.TransitionTo(actx.Behavior.ChaseState);
             return;
         }
 
         if (actx.IsNavReady && !actx.Agent.pathPending && actx.Agent.remainingDistance <= actx.Agent.stoppingDistance)
         {
-            actx.TransitionTo(actx.Behavior.BasePatrolState);
+            actx.TransitionTo(actx.Behavior.PatrolState);
         }
     }
 

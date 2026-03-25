@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class EnemyBaseExposedState : EnemyBaseState
+public class EnemyExposedState : EnemyBaseState
 {
     float timerExposed = 0;
     float timerExposedMax = 0;
@@ -29,7 +29,7 @@ public class EnemyBaseExposedState : EnemyBaseState
 
         if (timerExposed >= timerExposedMax)
         {
-            actx.TransitionTo(actx.Behavior.BasePatrolState);
+            actx.TransitionTo(actx.Behavior.PatrolState);
             return;
         }
     }

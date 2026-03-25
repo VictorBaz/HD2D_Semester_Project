@@ -1,76 +1,30 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class VATManager : MonoBehaviour, IRootLink
 {
-    #region Variables
+    [Header("VAT Settings")]
+    [SerializeField] protected Renderer targetRenderer;
+    [SerializeField] protected string shaderPropertyName = "_frame";
+    [SerializeField] protected int maxFrames = 24;
+    [SerializeField] protected List<float> animationSteps = new List<float> { 0f, 0.3f, 0.7f, 1f };
+    [SerializeField] protected float transitionSpeed = 2f;
+    [SerializeField] protected Animator animator;
 
-    [SerializeField] private Renderer targetRenderer;
-    [SerializeField] private string shaderPropertyName = "_frame";
+    protected float currentNormalizedValue = 0f;
+    protected MaterialPropertyBlock propBlock;
+    protected Root root;
 
-    [Header("Animation Settings")]
-    [SerializeField] private int maxFrames = 24;
-    [Tooltip("Chaque palier correspond à 1 point d'énergie. Indice 0 = 0 énergie.")]
-    [SerializeField] private List<float> animationSteps = new List<float> { 0f, 0.3f, 0.7f, 1f };
-    [SerializeField] private float transitionSpeed = 2f;
-    [SerializeField] public Animator animator;
+    protected int CurrentEnergy => root != null ? root.currentEnergy : 0;
+    protected int MaxEnergyIndex => animationSteps.Count - 1;
 
-    private int currentEnergy => root.currentEnergy;
+    protected virtual void Awake() => propBlock = new MaterialPropertyBlock();
 
-    private float currentNormalizedValue = 0f;
-    private MaterialPropertyBlock propBlock;
-    
-    private Root root;
+    protected virtual void Update() => UpdateVAT();
 
-    #endregion
-
-    #region Unity Lifecycle
-
-    private void Awake()
+    protected void UpdateVAT()
     {
-        InitMat();
-    }
-    
-    private void Update()
-    {
-        UpdateStep();
-    }
-
-    #endregion
-
-    #region Initialisation
-
-    private void InitMat()
-    {
-        propBlock = new MaterialPropertyBlock();
-
-        if (animationSteps.Count > 0)
-            currentNormalizedValue = animationSteps[0];
-    }
-
-    public void SetRoot(Root root)
-    {
-        this.root = root;
-    }
-
-    #endregion
-
-    #region VAT
-
-    /*private void SetEnergy(int energy)
-    {
-        currentEnergy = Mathf.Clamp(energy, 0, animationSteps.Count - 1);
-    }
-
-    public void AddEnergy() => SetEnergy(currentEnergy + 1);
-    public void RemoveEnergy() => SetEnergy(currentEnergy - 1);*/
-    
-
-    private void UpdateStep()
-    {
-        int   targetIndex = Mathf.Clamp(currentEnergy, 0, animationSteps.Count - 1);
+        int targetIndex = Mathf.Clamp(CurrentEnergy, 0, MaxEnergyIndex);
         float targetValue = animationSteps[targetIndex];
 
         if (!Mathf.Approximately(currentNormalizedValue, targetValue))
@@ -79,21 +33,28 @@ public class VATManager : MonoBehaviour, IRootLink
                 currentNormalizedValue,
                 targetValue,
                 transitionSpeed * Time.deltaTime);
+            
+            OnValueUpdated(currentNormalizedValue);
         }
         
+        ApplyVATToRenderer();
+    }
+
+    private void ApplyVATToRenderer()
+    {
         float frameValue = currentNormalizedValue * Mathf.Max(0, maxFrames - 1);
+        float clampedValue = Mathf.Clamp(currentNormalizedValue, 0, 0.99f);
         
-        animator.Play("AnimClip", -1, currentNormalizedValue); 
+        if(animator != null) animator.Play("Main Animation Vat", 0, clampedValue); 
 
         targetRenderer.GetPropertyBlock(propBlock);
         propBlock.SetFloat(shaderPropertyName, frameValue);
         targetRenderer.SetPropertyBlock(propBlock);
     }
 
+    protected virtual void OnValueUpdated(float newValue) { }
 
-    #endregion
-
-
-    public bool IsContainingEnergy() => currentEnergy > 0;
-    public bool IsAtMaximumEnergy()  => currentEnergy >= animationSteps.Count - 1;
+    public void SetRoot(Root root) => this.root = root;
+    public bool IsContainingEnergy() => CurrentEnergy > 0;
+    public bool IsAtMaximumEnergy() => CurrentEnergy >= MaxEnergyIndex;
 }

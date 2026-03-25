@@ -80,11 +80,12 @@ public class AiAttackState : AiState
         
         actx.AnimManager.AttackOff();
 
-        attackRoutine = null; 
         isCooldown = true;
 
         yield return new WaitForSeconds(data.AttackCooldown);
 
+        attackRoutine = null;
+        
         isCooldown = false;  
     }
 

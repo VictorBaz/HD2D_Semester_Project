@@ -57,4 +57,6 @@ public class VATManager : MonoBehaviour, IRootLink
     public void SetRoot(Root root) => this.root = root;
     public bool IsContainingEnergy() => CurrentEnergy > 0;
     public bool IsAtMaximumEnergy() => CurrentEnergy >= MaxEnergyIndex;
+
+    
 }

@@ -133,6 +133,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
     private void Start()
     {
         DebugState();
+        
+        Time.timeScale = 0.3f;
     }
 
     private void Update()
@@ -142,8 +144,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
         TickJumpTimer();
         
         playerController.SetJumping(jumpCooldownTimer > 0);
-        
-        print(new Vector2(rb.linearVelocity.x, rb.linearVelocity.z).magnitude);
     }
 
     private void FixedUpdate()

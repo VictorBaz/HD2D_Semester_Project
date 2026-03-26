@@ -22,6 +22,7 @@ public class BumperLogic : MonoBehaviour
         
         controller.Rb.AddForce(transform.up * bounceForce, ForceMode.Impulse);
 
+        controller.OnJump?.Invoke();
         manager.TransitionTo(manager.AirState);
     }
 }

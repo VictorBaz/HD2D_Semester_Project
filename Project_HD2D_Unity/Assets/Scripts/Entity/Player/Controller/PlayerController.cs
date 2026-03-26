@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     public bool IsJumping => isJumping;
     public Rigidbody Rb => rb;
 
-    public event Action OnJump;
+    public Action OnJump;
     public Action OnAttackMelee;
 
     [SerializeField] private Rigidbody rb;

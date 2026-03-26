@@ -7,7 +7,6 @@ public class PlayerController : MonoBehaviour
     #region Variables
     public bool IsGrounded  { get; private set; }
     public bool IsAttacking { get; private set; }
-    public bool IsJumping => isJumping;
     public Rigidbody Rb => rb;
 
     public Action OnJump;
@@ -28,6 +27,8 @@ public class PlayerController : MonoBehaviour
     private float currentSpeed = 0f;
     
     private bool isJumping;
+    
+    [SerializeField] private Camera cam;
     #endregion
 
     #region Unity Lifecycle
@@ -49,8 +50,6 @@ public class PlayerController : MonoBehaviour
     {
         CheckGround();
         HandleRotation(cam, moveInput);
-
-        /*rb.useGravity = !IsGrounded || isJumping;*/
     }
 
     public void UpdatePlayerControllerPhysics(Vector3 targetDirection, Vector2 moveInput, float speedMultiplier)
@@ -73,44 +72,96 @@ public class PlayerController : MonoBehaviour
     #region Movement
     private void ApplyMovement(Vector3 targetDirection, Vector2 moveInput, float speedMultiplier)
     {
-        bool isMoving = moveInput.sqrMagnitude > GameConstants.DEAD_STICK_SQUARE;
-        bool onSlope = OnSlope();
-
-        float targetSpeed = 0f;
-        if (isMoving)
-        {
-            if (onSlope) targetSpeed = playerData.MoveSpeedSlope;
-            else if (moveInput.magnitude >= playerData.RunThreshold) targetSpeed = playerData.MoveSpeedRunning;
-            else targetSpeed = playerData.MoveSpeedWalking;
-        }
-        targetSpeed *= speedMultiplier;
-
-        float accel = isMoving ? playerData.Acceleration : playerData.Deceleration;
-        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, accel * Time.fixedDeltaTime);
-
-        Vector3 targetVelocity = targetDirection * currentSpeed;
+        float targetSpeed = CalculateTargetSpeed(moveInput, speedMultiplier);
+    
+        UpdateCurrentSpeed(targetSpeed, moveInput.sqrMagnitude > GameConstants.DEAD_STICK_SQUARE);
 
         if (IsGrounded && !isJumping)
         {
-            if (onSlope)
-            {
-                rb.linearVelocity = GetSlopeMoveDirection(targetVelocity);
-            }
-            else
-            {
-                rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
-            }
+            ApplyGroundMovement(targetDirection);
+        }
+        else
+        {
+            ApplyAirMovement(moveInput);
+        }
+    }
+    
+    private float CalculateTargetSpeed(Vector2 moveInput, float speedMultiplier)
+    {
+        if (moveInput.sqrMagnitude <= GameConstants.DEAD_STICK_SQUARE) return 0f;
 
-            if (!isMoving && currentSpeed < 0.1f)
-            {
-                currentSpeed = 0f;
-                rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
-            }
+        float speed;
+        
+        if (OnSlope())
+        {
+            speed = playerData.MoveSpeedSlope;
+        }
+        else if (moveInput.magnitude >= playerData.RunThreshold)
+        {
+            speed = playerData.MoveSpeedRunning;
+        }
+        else
+        {
+            speed = playerData.MoveSpeedWalking;
+        }
+
+        return speed * speedMultiplier;
+    }
+
+    private void UpdateCurrentSpeed(float targetSpeed, bool isMoving)
+    {
+        float accel = isMoving ? playerData.Acceleration : playerData.Deceleration;
+        currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, accel * Time.fixedDeltaTime);
+    
+        if (!isMoving && currentSpeed < 0.1f) currentSpeed = 0f;
+    }
+    
+    private void ApplyGroundMovement(Vector3 targetDirection)
+    {
+        Vector3 targetVelocity = targetDirection * currentSpeed;
+
+        if (OnSlope())
+        {
+            rb.linearVelocity = GetSlopeMoveDirection(targetVelocity);
         }
         else
         {
             rb.linearVelocity = new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
         }
+    }
+
+    private void ApplyAirMovement(Vector2 moveInput)
+    {
+        float airControlForce = 10f;   
+        
+        Vector3 camForward = cam.transform.forward;
+        Vector3 camRight = cam.transform.right;
+        
+        camRight.y = 0; camForward.y = 0; 
+        
+        Vector3 targetDir = (camForward * moveInput.y + camRight * moveInput.x).normalized;
+        
+        Vector3 currentHorizontalVel = rb.linearVelocity;
+        currentHorizontalVel.y = 0;
+        
+        Vector3 acceleration = targetDir * (airControlForce * Time.fixedDeltaTime);
+        Vector3 newHorizontalVel = currentHorizontalVel + acceleration;
+        
+        float maxSpeed = playerData.MoveSpeedRunning;
+        
+        if (newHorizontalVel.magnitude > maxSpeed)
+        {
+            newHorizontalVel = Vector3.ClampMagnitude(
+                newHorizontalVel,
+                Mathf.Max(currentHorizontalVel.magnitude, 
+                maxSpeed));
+        }
+        
+        rb.linearVelocity = new Vector3(
+            newHorizontalVel.x,
+            rb.linearVelocity.y,
+            newHorizontalVel.z);
+        
     }
     #endregion
 

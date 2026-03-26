@@ -6,7 +6,7 @@ using UnityEngine;
 public class ProjectileBase : MonoBehaviour
 {
     [SerializeField] protected float m_speed = 10f;
-    [SerializeField] private int m_damage = 1;
+    //[SerializeField] private int m_damage = 1;
 
 
     [SerializeField] protected Rigidbody m_rb;

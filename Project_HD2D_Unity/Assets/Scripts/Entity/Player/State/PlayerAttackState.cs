@@ -67,9 +67,9 @@ namespace Player.State
         {
             CalculateTargetDirection(psc);
             
-            if (targetDirection.magnitude > 0.1f)
+            if (psc.TargetDirection.magnitude > 0.1f)
             {
-                psc.PlayerTransform.forward = targetDirection;
+                psc.PlayerTransform.forward = psc.TargetDirection;
             }
         }
 
@@ -145,7 +145,7 @@ namespace Player.State
             }
             else
             {
-                psc.StateMachine.TransitionTo(psc.StateMachine.LocomotionState);
+                DetermineState(psc);
             }
         }
 

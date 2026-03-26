@@ -2,7 +2,6 @@ using UnityEngine;
 
 public abstract class PlayerBaseState
 {
-    protected  Vector3 targetDirection = Vector3.zero;
     protected Vector2 blendInput = Vector2.zero;
     
     public abstract void EnterState(PlayerStateContext psc);
@@ -24,7 +23,7 @@ public abstract class PlayerBaseState
     protected void HandlePhysics(PlayerStateContext psc, float speedMultiplier = 1f)
     {
         if (!CanMove) return;
-        psc.Controller.UpdatePlayerControllerPhysics(targetDirection,psc.InputManager.MoveInput,speedMultiplier);
+        psc.Controller.UpdatePlayerControllerPhysics(psc.TargetDirection,psc.InputManager.MoveInput,speedMultiplier);
     }
     
     protected virtual void CalculateTargetDirection(PlayerStateContext psc)
@@ -42,11 +41,11 @@ public abstract class PlayerBaseState
         Vector3 camRight = psc.CameraTransform.right;
         camRight.y = 0; camRight.Normalize();
 
-        targetDirection = camForward * psc.InputManager.MoveInput.y +
-                          camRight   * psc.InputManager.MoveInput.x;
+        psc.TargetDirection = camForward * psc.InputManager.MoveInput.y +
+                              camRight   * psc.InputManager.MoveInput.x;
 
-        if (targetDirection.magnitude > 0.1f)
-            targetDirection.Normalize();
+        if (psc.TargetDirection.magnitude > 0.1f)
+            psc.TargetDirection.Normalize();
     }
     
     protected virtual Vector2 GetBlendTreeInput(PlayerStateContext psc)
@@ -68,9 +67,9 @@ public abstract class PlayerBaseState
                 Vector3.Dot(enemyDir, camF));
         }
 
-        if (targetDirection.magnitude < 0.1f) return Vector2.zero;
+        if (psc.TargetDirection.magnitude < 0.1f) return Vector2.zero;
 
-        Vector3 d = targetDirection;
+        Vector3 d = psc.TargetDirection;
         d.y = 0f; d.Normalize();
 
         return new Vector2(
@@ -109,8 +108,35 @@ public abstract class PlayerBaseState
         psc.AnimationManager.HandleAnimation(
             psc.InputManager.MoveInput.magnitude,
             blendInput,
-            psc.Controller.IsGrounded,
-            psc.Rb.linearVelocity);
+            psc.Controller.IsGrounded
+            );
+    }
+    
+    public virtual void DetermineState(PlayerStateContext psc)
+    {
+        if (psc.Controller.IsGrounded)
+        {
+            
+            if (psc.AnimationManager.IsLandingFinished())
+            {
+                psc.StateMachine.TransitionTo(psc.StateMachine.LocomotionState);
+            }
+            else
+            {
+                psc.StateMachine.TransitionTo(psc.StateMachine.LandingState);
+            }
+            return;
+        }
+
+        if (psc.Rb.linearVelocity.y > 0.1f)
+        {
+            psc.StateMachine.TransitionTo(psc.StateMachine.JumpState);
+            Debug.Log("Entered Jump State");
+        }
+        else
+        {
+            psc.StateMachine.TransitionTo(psc.StateMachine.FallState);
+        }
     }
     
 }

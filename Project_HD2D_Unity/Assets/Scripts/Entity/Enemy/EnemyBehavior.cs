@@ -56,7 +56,6 @@ public class EnemyBehavior : MonoBehaviour, IDamageableEnemy, ICarryable
     private Vector3 lastKnownPosition;
     private bool isPlayerInAttackRange;
     private bool isPlayerInViewRange;
-    private bool isHold = false;
     public bool isFriendly { get; private set; } = false;
     #endregion
 

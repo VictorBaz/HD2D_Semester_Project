@@ -9,6 +9,8 @@ namespace Player.State
         public override void EnterState(PlayerStateContext psc)
         {
             psc.Controller.SetGravity(true);
+            
+            psc.Rb.linearVelocity = Vector3.zero;
         }
 
         public override void ExitState(PlayerStateContext psc)

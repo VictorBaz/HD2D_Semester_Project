@@ -10,21 +10,18 @@ public class PlayerAnimationManager : BaseAnimationManager
     private static readonly int IsCarryingHash = Animator.StringToHash("IsCarrying");
     private static readonly int ComboIndexHash = Animator.StringToHash("ComboIndex");
     private static readonly int IsParryingHash = Animator.StringToHash("IsParrying");
-    private static readonly int JumpTriggerHash = Animator.StringToHash("Jump");
-    private static readonly int VelocityYHash = Animator.StringToHash("VelocityY");
 
     [SerializeField] private float dampTime = 0.1f;
 
-    public void HandleAnimation(float inputRawMagnitude, Vector2 inputBlendTree, bool isGrounded, Vector3 velocity)
+    
+    public void HandleAnimation(float inputRawMagnitude, Vector2 inputBlendTree, bool isGrounded)
     {
         UpdateMovement(inputBlendTree);
         
         animator.SetFloat(InputMagnitudeHash, inputRawMagnitude);
         animator.SetBool(IsGroundedHash, isGrounded);
-        animator.SetFloat(VelocityYHash, velocity.y); 
         
-        bool isFalling = !isGrounded && velocity.y < -0.1f;
-        animator.SetBool(IsFallingHash, isFalling);
+    
     }
 
     private void UpdateMovement(Vector2 input)
@@ -33,7 +30,6 @@ public class PlayerAnimationManager : BaseAnimationManager
         animator.SetFloat(MoveYHash, input.y, dampTime, Time.deltaTime);
     }
 
-    public void TriggerJump() => animator.SetTrigger(JumpTriggerHash);
     public void SetDashing(bool isDashing) => animator.SetBool(DashingHash, isDashing);
     public void SetParry(bool isParry) => animator.SetBool(IsParryingHash, isParry);
     public void SetCarrying(bool isCarrying) => animator.SetBool(IsCarryingHash, isCarrying);
@@ -50,8 +46,14 @@ public class PlayerAnimationManager : BaseAnimationManager
         animator.SetInteger(ComboIndexHash, 0);
     }
 
-    public bool IsLandingFinished() {
+    public bool IsLandingFinished() 
+    {
         var state = animator.GetCurrentAnimatorStateInfo(0);
-        return state.IsTag("Land") && state.normalizedTime >= 0.95f; 
+    
+        if (!state.IsTag("Land")) return true;
+
+        return state.normalizedTime >= 0.95f;
     }
+    
+    
 }

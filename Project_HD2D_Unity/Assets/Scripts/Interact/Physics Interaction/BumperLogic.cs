@@ -3,26 +3,24 @@ using UnityEngine;
 public class BumperLogic : MonoBehaviour
 {
     [SerializeField] private float bounceForce = 15f;
-
+    [SerializeField] private Transform parentTransform;
 
     private void OnTriggerEnter(Collider other)
     {
         if (!other.CompareTag(GameConstants.PLAYER_TAG)) return;
         
-        var manager = other.GetComponentInParent<PlayerManager>();
         var controller = other.GetComponentInParent<PlayerController>();
+        var manager = other.GetComponentInParent<PlayerManager>();
         
-        if (manager == null || controller == null) return;
-
-        if (controller.Rb == null) return;
+        if (controller == null || manager == null || controller.Rb == null) return;
         
-        if (controller != null) controller.SetJumping(true);
-
-        controller.Rb.linearVelocity = new Vector3(controller.Rb.linearVelocity.x, 0, controller.Rb.linearVelocity.z);
         
-        controller.Rb.AddForce(transform.up * bounceForce, ForceMode.Impulse);
-
-        controller.OnJump?.Invoke();
-        manager.TransitionTo(manager.AirState);
+        controller.SetJumping(true);
+        
+        controller.Rb.linearVelocity = new Vector3(0, 0, 0);
+        
+        controller.Rb.AddForce(parentTransform.up * bounceForce, ForceMode.Impulse);
+        
+        manager.TransitionTo(manager.JumpState);
     }
 }

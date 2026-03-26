@@ -25,19 +25,22 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     public PlayerBaseState CurrentPlayerState { get; private set; }
     public PlayerLocomotionState LocomotionState { get; private set; }
-    public PlayerAirState AirState { get; private set; }
     public PlayerAttackState AttackState { get; private set; }
     public PlayerLandingState LandingState { get; private set; }
     public PlayerDashState DashState { get; private set; }
     public PlayerCarryState CarryState { get; private set; }
     public PlayerHitState HitState { get; private set; }
     public PlayerParryState ParryState { get; private set; }
+    public PlayerJumpState JumpState { get; private set; }
+    public PlayerFallState FallState { get; private set; }
 
-    private PlayerStateContext context;
+    public PlayerStateContext Context { get; private set; }
     private PlayerDataInstance playerData;
 
     private float dashCooldownTimer = 0f;
     private float jumpCooldownTimer = 0f;
+
+    public Vector3 TargetDirection { get; private set; } = Vector3.zero;
 
     #endregion
 
@@ -46,17 +49,18 @@ public class PlayerManager : MonoBehaviour, IDamageable
     private void Awake()
     {
         LocomotionState = new PlayerLocomotionState();
-        AirState = new PlayerAirState();
         AttackState = new PlayerAttackState();
         LandingState = new PlayerLandingState();
         DashState = new PlayerDashState();
         CarryState = new PlayerCarryState();
         HitState = new PlayerHitState();
         ParryState = new PlayerParryState();
+        JumpState = new PlayerJumpState();
+        FallState = new PlayerFallState();
 
         playerData = playerDataRaw.Init();
 
-        context = new PlayerStateContext
+        Context = new PlayerStateContext
         {
             Controller = playerController,
             AnimationManager = animationManager,
@@ -70,6 +74,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
             VfxManager = vfxManager,
             ShootDirection = transform.forward,
             PlayerHeadTransform = playerHead,
+            TargetDirection = this.TargetDirection,
         };
 
         TransitionTo(LocomotionState);
@@ -78,6 +83,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
         playerController.InitData(playerData);
         
         uiManager.UpdateEnergyTxt(playerData.Energy);
+        
     }
 
     private void OnEnable()
@@ -131,16 +137,18 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void Update()
     {
-        CurrentPlayerState.UpdateState(context);
+        CurrentPlayerState.UpdateState(Context);
         TickDashTimer();
         TickJumpTimer();
         
         playerController.SetJumping(jumpCooldownTimer > 0);
+        
+        print(new Vector2(rb.linearVelocity.x, rb.linearVelocity.z).magnitude);
     }
 
     private void FixedUpdate()
     {
-        CurrentPlayerState.FixedUpdateState(context);
+        CurrentPlayerState.FixedUpdateState(Context);
     }
 
     #endregion
@@ -149,9 +157,9 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     public void TransitionTo(PlayerBaseState newState)
     {
-        CurrentPlayerState?.ExitState(context);
+        CurrentPlayerState?.ExitState(Context);
         CurrentPlayerState = newState;
-        CurrentPlayerState.EnterState(context);
+        CurrentPlayerState.EnterState(Context);
         DebugState();
     }
 
@@ -161,7 +169,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void TryJump()
     {
-        if (!CurrentPlayerState.CanJump(context)) return;
+        if (!CurrentPlayerState.CanJump(Context)) return;
         if (jumpCooldownTimer > 0f) return;
 
         Jump();
@@ -171,18 +179,18 @@ public class PlayerManager : MonoBehaviour, IDamageable
     {
         jumpCooldownTimer = playerData.JumpCooldown;
         playerController.Jump();
-        TransitionTo(AirState);
+        TransitionTo(JumpState);
     }
 
     private void TryJumpReleased()
     {
-        if (CurrentPlayerState is PlayerAirState)
+        if (CurrentPlayerState is PlayerInAirBase)
            JumpReleased(); 
     }
 
     private void JumpReleased()
     {
-        context.JumpReleased = true;
+        Context.JumpReleased = true;
     }
     
     #endregion
@@ -208,11 +216,11 @@ public class PlayerManager : MonoBehaviour, IDamageable
     private void TryCarry()
     {
         
-        if (context.CurrentTargetCarry != null)
+        if (Context.CurrentTargetCarry != null)
         {
-            context.CurrentTargetCarry.Eject();
+            Context.CurrentTargetCarry.Eject();
         
-            context.CurrentTargetCarry = null;
+            Context.CurrentTargetCarry = null;
         
             TransitionTo(LocomotionState);
             return;
@@ -229,9 +237,9 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         targets.RemoveAll(t => !t.IsCarryable());
 
-        context.CurrentTargetCarry = DetectionHelper.GetBestTarget(transform, targets);
+        Context.CurrentTargetCarry = DetectionHelper.GetBestTarget(transform, targets);
         
-        if (context.CurrentTargetCarry != null)
+        if (Context.CurrentTargetCarry != null)
         {
             TransitionTo(CarryState);
         }
@@ -241,7 +249,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
     {
         if (CurrentPlayerState is  PlayerCarryState)
         {
-            context.CurrentTargetCarry = null;    
+            Context.CurrentTargetCarry = null;    
         }
     }
 
@@ -255,16 +263,16 @@ public class PlayerManager : MonoBehaviour, IDamageable
     {
         if (!CurrentPlayerState.CanDash) return;
         if (dashCooldownTimer > 0f) return;
-        if (context.HasDash) return;
+        if (Context.HasDash) return;
 
         Dash();
     }
 
     private void Dash()
     {
-        if (CurrentPlayerState == AirState)
+        if (CurrentPlayerState is PlayerInAirBase)
         {
-            context.HasDash = true;
+            Context.HasDash = true;
         }
         
         dashCooldownTimer = playerData.DashCooldown;
@@ -431,7 +439,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
     {
         if (CurrentPlayerState.CanTakeDamage)
         {
-            context.HitDirection = hitDirection;
+            Context.HitDirection = hitDirection;
             TransitionTo(HitState);
         }
     }

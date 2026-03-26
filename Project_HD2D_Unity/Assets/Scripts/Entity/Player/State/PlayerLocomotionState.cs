@@ -22,10 +22,10 @@ public class PlayerLocomotionState : PlayerBaseState
         if (!psc.Controller.IsGrounded)
         {
             airTimeBuffer += Time.deltaTime;
-            
+        
             if (airTimeBuffer > psc.PlayerData.CoyotteTime || psc.Rb.linearVelocity.y > 1f)
             {
-                psc.StateMachine.TransitionTo(psc.StateMachine.AirState);
+                DetermineState(psc); 
                 return;
             }
         }
@@ -50,8 +50,7 @@ public class PlayerLocomotionState : PlayerBaseState
         psc.AnimationManager.HandleAnimation(
             animMagnitude,
             blendInput,
-            psc.Controller.IsGrounded,
-            psc.Rb.linearVelocity);
+            psc.Controller.IsGrounded);
         
     }
 

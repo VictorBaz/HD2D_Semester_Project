@@ -44,8 +44,7 @@ public class PlayerCarryState : PlayerBaseState
         psc.AnimationManager.HandleAnimation(
             animMagnitude,
             blendInput,
-            psc.Controller.IsGrounded,
-            psc.Rb.linearVelocity);
+            psc.Controller.IsGrounded);
     }
 
     public override void FixedUpdateState(PlayerStateContext psc)

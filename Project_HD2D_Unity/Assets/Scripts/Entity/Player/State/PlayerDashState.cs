@@ -53,13 +53,14 @@ namespace Player.State
             Vector3 dashDirection = psc.PlayerTransform.forward;
 
             EventManager.CameraShake();
+            
             psc.VfxManager.ToggleDashTrail(true);
             
             while (elapsed < psc.PlayerData.DashDuration)
             {
                 psc.Rb.linearVelocity = Vector3.Lerp(
                     dashDirection * psc.PlayerData.DashSpeed,
-                    velocityStock * 0.7f,
+                    Vector3.zero,
                     elapsed / psc.PlayerData.DashDuration);
                 
                 psc.Rb.linearVelocity = new Vector3(psc.Rb.linearVelocity.x, 0, psc.Rb.linearVelocity.z);
@@ -67,16 +68,9 @@ namespace Player.State
                 elapsed += Time.deltaTime;
                 yield return null;
             }
-
-            bool isGrounded = psc.Controller.IsGrounded;
             
-            if (isGrounded)
-            {
-                psc.Rb.linearVelocity = velocityStock;
-            }
             
-            psc.StateMachine.TransitionTo(isGrounded ? psc.StateMachine.LocomotionState 
-                : psc.StateMachine.AirState);
+            DetermineState(psc);
             
             psc.VfxManager.ToggleDashTrail(false);
         }

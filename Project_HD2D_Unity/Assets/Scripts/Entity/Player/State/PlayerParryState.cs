@@ -41,8 +41,7 @@ public class PlayerParryState : PlayerBaseState
 
         if (psc.StateMachine.CurrentPlayerState == this) 
         {
-            psc.StateMachine.TransitionTo(psc.Controller.IsGrounded ? 
-                psc.StateMachine.LocomotionState : psc.StateMachine.AirState);
+            DetermineState(psc);
         }
     }
 

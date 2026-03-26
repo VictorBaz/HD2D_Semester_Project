@@ -27,6 +27,6 @@ public class PlayerStateContext
     public ICarryable CurrentTargetCarry;
     
     public PlayerManager StateMachine;
-    
-    
+
+    public Vector3 TargetDirection;
 }

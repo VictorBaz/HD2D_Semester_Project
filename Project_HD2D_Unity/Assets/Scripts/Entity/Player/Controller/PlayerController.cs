@@ -132,7 +132,7 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyAirMovement(Vector2 moveInput)
     {
-        float airControlForce = 10f;   
+        float airControlForce = 17f;   
         
         Vector3 camForward = cam.transform.forward;
         Vector3 camRight = cam.transform.right;

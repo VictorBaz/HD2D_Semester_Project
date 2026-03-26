@@ -7,9 +7,10 @@ namespace Player.State
         private float timeInAir = 0f;
         private float jumpStartTime;
         private bool isFalling;
-        private float requiredJumpGravity; // La gravité calculée pour la montée
+        private float requiredJumpGravity; 
         
         public override string Name => "Air";
+        public override bool CanDash => true;
 
         public override void EnterState(PlayerStateContext psc)
         {
@@ -85,7 +86,7 @@ namespace Player.State
         private void StartFalling(PlayerStateContext psc)
         {
             isFalling = true;
-            psc.Controller.SetGravity(false); 
+            psc.Controller.SetGravity(true); 
             psc.Controller.SetJumping(false);
         }
 

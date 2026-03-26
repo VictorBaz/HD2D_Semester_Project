@@ -256,6 +256,11 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void Dash()
     {
+        if (CurrentPlayerState == AirState)
+        {
+            context.HasDash = true;
+        }
+        
         dashCooldownTimer = playerData.DashCooldown;
         TransitionTo(DashState);
     }

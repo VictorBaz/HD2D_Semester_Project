@@ -561,7 +561,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2813359092288113777
 Transform:
   m_ObjectHideFlags: 0
@@ -590,7 +590,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponHitbox
   damage: 0
-  targetTag: Enemy
+  targetTag: Player
 --- !u!136 &8930600654042696040
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -611,9 +611,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.21
-  m_Height: 1.65
+  m_Height: 1.1564591
   m_Direction: 2
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0, z: -0.2467705}
 --- !u!1 &3931497417726245773
 GameObject:
   m_ObjectHideFlags: 0
@@ -1068,10 +1068,10 @@ GameObject:
   - component: {fileID: 2879923308048361767}
   - component: {fileID: 6053275285241826347}
   - component: {fileID: 8918907076220912373}
-  - component: {fileID: 7076905133702933037}
   - component: {fileID: 7379718704339800893}
   - component: {fileID: 2585091766700536800}
   - component: {fileID: 976635082180939888}
+  - component: {fileID: 3462938431257747894}
   m_Layer: 6
   m_Name: NewVersionEnnemies
   m_TagString: Enemy
@@ -1168,20 +1168,6 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
---- !u!114 &7076905133702933037
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8601150602906061864}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 092706ef59adac54ab8f519bcd9c7d1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AnimManagerEnnemie
-  animator: {fileID: 976635082180939888}
-  colliderAttack: {fileID: 2291274086204435826}
 --- !u!114 &7379718704339800893
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1197,7 +1183,7 @@ MonoBehaviour:
   rb: {fileID: 6053275285241826347}
   agent: {fileID: 2585091766700536800}
   mainCollider: {fileID: 2879923308048361767}
-  AnimationManagerEnnemie: {fileID: 7076905133702933037}
+  enemyAnimationManager: {fileID: 3462938431257747894}
   viewRangeTrigger: {fileID: 2869450096596587759}
   attackRangeTrigger: {fileID: 5818927003079740641}
   obstacleMask:
@@ -1205,6 +1191,7 @@ MonoBehaviour:
     m_Bits: 537
   eyeHeightOffset: 1.5
   patrolPoints:
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   KoSlider: {fileID: 7228887627121313361}
@@ -1255,3 +1242,17 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3462938431257747894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8601150602906061864}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e10b40e16dd4469bf995f67772f5237, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimationManager
+  animator: {fileID: 976635082180939888}
+  colliderAttack: {fileID: 2291274086204435826}

@@ -3,12 +3,13 @@
 [CreateAssetMenu(fileName = "EnemyData", menuName = "Enemy/EnemyData")]
 public class EnemyData : ScriptableObject
 {
-    [field: SerializeField] public AiNavigationData AiNavigationData { get; private set; } // AJOUT
-    [field: SerializeField] public AiAttackData AiAttackData { get; private set; }
-    [field: SerializeField] public AiKOData AiKOData { get; private set; }
-    [field: SerializeField] public AiSearchData AiSearchData { get; private set; }
-    [field: SerializeField] public AiTakeDamageData AiTakeDamageData { get; private set; }
-    [field: SerializeField] public AiDataFeedBack AiDataFeedBack { get; private set; }
+    [field: SerializeField] public EnemyNavigationData EnemyNavigationData { get; private set; } // AJOUT
+    [field: SerializeField] public EnemyAttackData EnemyAttackData { get; private set; }
+    [field: SerializeField] public EnemyKOData EnemyKoData { get; private set; }
+    [field: SerializeField] public EnemySearchData EnemySearchData { get; private set; }
+    [field: SerializeField] public EnemyTakeDamageData EnemyTakeDamageData { get; private set; }
+    [field: SerializeField] public EnemyDataFeedBack EnemyDataFeedBack { get; private set; }
+    [field: SerializeField] public EnemyExposedData EnemyExposedData { get; private set; }
     
     public EnemyDataInstance Init() => new EnemyDataInstance(this);
 }
@@ -46,48 +47,54 @@ public class EnemyDataInstance
     public Sprite SpriteKo;
     public Sprite SpriteFall;
     public Sprite SpriteTakeDamage;
+    public Sprite SpriteExposed;
+    
+    public float ExposedTime;
 
     public EnemyDataInstance(EnemyData data)
     {
-        PatrolSpeed = data.AiNavigationData.PatrolSpeed;
-        ChaseSpeed = data.AiNavigationData.ChaseSpeed;
-        StoppingDistance = data.AiNavigationData.StoppingDistance;
-        DetectionRange = data.AiNavigationData.DetectionRange;
-        ViewAngle = data.AiNavigationData.ViewAngle;
-        Acceleration = data.AiNavigationData.Acceleration;
+        PatrolSpeed = data.EnemyNavigationData.PatrolSpeed;
+        ChaseSpeed = data.EnemyNavigationData.ChaseSpeed;
+        StoppingDistance = data.EnemyNavigationData.StoppingDistance;
+        DetectionRange = data.EnemyNavigationData.DetectionRange;
+        ViewAngle = data.EnemyNavigationData.ViewAngle;
+        Acceleration = data.EnemyNavigationData.Acceleration;
 
-        AttackCooldown = data.AiAttackData.AttackCooldown;
-        AnticipationTime = data.AiAttackData.AnticipationTime;
-        HitboxActiveDuration = data.AiAttackData.HitboxActiveDuration;
-        AttackDashSpeed = data.AiAttackData.AttackDashSpeed;
-        AttackDashDuration = data.AiAttackData.AttackDashDuration;
+        AttackCooldown = data.EnemyAttackData.AttackCooldown;
+        AnticipationTime = data.EnemyAttackData.AnticipationTime;
+        HitboxActiveDuration = data.EnemyAttackData.HitboxActiveDuration;
+        AttackDashSpeed = data.EnemyAttackData.AttackDashSpeed;
+        AttackDashDuration = data.EnemyAttackData.AttackDashDuration;
         
-        KoTime = data.AiKOData.KoTime;
-        MaxKo = data.AiKOData.MaxKo;
+        KoTime = data.EnemyKoData.KoTime;
+        MaxKo = data.EnemyKoData.MaxKo;
         CurrentKo = 0;
 
-        SearchDuration = data.AiSearchData.searchDuration;
-        SearchRadius = data.AiSearchData.searchRadius;
+        SearchDuration = data.EnemySearchData.searchDuration;
+        SearchRadius = data.EnemySearchData.searchRadius;
 
-        DamageToApply = data.AiTakeDamageData.DamageToApply;
-        StunDuration = data.AiTakeDamageData.StunDuration;
+        DamageToApply = data.EnemyTakeDamageData.DamageToApply;
+        StunDuration = data.EnemyTakeDamageData.StunDuration;
         
-        SpriteSearch = data.AiDataFeedBack.SpriteSearch;
-        SpriteAttackStart = data.AiDataFeedBack.SpriteAttackStart;
-        SpriteChase = data.AiDataFeedBack.SpriteChase;
-        SpritePatrol =  data.AiDataFeedBack.SpritePatrol;
-        SpriteKo =  data.AiDataFeedBack.SpriteKo;
-        SpriteFall = data.AiDataFeedBack.SpriteFall;
-        SpriteTakeDamage = data.AiDataFeedBack.SpriteTakeDamage;
+        SpriteSearch = data.EnemyDataFeedBack.SpriteSearch;
+        SpriteAttackStart = data.EnemyDataFeedBack.SpriteAttackStart;
+        SpriteChase = data.EnemyDataFeedBack.SpriteChase;
+        SpritePatrol =  data.EnemyDataFeedBack.SpritePatrol;
+        SpriteKo =  data.EnemyDataFeedBack.SpriteKo;
+        SpriteFall = data.EnemyDataFeedBack.SpriteFall;
+        SpriteTakeDamage = data.EnemyDataFeedBack.SpriteTakeDamage;
+        SpriteExposed = data.EnemyDataFeedBack.SpriteExposed;
+        
+        ExposedTime = data.EnemyExposedData.ExposedTime;
     }
     
     public bool IsKoFull() => CurrentKo >= MaxKo;
     
     public void ResetKo() => CurrentKo = 0;
 
-    public Sprite GetSprite(AiState currentState)
+    public Sprite GetSprite(EnemyBaseState currentBaseState)
     {
-        switch (currentState.Name)
+        switch (currentBaseState.Name)
         {
             case "Chase":
                 return SpriteChase;
@@ -103,6 +110,8 @@ public class EnemyDataInstance
                 return SpriteFall;
             case "Taking Damage":
                 return SpriteTakeDamage;
+            case "Exposed":
+                return SpriteExposed;
             default:
                 return null;
         }

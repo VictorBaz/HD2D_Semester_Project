@@ -85,7 +85,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerManager
   inputManager: {fileID: 5011098004673443459}
   playerController: {fileID: 6945632285107405488}
-  animationManager: {fileID: 2750060000828546307}
+  animationManager: {fileID: 3394481460832223314}
   lockOnSystem: {fileID: 6652683228054312222}
   uiManager: {fileID: 0}
   vfxManager: {fileID: 5595405388700783575}
@@ -330,8 +330,8 @@ GameObject:
   - component: {fileID: 4853645424513758346}
   - component: {fileID: 2727255195874718159}
   - component: {fileID: 3949979862434755701}
-  - component: {fileID: 2750060000828546307}
   - component: {fileID: 3109046576608672110}
+  - component: {fileID: 3394481460832223314}
   m_Layer: 9
   m_Name: Visuals
   m_TagString: Untagged
@@ -430,20 +430,6 @@ MonoBehaviour:
   lockX: 0
   lockY: 0
   lockZ: 0
---- !u!114 &2750060000828546307
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2997636382240519081}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e76f58f049b3ffa48af4457fefe334b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AnimationManager
-  animator: {fileID: 3109046576608672110}
-  dampTime: 0.1
 --- !u!95 &3109046576608672110
 Animator:
   serializedVersion: 7
@@ -466,6 +452,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &3394481460832223314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2997636382240519081}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e8d1cd2b14b45aca59a325f3f3a3019, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimationManager
+  animator: {fileID: 3109046576608672110}
+  dampTime: 0.1
 --- !u!1 &6052978935030615225
 GameObject:
   m_ObjectHideFlags: 0

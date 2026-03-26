@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PlayerStateContext
 {
-    public AnimationManager AnimationManager;
+    public PlayerAnimationManager AnimationManager;
     public LockOnSystem LockOnSystem;
     public InputManager InputManager;
     public VfxManager VfxManager;

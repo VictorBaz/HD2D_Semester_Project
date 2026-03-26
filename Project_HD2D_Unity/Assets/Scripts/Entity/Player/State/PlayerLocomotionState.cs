@@ -46,6 +46,7 @@ public class PlayerLocomotionState : PlayerBaseState
         
         
         blendInput = GetBlendTreeInput(psc);
+        
         psc.AnimationManager.HandleAnimation(
             animMagnitude,
             blendInput,

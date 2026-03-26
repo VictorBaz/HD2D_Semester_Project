@@ -171,8 +171,6 @@ public class PlayerController : MonoBehaviour
     public void Jump()
     {
         isJumping = true;
-        rb.useGravity = true;
-        rb.AddForce(Vector3.up * playerData.JumpForce, ForceMode.Impulse);
         OnJump?.Invoke();
     }
 

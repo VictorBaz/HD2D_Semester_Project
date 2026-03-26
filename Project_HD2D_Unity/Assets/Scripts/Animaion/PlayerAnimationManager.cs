@@ -11,6 +11,7 @@ public class PlayerAnimationManager : BaseAnimationManager
     private static readonly int ComboIndexHash = Animator.StringToHash("ComboIndex");
     private static readonly int IsParryingHash = Animator.StringToHash("IsParrying");
     private static readonly int JumpTriggerHash = Animator.StringToHash("Jump");
+    private static readonly int VelocityYHash = Animator.StringToHash("VelocityY");
 
     [SerializeField] private float dampTime = 0.1f;
 
@@ -20,7 +21,7 @@ public class PlayerAnimationManager : BaseAnimationManager
         
         animator.SetFloat(InputMagnitudeHash, inputRawMagnitude);
         animator.SetBool(IsGroundedHash, isGrounded);
-        //animator.SetFloat(VelocityYHash, velocity.y); 
+        animator.SetFloat(VelocityYHash, velocity.y); 
         
         bool isFalling = !isGrounded && velocity.y < -0.1f;
         animator.SetBool(IsFallingHash, isFalling);
@@ -47,5 +48,10 @@ public class PlayerAnimationManager : BaseAnimationManager
     {
         animator.SetBool(IsAttackingHash, false);
         animator.SetInteger(ComboIndexHash, 0);
+    }
+
+    public bool IsLandingFinished() {
+        var state = animator.GetCurrentAnimatorStateInfo(0);
+        return state.IsTag("Land") && state.normalizedTime >= 0.95f; 
     }
 }

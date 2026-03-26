@@ -10,7 +10,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     [SerializeField] private InputManager inputManager;
     [SerializeField] private PlayerController playerController;
-    [SerializeField] private AnimationManager animationManager;
+    [SerializeField] private PlayerAnimationManager animationManager;
     [SerializeField] private LockOnSystem lockOnSystem;
     [SerializeField] private UiManager uiManager;
     [SerializeField] private VfxManager vfxManager;

@@ -6,6 +6,8 @@ public class PlayerParryState : PlayerBaseState
     public override bool CanMove => false;
     public override string Name => "Parry";
     public override bool CanParry => false;
+    public override bool IsParryWindowActive => _isWindowActive;
+    private bool _isWindowActive;
     
     private Coroutine parryRoutine;
 
@@ -15,6 +17,7 @@ public class PlayerParryState : PlayerBaseState
         psc.Controller.SetGravity(false);
         
         psc.Rb.linearVelocity = Vector3.zero;
+        _isWindowActive = false;
 
         parryRoutine = psc.Controller.RunRoutine(ParrySequence(psc));
     }
@@ -25,10 +28,12 @@ public class PlayerParryState : PlayerBaseState
 
         yield return new WaitForSeconds(psc.PlayerData.ParryHitboxStartOffset);
 
+        _isWindowActive = true;
         psc.Controller.ParryOn();
 
         yield return new WaitForSeconds(psc.PlayerData.ParryActiveDuration);
 
+        _isWindowActive = false;
         psc.Controller.ParryOff();
 
         float remainingTime = animDuration - 
@@ -53,6 +58,8 @@ public class PlayerParryState : PlayerBaseState
             parryRoutine = null;
         }
     
+        _isWindowActive = false;
+        
         psc.Controller.ParryOff();
         psc.AnimationManager.SetParry(false);
         psc.Controller.SetGravity(true);

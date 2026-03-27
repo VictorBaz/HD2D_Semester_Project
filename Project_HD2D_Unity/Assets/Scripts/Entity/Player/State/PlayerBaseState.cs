@@ -17,6 +17,7 @@ public abstract class PlayerBaseState
 
     public virtual bool CanCarry => false;
     public virtual bool CanParry => false;
+    public virtual bool IsParryWindowActive => false;
     
     public virtual string Name { get; protected set; }
     

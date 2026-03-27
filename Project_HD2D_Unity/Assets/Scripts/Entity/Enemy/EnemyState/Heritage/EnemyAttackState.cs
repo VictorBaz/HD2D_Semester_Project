@@ -56,9 +56,12 @@ public class EnemyAttackState : EnemyBaseState
         
         isPreparingAttack = false;
         actx.AnimManager.TriggerAttack(); 
+        CanBeParry = true;
+
+        yield return new WaitForFixedUpdate();
+        
         actx.AnimManager.ToggleAttackCollider(true);
 
-        CanBeParry = true;
         
         float elapsed = 0f;
         Vector3 strikeDir = actx.Behavior.transform.forward;
@@ -76,10 +79,11 @@ public class EnemyAttackState : EnemyBaseState
             yield return null;
         }
 
+        actx.AnimManager.ToggleAttackCollider(false);
+        yield return new WaitForFixedUpdate();        
         CanBeParry = false;
         
-        actx.AnimManager.ToggleAttackCollider(false);
-
+        
         isCooldown = true;
 
         yield return new WaitForSeconds(data.AttackCooldown);

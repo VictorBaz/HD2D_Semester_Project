@@ -446,11 +446,11 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     public void TakeDamage(int value, Vector3 hitDirection)
     {
-        if (CurrentPlayerState.CanTakeDamage)
-        {
-            Context.HitDirection = hitDirection;
-            TransitionTo(HitState);
-        }
+        if (!CurrentPlayerState.CanTakeDamage) return;
+        if (CurrentPlayerState.IsParryWindowActive) return;
+        
+        Context.HitDirection = hitDirection;
+        TransitionTo(HitState);
     }
 
     public Transform GetTransform() => transform;

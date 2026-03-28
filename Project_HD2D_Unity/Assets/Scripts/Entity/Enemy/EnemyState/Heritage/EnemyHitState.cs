@@ -8,7 +8,7 @@ public class EnemyHitState : EnemyBaseState
 
     public override void EnterState(EnemyContext actx)
     {
-        actx.Behavior.ApplyMovementMode(true);
+        actx.Manager.ApplyMovementMode(true);
     
         actx.Rb.AddForce(actx.HitDirection * 5f, ForceMode.Impulse);
         actx.AnimManager.SetHit(true);
@@ -17,7 +17,7 @@ public class EnemyHitState : EnemyBaseState
 
         if (actx.Data.IsKoFull())
         {
-            actx.TransitionTo(actx.Behavior.KoState);
+            actx.TransitionTo(actx.Manager.KoState);
             return;
         }
 
@@ -30,7 +30,7 @@ public class EnemyHitState : EnemyBaseState
 
         if (timer <= 0)
         {
-            actx.TransitionTo(actx.Behavior.PreviousBaseState);
+            actx.TransitionTo(actx.Manager.PreviousBaseState);
         }
     }
 

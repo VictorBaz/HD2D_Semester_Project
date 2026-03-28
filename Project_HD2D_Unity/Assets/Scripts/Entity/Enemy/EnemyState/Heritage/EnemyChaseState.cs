@@ -6,7 +6,7 @@ public class EnemyChaseState : EnemyBaseState
 
     public override void EnterState(EnemyContext actx) 
     {
-        actx.Behavior.ApplyMovementMode(false); 
+        actx.Manager.ApplyMovementMode(false); 
         actx.ResumeAgent();
         
         actx.UpdateAgentSpeed(actx.Data.ChaseSpeed,actx.Data.Acceleration,actx.Data.StoppingDistance);
@@ -14,15 +14,15 @@ public class EnemyChaseState : EnemyBaseState
 
     public override void UpdateState(EnemyContext actx)
     {
-        if (!actx.Behavior.CanSeePlayer()) 
+        if (!actx.Manager.CanSeePlayer()) 
         { 
-            actx.TransitionTo(actx.Behavior.SearchState); 
+            actx.TransitionTo(actx.Manager.SearchState); 
             return; 
         }
     
         if (actx.IsPlayerInAttackRange) 
         {
-            actx.TransitionTo(actx.Behavior.AttackState);
+            actx.TransitionTo(actx.Manager.AttackState);
             return;
         }
     

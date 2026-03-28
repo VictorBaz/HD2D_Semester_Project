@@ -17,7 +17,6 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LockOnSystem lockOnSystem;
 
     [SerializeField] private GameObject colliderAttack;
-    [SerializeField] private GameObject colliderParry;
 
     private RaycastHit slopeHit;
     private bool isInLockMode;
@@ -250,8 +249,6 @@ public class PlayerController : MonoBehaviour
     public void AttackOn() => ToggleCollider(colliderAttack,true);
     public void AttackOff() => ToggleCollider(colliderAttack,false);
     
-    public void ParryOn() => ToggleCollider(colliderParry,true);
-    public void ParryOff() => ToggleCollider(colliderParry,false);
 
     #endregion
 }

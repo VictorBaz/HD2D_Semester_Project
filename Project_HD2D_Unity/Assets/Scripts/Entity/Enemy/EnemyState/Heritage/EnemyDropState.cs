@@ -13,13 +13,13 @@ public class EnemyDropState : EnemyBaseState
     public override void EnterState(EnemyContext actx) 
     {
         isGrounded = false;
-        actx.Behavior.ApplyMovementMode(true);
+        actx.Manager.ApplyMovementMode(true);
         actx.AnimManager.SetFalling(true);
     }
 
     public override void UpdateState(EnemyContext actx) 
     {
-        if (!isGrounded && Physics.Raycast(actx.Behavior.transform.position, Vector3.down, out RaycastHit hit, 1.2f))
+        if (!isGrounded && Physics.Raycast(actx.Manager.transform.position, Vector3.down, out RaycastHit hit, 1.2f))
         {
             if (NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, 0.5f, NavMesh.AllAreas))
             {
@@ -31,20 +31,20 @@ public class EnemyDropState : EnemyBaseState
 
     private void LandingSequence(EnemyContext actx)
     {
-        actx.Behavior.ApplyMovementMode(false); 
+        actx.Manager.ApplyMovementMode(false); 
 
-        bool isStillKO = actx.Behavior.KoSlider != null && actx.Behavior.KoSlider.value > 0;
+        bool isStillKO = actx.Manager.KoSlider != null && actx.Manager.KoSlider.value > 0;
 
         if (isStillKO)
         {
-            actx.TransitionTo(actx.Behavior.KoState);
+            actx.TransitionTo(actx.Manager.KoState);
         }
         else 
         {
             if (actx.Target != null)
-                actx.TransitionTo(actx.Behavior.ChaseState);
+                actx.TransitionTo(actx.Manager.ChaseState);
             else
-                actx.TransitionTo(actx.Behavior.PatrolState);
+                actx.TransitionTo(actx.Manager.PatrolState);
         }
     }
 

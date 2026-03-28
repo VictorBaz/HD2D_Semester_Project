@@ -29,7 +29,7 @@ public class EnemyExposedState : EnemyBaseState
 
         if (timerExposed >= timerExposedMax)
         {
-            actx.TransitionTo(actx.Behavior.PatrolState);
+            actx.TransitionTo(actx.Manager.PatrolState);
             return;
         }
     }

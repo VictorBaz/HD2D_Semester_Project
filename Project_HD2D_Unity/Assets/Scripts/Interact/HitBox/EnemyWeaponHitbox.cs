@@ -1,11 +1,12 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-public class WeaponHitbox : BaseHitbox
+public class EnemyWeaponHitbox : BaseHitbox
 {
     [Header("Weapon Specific")]
-    [SerializeField] private int damage = 10;
-    [SerializeField] private string targetTag = "Enemy";
+    [SerializeField] private EnemyManager manager;
+    [SerializeField] private int    damage    = 10;
+    [SerializeField] private string targetTag = "Player";
 
     private List<IDamageable> alreadyHitTargets = new();
 
@@ -18,7 +19,13 @@ public class WeaponHitbox : BaseHitbox
         var target = other.GetComponentInParent<IDamageable>();
         if (target == null || alreadyHitTargets.Contains(target)) return;
 
-        if (HasClearLineTo(other))
+        if (!HasClearLineTo(other)) return;
+
+        if (target.IsInParryWindow())
+        {
+            manager.HandleParry();
+        }
+        else
         {
             target.TakeDamage(damage, transform.forward);
             alreadyHitTargets.Add(target);
@@ -27,7 +34,7 @@ public class WeaponHitbox : BaseHitbox
 
     private bool IsTarget(Collider other)
     {
-        return other.CompareTag(targetTag) || 
+        return other.CompareTag(targetTag) ||
                (other.transform.parent != null && other.transform.parent.CompareTag(targetTag));
     }
 }

@@ -14,7 +14,7 @@ public class EnemyAttackState : EnemyBaseState
 
     public override void EnterState(EnemyContext actx)
     {
-        actx.Behavior.ApplyMovementMode(false);
+        actx.Manager.ApplyMovementMode(false);
         actx.StopAgent(); 
         attackRoutine = null;
         isPreparingAttack = false;
@@ -26,7 +26,7 @@ public class EnemyAttackState : EnemyBaseState
     {
         if (actx.Target == null) 
         { 
-            actx.TransitionTo(actx.Behavior.SearchState); 
+            actx.TransitionTo(actx.Manager.SearchState); 
             return; 
         }
 
@@ -40,11 +40,11 @@ public class EnemyAttackState : EnemyBaseState
 
         if (!actx.IsPlayerInAttackRange)
         {
-            actx.TransitionTo(actx.Behavior.ChaseState);
+            actx.TransitionTo(actx.Manager.ChaseState);
             return;
         }
 
-        attackRoutine = actx.Behavior.StartCoroutine(AttackSequence(actx));
+        attackRoutine = actx.Manager.StartCoroutine(AttackSequence(actx));
     }
 
     private IEnumerator AttackSequence(EnemyContext actx)
@@ -64,14 +64,14 @@ public class EnemyAttackState : EnemyBaseState
 
         
         float elapsed = 0f;
-        Vector3 strikeDir = actx.Behavior.transform.forward;
+        Vector3 strikeDir = actx.Manager.transform.forward;
         float activePhaseDuration = Mathf.Max(data.AttackDashDuration, data.HitboxActiveDuration);
 
         while (elapsed < activePhaseDuration)
         {
             elapsed += Time.deltaTime;
             if (elapsed <= data.AttackDashDuration)
-                actx.Behavior.transform.position += strikeDir * data.AttackDashSpeed * Time.deltaTime;
+                actx.Manager.transform.position += strikeDir * data.AttackDashSpeed * Time.deltaTime;
 
             if (elapsed >= data.HitboxActiveDuration)
                 actx.AnimManager.ToggleAttackCollider(false);
@@ -97,14 +97,14 @@ public class EnemyAttackState : EnemyBaseState
     {
         if (actx.Target == null) return;
         
-        Vector3 lookDir = (actx.Target.transform.position - actx.Behavior.transform.position).normalized;
+        Vector3 lookDir = (actx.Target.transform.position - actx.Manager.transform.position).normalized;
         
         lookDir.y = 0;
         
         if (lookDir != Vector3.zero)
         {
-            actx.Behavior.transform.rotation = Quaternion.Slerp(
-                actx.Behavior.transform.rotation, 
+            actx.Manager.transform.rotation = Quaternion.Slerp(
+                actx.Manager.transform.rotation, 
                 Quaternion.LookRotation(lookDir), 
                 Time.deltaTime * 5f 
             );
@@ -114,7 +114,7 @@ public class EnemyAttackState : EnemyBaseState
     public override void ExitState(EnemyContext actx) 
     { 
         if (attackRoutine != null) 
-            actx.Behavior.StopCoroutine(attackRoutine);
+            actx.Manager.StopCoroutine(attackRoutine);
         
         actx.AnimManager.ToggleAttackCollider(false);
         isPreparingAttack = false;

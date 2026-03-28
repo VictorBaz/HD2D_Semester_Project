@@ -8,7 +8,7 @@ public class EnemyKoState : EnemyBaseState
 
     public override void EnterState(EnemyContext actx)
     {
-        actx.Behavior.ApplyMovementMode(true); 
+        actx.Manager.ApplyMovementMode(true); 
         actx.Rb.isKinematic = true; 
 
         actx.AnimManager.SetKO(true);
@@ -23,9 +23,9 @@ public class EnemyKoState : EnemyBaseState
     {
         koTimer -= Time.deltaTime;
 
-        if (actx.Behavior.KoSlider != null)
+        if (actx.Manager.KoSlider != null)
         {
-            actx.Behavior.KoSlider.value = (koTimer / actx.Data.KoTime) * actx.Data.MaxKo;
+            actx.Manager.KoSlider.value = (koTimer / actx.Data.KoTime) * actx.Data.MaxKo;
         }
 
         if (koTimer <= 0)
@@ -38,23 +38,23 @@ public class EnemyKoState : EnemyBaseState
 
     private void DetermineNextState(EnemyContext actx)
     {
-        if (actx.Behavior.IsCarry())
+        if (actx.Manager.IsCarry())
         {
-            actx.Behavior.Eject(true); 
+            actx.Manager.Eject(true); 
             return; 
         }
 
-        Vector3 rayOrigin = actx.Behavior.transform.position + Vector3.up * 0.5f;
+        Vector3 rayOrigin = actx.Manager.transform.position + Vector3.up * 0.5f;
     
         bool isTouchingGround = Physics.Raycast(rayOrigin, Vector3.down, 0.7f,actx.LayerMaskEnemy);
 
         if (!isTouchingGround)
         {
-            actx.TransitionTo(actx.Behavior.DropState);
+            actx.TransitionTo(actx.Manager.DropState);
         }
         else
         {
-            actx.TransitionTo(actx.Behavior.GoToSpawnState);
+            actx.TransitionTo(actx.Manager.GoToSpawnState);
         }
     }
     

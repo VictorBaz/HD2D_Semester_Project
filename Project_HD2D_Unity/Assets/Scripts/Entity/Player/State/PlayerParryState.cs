@@ -29,12 +29,10 @@ public class PlayerParryState : PlayerBaseState
         yield return new WaitForSeconds(psc.PlayerData.ParryHitboxStartOffset);
 
         _isWindowActive = true;
-        psc.Controller.ParryOn();
 
         yield return new WaitForSeconds(psc.PlayerData.ParryActiveDuration);
 
         _isWindowActive = false;
-        psc.Controller.ParryOff();
 
         float remainingTime = animDuration - 
                               (psc.PlayerData.ParryHitboxStartOffset + psc.PlayerData.ParryActiveDuration);
@@ -60,7 +58,6 @@ public class PlayerParryState : PlayerBaseState
     
         _isWindowActive = false;
         
-        psc.Controller.ParryOff();
         psc.AnimationManager.SetParry(false);
         psc.Controller.SetGravity(true);
     }

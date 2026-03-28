@@ -8,31 +8,31 @@ public class EnemyPatrolState : EnemyBaseState
 
     public override void EnterState(EnemyContext actx) 
     {
-        actx.Behavior.ApplyMovementMode(false);
+        actx.Manager.ApplyMovementMode(false);
         
         actx.ResumeAgent();
         
         actx.UpdateAgentSpeed(actx.Data.PatrolSpeed,actx.Data.Acceleration,actx.Data.StoppingDistance);
     
-        if (actx.Behavior.patrolPoints.Length > 0)
-            actx.SetDestination(actx.Behavior.patrolPoints[currentPointIndex].position);
+        if (actx.Manager.patrolPoints.Length > 0)
+            actx.SetDestination(actx.Manager.patrolPoints[currentPointIndex].position);
     }
 
     public override void UpdateState(EnemyContext actx)
     {
         actx.AnimManager.UpdateMovement(actx.Agent.speed);
 
-        if (actx.Behavior.CanSeePlayer())
+        if (actx.Manager.CanSeePlayer())
         {
-            actx.TransitionTo(actx.Behavior.ChaseState); return;
+            actx.TransitionTo(actx.Manager.ChaseState); return;
         }
 
         if (actx.IsNavReady && !actx.Agent.pathPending)
         {
             if (actx.Agent.remainingDistance <= actx.Agent.stoppingDistance)
             {
-                currentPointIndex = (currentPointIndex + 1) % actx.Behavior.patrolPoints.Length;
-                actx.SetDestination(actx.Behavior.patrolPoints[currentPointIndex].position);
+                currentPointIndex = (currentPointIndex + 1) % actx.Manager.patrolPoints.Length;
+                actx.SetDestination(actx.Manager.patrolPoints[currentPointIndex].position);
             }
         }
         

@@ -10,18 +10,16 @@ public class EnemyFriendlyState : EnemyBaseState
     
     public override void EnterState(EnemyContext actx)
     {
-        actx.Behavior.ApplyMovementMode(false); 
+        actx.Manager.ApplyMovementMode(false); 
         actx.ResumeAgent();
     
-        searchCenter = actx.Behavior.transform.position;
+        searchCenter = actx.Manager.transform.position;
         waitTimer = 0f;
         MoveToRandomPoint(actx);
     }
 
     public override void UpdateState(EnemyContext actx)
     {
-        if (!actx.Behavior.isFriendly) return;
-
         if (actx.IsNavReady && !actx.Agent.pathPending && actx.Agent.remainingDistance <= actx.Agent.stoppingDistance)
         {
             waitTimer += Time.deltaTime;

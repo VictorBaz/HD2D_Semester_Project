@@ -3,7 +3,7 @@ using UnityEngine.AI;
 
 public class EnemyContext
 {
-    public EnemyBehavior Behavior;
+    public EnemyManager Manager;
     public NavMeshAgent Agent;
     public Rigidbody Rb;
     public EnemyMovement Movement;
@@ -23,7 +23,7 @@ public class EnemyContext
     
     public LayerMask LayerMaskEnemy;
     
-    public void TransitionTo(EnemyBaseState newBaseState) => Behavior.ChangeState(newBaseState);
+    public void TransitionTo(EnemyBaseState newBaseState) => Manager.ChangeState(newBaseState);
     
     public bool IsNavReady => Agent != null && Agent.isActiveAndEnabled && Agent.isOnNavMesh;
 

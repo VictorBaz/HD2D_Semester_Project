@@ -6,15 +6,15 @@ public class EnemyStaticState : EnemyBaseState
 
     public override void EnterState(EnemyContext actx)
     {
-        actx.Behavior.ApplyMovementMode(false);
+        actx.Manager.ApplyMovementMode(false);
         actx.StopAgent();
     }
 
     public override void UpdateState(EnemyContext actx)
     {
-        if (actx.Behavior.CanSeePlayer())
+        if (actx.Manager.CanSeePlayer())
         {
-            actx.TransitionTo(actx.Behavior.ChaseState);
+            actx.TransitionTo(actx.Manager.ChaseState);
         }
     }
 

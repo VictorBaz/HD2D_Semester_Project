@@ -13,16 +13,16 @@ public class EnemySearchState : EnemyBaseState
         timer = actx.Data.SearchDuration;
         searchCenter = actx.LastKnownPosition;
     
-        actx.Behavior.ApplyMovementMode(false);
+        actx.Manager.ApplyMovementMode(false);
         actx.ResumeAgent();
         MoveToRandomPoint(actx);
     } 
 
     public override void UpdateState(EnemyContext actx)
     {
-        if (actx.Behavior.CanSeePlayer()) 
+        if (actx.Manager.CanSeePlayer()) 
         { 
-            actx.TransitionTo(actx.Behavior.ChaseState); 
+            actx.TransitionTo(actx.Manager.ChaseState); 
             return; 
         }
 
@@ -35,7 +35,7 @@ public class EnemySearchState : EnemyBaseState
     
         if (timer <= 0) 
         {
-            actx.TransitionTo(actx.Behavior.GoToSpawnState);
+            actx.TransitionTo(actx.Manager.GoToSpawnState);
         }
     }
 

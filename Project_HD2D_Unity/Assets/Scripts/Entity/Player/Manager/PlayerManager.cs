@@ -17,10 +17,10 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private Transform playerHead;
-    
+
     [SerializeField] private TMP_Text stateText;
     [SerializeField] private Rigidbody rb;
-    
+
     [SerializeField] private PlayerData playerDataRaw;
 
     public PlayerBaseState CurrentPlayerState { get; private set; }
@@ -82,9 +82,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         lockOnSystem.InitData(playerData);
         playerController.InitData(playerData);
-        
+
         uiManager.UpdateEnergyTxt(playerData.Energy);
-        
     }
 
     private void OnEnable()
@@ -105,7 +104,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         inputManager.OnCarry += TryCarry;
         EventManager.OnEject += HandleEject;
-        
+
         inputManager.OnParry += HandleParry;
     }
 
@@ -124,17 +123,16 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         inputManager.OnEnergyGive -= TryGiveEnergy;
         inputManager.OnEnergyTake -= TryTakeEnergy;
-        
+
         inputManager.OnCarry -= TryCarry;
         EventManager.OnEject -= HandleEject;
-        
+
         inputManager.OnParry -= HandleParry;
     }
 
     private void Start()
     {
         DebugState();
-        
     }
 
     private void Update()
@@ -143,7 +141,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
         TickDashTimer();
         TickJumpTimer();
         TickParryTimer();
-        
+
         playerController.SetJumping(jumpCooldownTimer > 0);
     }
 
@@ -186,14 +184,14 @@ public class PlayerManager : MonoBehaviour, IDamageable
     private void TryJumpReleased()
     {
         if (CurrentPlayerState is PlayerInAirBase)
-           JumpReleased(); 
+            JumpReleased();
     }
 
     private void JumpReleased()
     {
         Context.JumpReleased = true;
     }
-    
+
     #endregion
 
     #region Attack
@@ -207,39 +205,37 @@ public class PlayerManager : MonoBehaviour, IDamageable
         }
 
         if (!CurrentPlayerState.CanAttack) return;
-        
+
         TransitionTo(AttackState);
     }
 
     #endregion
 
-    #region Link ICarry
+    #region Carry
+
     private void TryCarry()
     {
-        
         if (Context.CurrentTargetCarry != null)
         {
             Context.CurrentTargetCarry.Eject();
-        
             Context.CurrentTargetCarry = null;
-        
             TransitionTo(LocomotionState);
             return;
         }
 
         if (!CurrentPlayerState.CanCarry) return;
-        
+
         var targets = DetectionHelper.FindVisibleTargets<ICarryable>(
-            transform, 
-            playerData.CarryRange, 
-            playerData.CarryAngle, 
+            transform,
+            playerData.CarryRange,
+            playerData.CarryAngle,
             playerData.CarryLayer
         );
 
         targets.RemoveAll(t => !t.IsCarryable());
 
         Context.CurrentTargetCarry = DetectionHelper.GetBestTarget(transform, targets);
-        
+
         if (Context.CurrentTargetCarry != null)
         {
             TransitionTo(CarryState);
@@ -248,13 +244,11 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void HandleEject()
     {
-        if (CurrentPlayerState is  PlayerCarryState)
+        if (CurrentPlayerState is PlayerCarryState)
         {
-            Context.CurrentTargetCarry = null;    
+            Context.CurrentTargetCarry = null;
         }
     }
-
-    
 
     #endregion
 
@@ -275,7 +269,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
         {
             Context.HasDash = true;
         }
-        
+
         dashCooldownTimer = playerData.DashCooldown;
         TransitionTo(DashState);
     }
@@ -289,7 +283,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
         if (!CanInteractWithTarget(out IEnergyLockable target)) return;
         if (playerData.IsEnergyEmpty()) return;
         if (target.IsAtMaximumEnergy()) return;
-        
+
         HandleEnergy(target, false);
     }
 
@@ -304,12 +298,12 @@ public class PlayerManager : MonoBehaviour, IDamageable
     private bool CanInteractWithTarget(out IEnergyLockable target)
     {
         target = null;
-        
+
         if (!lockOnSystem.IsLocked) return false;
         if (lockOnSystem.CurrentTarget is not IEnergyLockable energyTarget) return false;
-        
+
         target = energyTarget;
-        
+
         return true;
     }
 
@@ -317,12 +311,12 @@ public class PlayerManager : MonoBehaviour, IDamageable
     {
         if (takingEnergy)
         {
-            target.RemoveEnergy(); 
+            target.RemoveEnergy();
             playerData.AddEnergy();
         }
         else
         {
-            target.AddEnergy();    
+            target.AddEnergy();
             playerData.RemoveEnergy();
         }
 
@@ -358,26 +352,11 @@ public class PlayerManager : MonoBehaviour, IDamageable
     private void OnLockToggle()
     {
         lockOnSystem.TryLock();
-
-        /*if (lockOnSystem.IsLocked)
-            vfxManager.ToggleLinkEffect(true, playerHead, lockOnSystem.CurrentTarget.GetLockTransform());
-        else
-            vfxManager.ToggleLinkEffect(false);*/
     }
 
     private void OnLockRelease()
     {
         lockOnSystem.Unlock();
-        /*vfxManager.ToggleLinkEffect(false);*/
-    }
-
-    #endregion
-    
-    #region Debugging
-
-    private void DebugState()
-    {
-        stateText.text = $"State: {CurrentPlayerState.Name}";
     }
 
     #endregion
@@ -388,26 +367,31 @@ public class PlayerManager : MonoBehaviour, IDamageable
     {
         if (parryCooldownTimer > 0f) return;
         if (lockOnSystem.IsLocked) return;
-        if (CurrentPlayerState is PlayerParryState) return; 
+        if (CurrentPlayerState is PlayerParryState) return;
         if (!CurrentPlayerState.CanParry) return;
-    
+
         parryCooldownTimer = playerData.ParryCooldown;
         TransitionTo(ParryState);
     }
 
     #endregion
+
+    #region Gizmos & Debugging
     
-    #region Debug & Gizmos
+    private void DebugState()
+    {
+        stateText.text = $"State: {CurrentPlayerState.Name}";
+    }
 
     private void OnDrawGizmos()
     {
         bool isRuntime = Application.isPlaying && playerData != null;
 
         Gizmos.color = isRuntime ? (playerController.IsGrounded ? Color.green : Color.red) : Color.yellow;
-        
+
         float height = isRuntime ? playerData.PlayerHeight : playerDataRaw.Movement.PlayerHeight;
         float checkDist = isRuntime ? playerData.GroundCheckDistance : playerDataRaw.Movement.GroundCheckDistance;
-        float radius = 0.2f; 
+        float radius = 0.2f;
 
         Vector3 rayStart = transform.position - new Vector3(0, (height / 2) - radius, 0);
         Vector3 rayEnd = rayStart + (Vector3.down * checkDist);
@@ -425,12 +409,12 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void DrawWireArc(Vector3 center, Vector3 forward, float angle, float radius)
     {
-        Vector3 leftRayRotation = Quaternion.AngleAxis(-angle, Vector3.up) * forward;
+        Vector3 leftRayRotation  = Quaternion.AngleAxis(-angle, Vector3.up) * forward;
         Vector3 rightRayRotation = Quaternion.AngleAxis(angle, Vector3.up) * forward;
 
         Gizmos.DrawLine(center, center + leftRayRotation * radius);
         Gizmos.DrawLine(center, center + rightRayRotation * radius);
-        
+
         int segments = 10;
         Vector3 previousPoint = center + leftRayRotation * radius;
         for (int i = 1; i <= segments; i++)
@@ -442,16 +426,28 @@ public class PlayerManager : MonoBehaviour, IDamageable
         }
     }
 
-#endregion
+    #endregion
+
+    #region IDamageable
 
     public void TakeDamage(int value, Vector3 hitDirection)
     {
         if (!CurrentPlayerState.CanTakeDamage) return;
         if (CurrentPlayerState.IsParryWindowActive) return;
-        
+
         Context.HitDirection = hitDirection;
         TransitionTo(HitState);
     }
 
     public Transform GetTransform() => transform;
+
+    public bool IsInParryWindow()
+    {
+        if (CurrentPlayerState is PlayerParryState parryState)
+            return parryState.IsParryWindowActive;
+
+        return false;
+    }
+
+    #endregion
 }

@@ -2,14 +2,14 @@
 
 public class PlayerBumpState : PlayerInAirBase
 {
-    private float requiredBumpGravity;
-
     public override string Name => "Bump";
 
     public override void EnterState(PlayerStateContext psc)
     {
         psc.Controller.SetGravity(false);
         psc.Controller.SetJumping(true);
+        
+        psc.AnimationManager.TriggerJump();
         psc.AnimationManager.SetFalling(false);
     }
 
@@ -29,5 +29,6 @@ public class PlayerBumpState : PlayerInAirBase
     public override void FixedUpdateState(PlayerStateContext psc)
     {
         AirControl(psc);
+        psc.Rb.AddForce(Vector3.down * Physics.gravity.magnitude, ForceMode.Acceleration);
     }
 }

@@ -145,7 +145,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
         TickJumpTimer();
         TickParryTimer();
 
-        playerController.SetJumping(jumpCooldownTimer > 0);
+        playerController.SetJumping(jumpCooldownTimer > 0 || CurrentPlayerState is PlayerBumpState);
     }
 
     private void FixedUpdate()

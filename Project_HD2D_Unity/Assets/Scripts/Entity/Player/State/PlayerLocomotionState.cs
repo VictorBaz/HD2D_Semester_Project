@@ -5,72 +5,54 @@ public class PlayerLocomotionState : PlayerBaseState
 {
     private float airTimeBuffer = 0f;
     
+    public override string Name    => "Locomotion";
+    public override bool CanAttack => true;
+    public override bool CanDash   => true;
+    public override bool CanCarry  => true;
+    public override bool CanParry  => true;
+
+    public override bool CanJump(PlayerStateContext psc) => !psc.LockOnSystem.IsLocked;
+
     public override void EnterState(PlayerStateContext psc)
     {
         psc.HasDash = false;
         psc.Controller.SetGravity(true);
     }
 
-    public override void ExitState(PlayerStateContext psc)
-    {
-        
-    }
+    public override void ExitState(PlayerStateContext psc) { }
 
     public override void UpdateState(PlayerStateContext psc)
     {
-        if (psc.StateMachine.CurrentPlayerState is PlayerBumpState) return;
-        
         if (!psc.Controller.IsGrounded)
         {
             airTimeBuffer += Time.deltaTime;
-        
+
             if (airTimeBuffer > psc.PlayerData.CoyotteTime || psc.Rb.linearVelocity.y > 1f)
             {
-                DetermineState(psc); 
+                DetermineState(psc);
                 return;
             }
         }
         else
         {
-            airTimeBuffer = 0f; 
+            airTimeBuffer = 0f;
         }
-        
+
         psc.LockOnSystem.CalculLockRotation();
         psc.Controller.SetLockMode(psc.LockOnSystem.IsLocked);
-    
-        HandleMovement(psc); 
-        
-        float magnitude = psc.InputManager.MoveInput.magnitude;
-        
+
+        HandleMovement(psc);
+
+        float magnitude     = psc.InputManager.MoveInput.magnitude;
         float animMagnitude = magnitude > psc.PlayerData.RunThreshold ? 1f :
-            magnitude > GameConstants.DEAD_STICK  ? 0.5f : 0f;
-        
-        
+            magnitude > GameConstants.DEAD_STICK    ? 0.5f : 0f;
+
         blendInput = GetBlendTreeInput(psc);
-        
-        psc.AnimationManager.HandleAnimation(
-            animMagnitude,
-            blendInput,
-            psc.Controller.IsGrounded);
-        
+        psc.AnimationManager.HandleAnimation(animMagnitude, blendInput, psc.Controller.IsGrounded);
     }
 
-    
     public override void FixedUpdateState(PlayerStateContext psc)
     {
         HandlePhysics(psc);
     }
-    
-
-    public override bool CanJump(PlayerStateContext psc)
-    {
-        return !psc.LockOnSystem.IsLocked;
-    }
-    public override bool CanAttack => true;
-
-    public override bool CanDash => true;
-
-    public override string Name => "Locomotion";
-    public override bool CanCarry => true;
-    public override bool CanParry => true;
 }

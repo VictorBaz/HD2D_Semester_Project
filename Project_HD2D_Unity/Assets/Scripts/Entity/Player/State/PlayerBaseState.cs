@@ -14,7 +14,6 @@ public abstract class PlayerBaseState
     public virtual bool CanMove => true;
     public virtual bool CanTakeDamage => true;
     public virtual bool CanDash => false;
-
     public virtual bool CanCarry => false;
     public virtual bool CanParry => false;
     public virtual bool IsParryWindowActive => false;
@@ -24,17 +23,15 @@ public abstract class PlayerBaseState
     protected void HandlePhysics(PlayerStateContext psc, float speedMultiplier = 1f)
     {
         if (!CanMove) return;
-        psc.Controller.UpdatePlayerControllerPhysics(psc.TargetDirection,psc.InputManager.MoveInput,speedMultiplier);
+        psc.Controller.UpdatePlayerControllerPhysics(psc.TargetDirection, psc.InputManager.MoveInput, speedMultiplier);
     }
     
     protected virtual void CalculateTargetDirection(PlayerStateContext psc)
     {
         Vector2 moveInput = psc.InputManager.MoveInput;
         
-        if (moveInput.magnitude <GameConstants.DEAD_STICK) 
-        {
+        if (moveInput.magnitude < GameConstants.DEAD_STICK)
             return;
-        }
         
         Vector3 camForward = psc.CameraTransform.forward;
         camForward.y = 0; camForward.Normalize();
@@ -88,8 +85,8 @@ public abstract class PlayerBaseState
         Vector3 camForward = psc.CameraTransform.forward;
         camForward.y = 0f; camForward.Normalize();
 
-        Vector3 worldDirection = camRight * psc.InputManager.ShootInput.x 
-        + camForward * psc.InputManager.ShootInput.y;
+        Vector3 worldDirection = camRight   * psc.InputManager.ShootInput.x
+                               + camForward * psc.InputManager.ShootInput.y;
         worldDirection.y = 0f;
 
         return worldDirection;
@@ -109,37 +106,25 @@ public abstract class PlayerBaseState
         psc.AnimationManager.HandleAnimation(
             psc.InputManager.MoveInput.magnitude,
             blendInput,
-            psc.Controller.IsGrounded
-            );
+            psc.Controller.IsGrounded);
     }
     
     public virtual void DetermineState(PlayerStateContext psc)
     {
         if (psc.StateMachine.CurrentPlayerState is PlayerBumpState) return;
-        
+
         if (psc.Controller.IsGrounded)
         {
-            
             if (psc.AnimationManager.IsLandingFinished())
-            {
                 psc.StateMachine.TransitionTo(psc.StateMachine.LocomotionState);
-            }
             else
-            {
                 psc.StateMachine.TransitionTo(psc.StateMachine.LandingState);
-            }
             return;
         }
 
         if (psc.Rb.linearVelocity.y > 0.1f)
-        {
             psc.StateMachine.TransitionTo(psc.StateMachine.JumpState);
-            Debug.Log($"current state : {Name}");
-        }
         else
-        {
             psc.StateMachine.TransitionTo(psc.StateMachine.FallState);
-        }
     }
-    
 }

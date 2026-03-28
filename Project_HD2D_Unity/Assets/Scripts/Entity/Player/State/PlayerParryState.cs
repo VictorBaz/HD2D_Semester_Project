@@ -3,49 +3,22 @@ using UnityEngine;
 
 public class PlayerParryState : PlayerBaseState
 {
-    public override bool CanMove => false;
-    public override string Name => "Parry";
-    public override bool CanParry => false;
-    public override bool IsParryWindowActive => _isWindowActive;
-    private bool _isWindowActive;
-    
+    public override string Name              => "Parry";
+    public override bool   CanMove          => false;
+    public override bool   CanParry         => false;
+    public override bool   IsParryWindowActive => isWindowActive;
+
+    private bool      isWindowActive;
     private Coroutine parryRoutine;
 
     public override void EnterState(PlayerStateContext psc)
     {
         psc.AnimationManager.SetParry(true);
         psc.Controller.SetGravity(false);
-        
         psc.Rb.linearVelocity = Vector3.zero;
-        _isWindowActive = false;
 
-        parryRoutine = psc.Controller.RunRoutine(ParrySequence(psc));
-    }
-
-    private IEnumerator ParrySequence(PlayerStateContext psc)
-    {
-        float animDuration = psc.PlayerData.ParryAnimationClip.length;
-
-        yield return new WaitForSeconds(psc.PlayerData.ParryHitboxStartOffset);
-
-        _isWindowActive = true;
-
-        yield return new WaitForSeconds(psc.PlayerData.ParryActiveDuration);
-
-        _isWindowActive = false;
-
-        float remainingTime = animDuration - 
-                              (psc.PlayerData.ParryHitboxStartOffset + psc.PlayerData.ParryActiveDuration);
-        
-        if (remainingTime > 0.01f)
-        {
-            yield return new WaitForSeconds(remainingTime);
-        }
-
-        if (psc.StateMachine.CurrentPlayerState == this) 
-        {
-            DetermineState(psc);
-        }
+        isWindowActive = false;
+        parryRoutine   = psc.Controller.RunRoutine(ParrySequence(psc));
     }
 
     public override void ExitState(PlayerStateContext psc)
@@ -55,9 +28,8 @@ public class PlayerParryState : PlayerBaseState
             psc.Controller.StopCoroutine(parryRoutine);
             parryRoutine = null;
         }
-    
-        _isWindowActive = false;
-        
+
+        isWindowActive = false;
         psc.AnimationManager.SetParry(false);
         psc.Controller.SetGravity(true);
     }
@@ -67,8 +39,27 @@ public class PlayerParryState : PlayerBaseState
         HandleAnimation(psc);
     }
 
-    public override void FixedUpdateState(PlayerStateContext psc)
+    public override void FixedUpdateState(PlayerStateContext psc) { }
+
+    private IEnumerator ParrySequence(PlayerStateContext psc)
     {
-        
+        float animDuration = psc.PlayerData.ParryAnimationClip.length;
+
+        yield return new WaitForSeconds(psc.PlayerData.ParryHitboxStartOffset);
+
+        isWindowActive = true;
+
+        yield return new WaitForSeconds(psc.PlayerData.ParryActiveDuration);
+
+        isWindowActive = false;
+
+        float remainingTime = animDuration -
+                              (psc.PlayerData.ParryHitboxStartOffset + psc.PlayerData.ParryActiveDuration);
+
+        if (remainingTime > 0.01f)
+            yield return new WaitForSeconds(remainingTime);
+
+        if (psc.StateMachine.CurrentPlayerState == this)
+            DetermineState(psc);
     }
 }

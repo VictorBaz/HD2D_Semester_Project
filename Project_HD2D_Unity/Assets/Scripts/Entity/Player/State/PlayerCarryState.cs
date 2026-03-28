@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlayerCarryState : PlayerBaseState
 {
     public override string Name { get; protected set; } = "Carry";
-    
+
     public override void EnterState(PlayerStateContext psc)
     {
         psc.AnimationManager.SetCarrying(true);
@@ -13,12 +13,6 @@ public class PlayerCarryState : PlayerBaseState
 
     public override void ExitState(PlayerStateContext psc)
     {
-        /*if (psc.CurrentTargetCarry != null)
-        {
-            psc.CurrentTargetCarry.Eject();
-            psc.CurrentTargetCarry = null;
-        }*/
-        
         psc.AnimationManager.SetCarrying(false);
     }
 
@@ -29,26 +23,21 @@ public class PlayerCarryState : PlayerBaseState
             psc.StateMachine.TransitionTo(psc.StateMachine.LocomotionState);
             return;
         }
-        
+
         psc.LockOnSystem.CalculLockRotation();
         psc.Controller.SetLockMode(psc.LockOnSystem.IsLocked);
-    
-        HandleMovement(psc); 
-        
-        float magnitude = psc.InputManager.MoveInput.magnitude;
-        
-        float animMagnitude = magnitude > GameConstants.DEAD_STICK ? 1 : 0f;
-        
-        
+
+        HandleMovement(psc);
+
+        float magnitude     = psc.InputManager.MoveInput.magnitude;
+        float animMagnitude = magnitude > GameConstants.DEAD_STICK ? 1f : 0f;
+
         blendInput = GetBlendTreeInput(psc);
-        psc.AnimationManager.HandleAnimation(
-            animMagnitude,
-            blendInput,
-            psc.Controller.IsGrounded);
+        psc.AnimationManager.HandleAnimation(animMagnitude, blendInput, psc.Controller.IsGrounded);
     }
 
     public override void FixedUpdateState(PlayerStateContext psc)
     {
-        HandlePhysics(psc,0.5f);
+        HandlePhysics(psc, 0.5f);
     }
 }

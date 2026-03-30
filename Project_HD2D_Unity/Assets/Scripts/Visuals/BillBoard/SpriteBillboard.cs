@@ -37,7 +37,6 @@ public class SpriteBillboard : MonoBehaviour
 
     private void DisplaySpriteBillboard()
     {
-        //pour perpandiculaire après transform.Look at transform.rotation.y = 0 par rapport X
         switch (billboardType)
         {
             case BillboardType.LookAtCamera:
@@ -46,17 +45,15 @@ public class SpriteBillboard : MonoBehaviour
             case BillboardType.CameraForward:
                 transform.forward = cameraTransform.forward;
                 break;
-            default:
-                throw new ArgumentOutOfRangeException();
         }
+
+        Vector3 currentRotation = transform.rotation.eulerAngles;
         
-        Vector3 rotation = transform.rotation.eulerAngles;
-        
-        transform.rotation = Quaternion.Euler(0, rotation.y, rotation.z);
-        
-        if (lockX) { rotation.x = originalRotation.x; }
-        if (lockY) { rotation.y = originalRotation.y; }
-        if (lockZ) { rotation.z = originalRotation.z; }
+        float x = lockX ? 0f : currentRotation.x;
+        float y = lockY ? 0f : currentRotation.y;
+        float z = lockZ ? 0f : currentRotation.z;
+
+        transform.rotation = Quaternion.Euler(x, y, z);
     }
 
     #endregion

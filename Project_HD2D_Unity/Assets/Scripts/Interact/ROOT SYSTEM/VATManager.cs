@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class VATManager : MonoBehaviour, IRootLink
 {
+    #region Variables
+
     [Header("VAT Settings")]
     [SerializeField] protected Renderer targetRenderer;
     [SerializeField] protected MeshFilter targetMeshFilter;
@@ -16,9 +18,26 @@ public class VATManager : MonoBehaviour, IRootLink
     protected MaterialPropertyBlock propBlock;
     protected Root root;
 
-    protected int CurrentEnergy => root != null ? root.CurrentEnergy : 0;
-    protected int MaxEnergyIndex => animationSteps.Count - 1;
+    #endregion
 
+    #region Unity Lifecycle
+
+    #if UNITY_EDITOR
+    protected virtual void OnValidate()
+    {
+        if (targetRenderer == null || targetMeshFilter == null) return;
+
+        Vector3 min = targetRenderer.sharedMaterial.GetVector("_minValues");
+        Vector3 max = targetRenderer.sharedMaterial.GetVector("_maxValues");
+
+        if (min == Vector3.zero && max == Vector3.zero) return;
+
+        Vector3 center = (min + max) * 0.5f;
+        Vector3 size = (max - min);
+
+        targetMeshFilter.sharedMesh.bounds = new Bounds(center, size);
+    }
+    #endif
     protected virtual void Awake()
     {
         propBlock = new MaterialPropertyBlock();
@@ -36,6 +55,10 @@ public class VATManager : MonoBehaviour, IRootLink
     }
 
     protected virtual void Update() => UpdateVAT();
+
+    #endregion
+
+    #region VAT Methods
 
     protected void UpdateVAT()
     {
@@ -67,11 +90,19 @@ public class VATManager : MonoBehaviour, IRootLink
         targetRenderer.SetPropertyBlock(propBlock);
     }
 
+    #endregion
+
+    #region Helper Methods
+    
+    protected int CurrentEnergy => root != null ? root.CurrentEnergy : 0;
+    protected int MaxEnergyIndex => animationSteps.Count - 1;
+
     protected virtual void OnValueUpdated(float newValue) { }
 
     public void SetRoot(Root root) => this.root = root;
     public bool IsContainingEnergy() => CurrentEnergy > 0;
     public bool IsAtMaximumEnergy() => CurrentEnergy >= MaxEnergyIndex;
 
+    #endregion
     
 }

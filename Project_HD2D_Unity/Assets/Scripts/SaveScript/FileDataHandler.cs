@@ -15,10 +15,7 @@ public class FileDataHandler
     private readonly string encryptionCode = "polycount";
 
     #endregion
-
-
-
-
+    
     public FileDataHandler(string dataDirPath, string dataFileName,bool useEncryption)
     {
         this.dataDirPath = dataDirPath;

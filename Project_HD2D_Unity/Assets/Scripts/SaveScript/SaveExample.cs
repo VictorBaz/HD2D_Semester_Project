@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using TMPro;
 using UnityEngine;
 
@@ -13,7 +14,12 @@ public class SaveExample : MonoBehaviour, IDataPersistence
     private int MagicPointLimit = 10;
     
     private List<bool> ParasiteAliveStates = new List<bool>();
-
+    
+    [Header("Save folder etc ...")]
+    [SerializeField] private string debugDirectoryName = "Debug/Debug";
+    [SerializeField] private string debugFileName = "debug_save.json";
+    [SerializeField] private int SaveStateID = 0;
+    
     #endregion
 
     #region Link
@@ -36,14 +42,24 @@ public class SaveExample : MonoBehaviour, IDataPersistence
             AddPoint();
         }
         
-        if (Input.GetKeyDown(KeyCode.M))
+        if (Input.GetKeyDown(KeyCode.O))
         {
             RemovePoint();
         }
         
-        if (Input.GetKeyDown(KeyCode.L))
+        if (Input.GetKeyDown(KeyCode.K))
         {
             KillParasite(ParasiteID);
+        }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            MakeASaveState();
+        }
+
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadASaveState();
         }
     }
 
@@ -74,6 +90,43 @@ public class SaveExample : MonoBehaviour, IDataPersistence
         if (parasiteIndex >= 0 && parasiteIndex < ParasiteAliveStates.Count)
         {
             ParasiteAliveStates[parasiteIndex] = false;
+        }
+    }
+
+    public void MakeASaveState()
+    {
+        
+        string fullPath = Path.Combine(Application.persistentDataPath, debugDirectoryName);
+        
+        FileDataHandler debugHandler = new FileDataHandler(fullPath, debugFileName, false);
+        
+        GameData dataToSave = new GameData();
+        SaveData(ref dataToSave);
+        
+        string profileID = "State_" + SaveStateID;
+        debugHandler.Save(dataToSave, profileID);
+
+        Debug.Log($"<color=green>Save State créé pour l'ID {SaveStateID} dans {fullPath}/{profileID}</color>");
+    }
+    
+    public void LoadASaveState()
+    {
+        string fullPath = Path.Combine(Application.persistentDataPath, debugDirectoryName);
+        
+        FileDataHandler debugHandler = new FileDataHandler(fullPath, debugFileName, false);
+        
+        string profileID = "State_" + SaveStateID;
+        GameData loadedData = debugHandler.Load(profileID);
+        
+        if (loadedData != null)
+        {
+            LoadData(loadedData);
+            UpdateText();
+            Debug.Log($"<color=cyan>Save State chargé pour l'ID {SaveStateID}</color>");
+        }
+        else
+        {
+            Debug.LogWarning("Aucune sauvegarde de debug trouvée pour l'ID : " + SaveStateID);
         }
     }
 

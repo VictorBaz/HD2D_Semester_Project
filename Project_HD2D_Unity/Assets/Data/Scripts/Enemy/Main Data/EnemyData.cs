@@ -3,17 +3,71 @@
 [CreateAssetMenu(fileName = "EnemyData", menuName = "Enemy/EnemyData")]
 public class EnemyData : ScriptableObject
 {
-    [field: SerializeField] public EnemyNavigationData EnemyNavigationData { get; private set; } // AJOUT
-    [field: SerializeField] public EnemyAttackData EnemyAttackData { get; private set; }
-    [field: SerializeField] public EnemyKOData EnemyKoData { get; private set; }
-    [field: SerializeField] public EnemySearchData EnemySearchData { get; private set; }
-    [field: SerializeField] public EnemyTakeDamageData EnemyTakeDamageData { get; private set; }
-    [field: SerializeField] public EnemyDataFeedBack EnemyDataFeedBack { get; private set; }
-    [field: SerializeField] public EnemyExposedData EnemyExposedData { get; private set; }
+    public NavigationSettings Navigation;
+    public AttackSettings Attack;
+    public StatusSettings Status; 
     
+    public VisualSettings Visuals;
+
     public EnemyDataInstance Init() => new EnemyDataInstance(this);
 }
 
+#region Serialized Settings Structures
+
+[System.Serializable]
+public class NavigationSettings
+{
+    public float PatrolSpeed = 2f;
+    public float ChaseSpeed = 4.5f;
+    public float Acceleration = 8f;
+    public float StoppingDistance = 1.2f;
+    public float DetectionRange = 15f;
+    public float ViewAngle = 90f;
+    public float SearchDuration = 10f;
+    public float SearchRadius = 5f;
+}
+
+[System.Serializable]
+public class AttackSettings
+{
+    public float AttackCooldown = 1f;
+    public float AnticipationTime = 0.4f;
+    public float HitboxActiveDuration = 0.2f;
+    public float AttackDashSpeed = 5f;
+    public float AttackDashDuration = 0.2f;
+}
+
+[System.Serializable]
+public class StatusSettings
+{
+    [Header("K-O & Stun")]
+    public int MaxKo = 100;
+    public float KoTime = 15f;
+    public float StunDuration = 0.2f;
+    
+    [Header("Exposed State")]
+    public float ExposedTime = 1f;
+    
+    [Header("Damage")]
+    public int DamageToApply = 1;
+}
+
+[System.Serializable]
+public class VisualSettings
+{
+    public Sprite SpriteSearch;
+    public Sprite SpriteAttackStart;
+    public Sprite SpriteChase;
+    public Sprite SpritePatrol;
+    public Sprite SpriteKo;
+    public Sprite SpriteFall;
+    public Sprite SpriteTakeDamage;
+    public Sprite SpriteExposed;
+}
+
+#endregion
+
+[System.Serializable]
 public class EnemyDataInstance
 {
     public float PatrolSpeed;
@@ -22,100 +76,81 @@ public class EnemyDataInstance
     public float StoppingDistance;
     public float DetectionRange;
     public float ViewAngle;
-
-    public float AttackCooldown;
-    public float AnticipationTime;      
-    public float HitboxActiveDuration; 
-    public float AttackDashSpeed;     
-    public float AttackDashDuration;
-    
-    public float KoTime;
-    public int MaxKo;
-    public int CurrentKo;
-
     public float SearchDuration;
     public float SearchRadius;
 
-    public int DamageToApply;
+    public float AttackCooldown;
+    public float AnticipationTime;
+    public float HitboxActiveDuration;
+    public float AttackDashSpeed;
+    public float AttackDashDuration;
+
+    public int MaxKo;
+    public float KoTime;
+    public int CurrentKo;
     public float StunDuration;
+    public float ExposedTime;
+    public int DamageToApply;
 
     public Sprite SpriteSearch;
     public Sprite SpriteAttackStart;
-    public Sprite SpriteAttackEnd;
     public Sprite SpriteChase;
     public Sprite SpritePatrol;
     public Sprite SpriteKo;
     public Sprite SpriteFall;
     public Sprite SpriteTakeDamage;
     public Sprite SpriteExposed;
-    
-    public float ExposedTime;
 
     public EnemyDataInstance(EnemyData data)
     {
-        PatrolSpeed = data.EnemyNavigationData.PatrolSpeed;
-        ChaseSpeed = data.EnemyNavigationData.ChaseSpeed;
-        StoppingDistance = data.EnemyNavigationData.StoppingDistance;
-        DetectionRange = data.EnemyNavigationData.DetectionRange;
-        ViewAngle = data.EnemyNavigationData.ViewAngle;
-        Acceleration = data.EnemyNavigationData.Acceleration;
+        PatrolSpeed = data.Navigation.PatrolSpeed;
+        ChaseSpeed = data.Navigation.ChaseSpeed;
+        Acceleration = data.Navigation.Acceleration;
+        StoppingDistance = data.Navigation.StoppingDistance;
+        DetectionRange = data.Navigation.DetectionRange;
+        ViewAngle = data.Navigation.ViewAngle;
+        SearchDuration = data.Navigation.SearchDuration;
+        SearchRadius = data.Navigation.SearchRadius;
 
-        AttackCooldown = data.EnemyAttackData.AttackCooldown;
-        AnticipationTime = data.EnemyAttackData.AnticipationTime;
-        HitboxActiveDuration = data.EnemyAttackData.HitboxActiveDuration;
-        AttackDashSpeed = data.EnemyAttackData.AttackDashSpeed;
-        AttackDashDuration = data.EnemyAttackData.AttackDashDuration;
-        
-        KoTime = data.EnemyKoData.KoTime;
-        MaxKo = data.EnemyKoData.MaxKo;
+        AttackCooldown = data.Attack.AttackCooldown;
+        AnticipationTime = data.Attack.AnticipationTime;
+        HitboxActiveDuration = data.Attack.HitboxActiveDuration;
+        AttackDashSpeed = data.Attack.AttackDashSpeed;
+        AttackDashDuration = data.Attack.AttackDashDuration;
+
+        MaxKo = data.Status.MaxKo;
+        KoTime = data.Status.KoTime;
+        StunDuration = data.Status.StunDuration;
+        ExposedTime = data.Status.ExposedTime;
+        DamageToApply = data.Status.DamageToApply;
         CurrentKo = 0;
 
-        SearchDuration = data.EnemySearchData.searchDuration;
-        SearchRadius = data.EnemySearchData.searchRadius;
-
-        DamageToApply = data.EnemyTakeDamageData.DamageToApply;
-        StunDuration = data.EnemyTakeDamageData.StunDuration;
-        
-        SpriteSearch = data.EnemyDataFeedBack.SpriteSearch;
-        SpriteAttackStart = data.EnemyDataFeedBack.SpriteAttackStart;
-        SpriteChase = data.EnemyDataFeedBack.SpriteChase;
-        SpritePatrol =  data.EnemyDataFeedBack.SpritePatrol;
-        SpriteKo =  data.EnemyDataFeedBack.SpriteKo;
-        SpriteFall = data.EnemyDataFeedBack.SpriteFall;
-        SpriteTakeDamage = data.EnemyDataFeedBack.SpriteTakeDamage;
-        SpriteExposed = data.EnemyDataFeedBack.SpriteExposed;
-        
-        ExposedTime = data.EnemyExposedData.ExposedTime;
+        SpriteSearch = data.Visuals.SpriteSearch;
+        SpriteAttackStart = data.Visuals.SpriteAttackStart;
+        SpriteChase = data.Visuals.SpriteChase;
+        SpritePatrol = data.Visuals.SpritePatrol;
+        SpriteKo = data.Visuals.SpriteKo;
+        SpriteFall = data.Visuals.SpriteFall;
+        SpriteTakeDamage = data.Visuals.SpriteTakeDamage;
+        SpriteExposed = data.Visuals.SpriteExposed;
     }
-    
+
     public bool IsKoFull() => CurrentKo >= MaxKo;
-    
     public void ResetKo() => CurrentKo = 0;
 
-    public Sprite GetSprite(EnemyBaseState currentBaseState)
+    public Sprite GetSpriteByStateName(string stateName)
     {
-        switch (currentBaseState.Name)
+        return stateName switch
         {
-            case "Chase":
-                return SpriteChase;
-            case "Searching":
-                return SpriteSearch;
-            case "Attacking":
-                return SpriteAttackStart; 
-            case "Patrol":
-                return SpritePatrol;
-            case "K-O":
-                return SpriteKo;
-            case "Falling":
-                return SpriteFall;
-            case "Taking Damage":
-                return SpriteTakeDamage;
-            case "Exposed":
-                return SpriteExposed;
-            default:
-                return null;
-        }
+            "Chase" => SpriteChase,
+            "Searching" => SpriteSearch,
+            "Attacking" => SpriteAttackStart,
+            "Patrol" => SpritePatrol,
+            "K-O" => SpriteKo,
+            "Falling" => SpriteFall,
+            "Taking Damage" => SpriteTakeDamage,
+            "Exposed" => SpriteExposed,
+            _ => SpritePatrol
+        };
     }
-    
 }
-

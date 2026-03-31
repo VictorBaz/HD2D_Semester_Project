@@ -6,7 +6,7 @@ namespace Player.State
 {
     public class PlayerDashState : PlayerBaseState
     {
-        private Vector3 velocityStock;
+        private float velocityStock;
         
         public override string Name { get; protected set; } = "Dash";
 
@@ -26,7 +26,7 @@ namespace Player.State
             
             psc.AnimationManager.SetDashing(true);
             
-            velocityStock = psc.Rb.linearVelocity;
+            velocityStock = psc.Rb.linearVelocity.magnitude;
             
             HandleAnimation(psc);
             
@@ -38,10 +38,6 @@ namespace Player.State
             psc.AnimationManager.SetDashing(false);
             
             psc.Controller.SetGravity(true);
-            
-            Vector3 dashVelocityExit = new Vector3(psc.Rb.linearVelocity.x, 0, psc.Rb.linearVelocity.z);
-            
-            psc.Rb.linearVelocity = dashVelocityExit;
         }
 
         public override void UpdateState(PlayerStateContext psc)
@@ -73,6 +69,20 @@ namespace Player.State
                 yield return null;
             }
             
+            elapsed = 0f;
+
+            Vector3 dashVelocityExit = psc.TargetDirection * velocityStock;
+            
+            while (elapsed < 0.01f)
+            {
+                psc.Rb.linearVelocity = Vector3.Lerp(Vector3.zero, dashVelocityExit, elapsed / 0.1f);
+                
+                elapsed += Time.deltaTime;
+                
+                yield return null;
+            }
+            
+            psc.Rb.linearVelocity = dashVelocityExit;
             
             DetermineState(psc);
             

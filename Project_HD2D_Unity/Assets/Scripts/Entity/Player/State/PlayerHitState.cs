@@ -4,14 +4,13 @@ namespace Player.State
 {
     public class PlayerHitState : PlayerBaseState
     {
-        private float hitDuration = 0.5f;
         private float timer;
 
         public override string Name => "Hit";
 
         public override void EnterState(PlayerStateContext psc)
         {
-            timer = hitDuration;
+            timer = psc.PlayerData.HitDuration;
             
             psc.Controller.SetGravity(true);
             
@@ -40,7 +39,7 @@ namespace Player.State
 
         private void Hit(PlayerStateContext psc)
         {
-            psc.Rb.AddForce(psc.HitDirection * 5f, ForceMode.Impulse);
+            psc.Rb.AddForce(psc.HitDirection * psc.PlayerData.HitForceTaken, ForceMode.Impulse);
         }
         
 

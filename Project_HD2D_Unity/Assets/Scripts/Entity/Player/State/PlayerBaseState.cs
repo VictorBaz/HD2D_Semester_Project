@@ -65,7 +65,7 @@ public abstract class PlayerBaseState
                 Vector3.Dot(enemyDir, camF));
         }
 
-        if (psc.TargetDirection.magnitude < 0.1f) return Vector2.zero;
+        if (psc.TargetDirection.magnitude < GameConstants.DEAD_STICK) return Vector2.zero;
 
         Vector3 d = psc.TargetDirection;
         d.y = 0f; d.Normalize();
@@ -75,22 +75,6 @@ public abstract class PlayerBaseState
             Vector3.Dot(d, camF));
     }
     
-    protected Vector3 CalculateShootDirection(PlayerStateContext psc)
-    {
-        if (psc.InputManager.ShootInput.magnitude < psc.PlayerData.InputDeadzone) return psc.ShootDirection;
-
-        Vector3 camRight = psc.CameraTransform.right;
-        camRight.y = 0f; camRight.Normalize();
-
-        Vector3 camForward = psc.CameraTransform.forward;
-        camForward.y = 0f; camForward.Normalize();
-
-        Vector3 worldDirection = camRight   * psc.InputManager.ShootInput.x
-                               + camForward * psc.InputManager.ShootInput.y;
-        worldDirection.y = 0f;
-
-        return worldDirection;
-    }
     
     protected void HandleMovement(PlayerStateContext psc)
     {
@@ -122,7 +106,7 @@ public abstract class PlayerBaseState
             return;
         }
 
-        if (psc.Rb.linearVelocity.y > 0.1f)
+        if (psc.Rb.linearVelocity.y > psc.PlayerData.FallAndJumpThreshold)
             psc.StateMachine.TransitionTo(psc.StateMachine.JumpState);
         else
             psc.StateMachine.TransitionTo(psc.StateMachine.FallState);

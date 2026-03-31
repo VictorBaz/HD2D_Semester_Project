@@ -17,7 +17,7 @@ public class PlayerBumpState : PlayerInAirBase
 
     public override void UpdateState(PlayerStateContext psc)
     {
-        if (psc.Rb.linearVelocity.y <= 0.1f)
+        if (psc.Rb.linearVelocity.y <= psc.PlayerData.FallAndJumpThreshold)
         {
             psc.StateMachine.TransitionTo(psc.StateMachine.FallState);
             return;

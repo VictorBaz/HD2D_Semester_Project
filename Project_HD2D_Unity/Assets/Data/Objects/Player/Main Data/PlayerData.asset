@@ -12,12 +12,73 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b075f1959f1262429105bdd193deedc, type: 3}
   m_Name: PlayerData
   m_EditorClassIdentifier: Assembly-CSharp::Character.Data.PlayerData
-  <Movement>k__BackingField: {fileID: 11400000, guid: d48bf0474f5ce7e4aaf60003d2430d6c, type: 2}
-  <Combat>k__BackingField: {fileID: 11400000, guid: 7b35e96186e84c344a846f15ab86000f, type: 2}
-  <Shooting>k__BackingField: {fileID: 11400000, guid: 65e0f3b6853c0614a8b5523af358e2ce, type: 2}
-  <LockOn>k__BackingField: {fileID: 11400000, guid: 3ee818b7941f5dd44adc82b59bc8774e, type: 2}
-  <DashData>k__BackingField: {fileID: 11400000, guid: 72bef63c51ca63d4c8eb48c9d9759c70, type: 2}
-  <JumpData>k__BackingField: {fileID: 11400000, guid: 0955d34849e8d124f9cfee8bffba3248, type: 2}
-  <PlayerResourcesData>k__BackingField: {fileID: 11400000, guid: ae8f4f81b82a9ab4d8b5cbec725c0776, type: 2}
-  <CarryData>k__BackingField: {fileID: 11400000, guid: cff5b425c43f83d4fa7aa60364a4e28d, type: 2}
-  <ParryData>k__BackingField: {fileID: 11400000, guid: 509d76bbc963acf4795677930243083f, type: 2}
+  Movement:
+    MoveSpeedWalking: 5
+    MoveSpeedRunning: 8
+    MoveSpeedSlope: 8
+    SpeedMultiplierCarry: 0.5
+    RotationSpeed: 10
+    Acceleration: 20
+    Deceleration: 30
+    RunThreshold: 0.6
+    GroundMask:
+      serializedVersion: 2
+      m_Bits: 8
+    GroundCheckDistance: 0.35
+    PlayerHeight: 1.85
+    MaxSlopeAngle: 45
+  Combat:
+    ComboWindow: 0.5
+    ComboHits:
+    - Clip: {fileID: 7400000, guid: 71be0db4f6d6b164cb0f788cb6b6e70c, type: 2}
+      DashSpeed: 5
+      DashStartOffset: 0.13
+      DashDuration: 0.38
+      HitboxStartOffset: 0.2
+      HitboxActiveDuration: 0.33
+    - Clip: {fileID: 7400000, guid: 7a110343ce47a1d4e8274d0e97fc8e07, type: 2}
+      DashSpeed: 10
+      DashStartOffset: 0.04
+      DashDuration: 0.38
+      HitboxStartOffset: 0
+      HitboxActiveDuration: 0.33
+    - Clip: {fileID: 7400000, guid: f10a072f6d6ba3344a95fcba0d77bf86, type: 2}
+      DashSpeed: 0.35
+      DashStartOffset: 0.13
+      DashDuration: 0.38
+      HitboxStartOffset: 0.02
+      HitboxActiveDuration: 0.33
+    ParryAnimationClip: {fileID: 7400000, guid: 1f7babac7bb2e4a42b2dd3e3dfb6af77, type: 2}
+    ParryHitboxStartOffset: 0.1
+    ParryActiveDuration: 0.2
+    ParryCooldown: 0.5
+    LockRange: 15
+    LockAngle: 90
+    LockableLayer:
+      serializedVersion: 2
+      m_Bits: 128
+    LockRotationSpeed: 10
+    HitDuration: 0.5
+    HitForceTaken: 5
+  Abilities:
+    JumpHeight: 2
+    JumpDuration: 0.4
+    JumpCooldown: 0.2
+    GravityMultiplier: 3
+    MaxGravityTime: 0.8
+    CoyoteTime: 0.2
+    AirControlForce: 0.2
+    FallAndJumpThreshold: 0.1
+    DashSpeed: 20
+    DashDuration: 0.4
+    DashCooldown: 0.6
+    CarryRange: 3
+    CarryAngle: 90
+    CarryLayer:
+      serializedVersion: 2
+      m_Bits: 64
+  Resources:
+    MaxLife: 3
+    MaxEnergy: 5
+    StartingLife: 3
+    StartingEnergy: 0

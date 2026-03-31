@@ -402,8 +402,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
         Gizmos.DrawWireSphere(rayEnd, radius);
 
         Gizmos.color = Color.blue;
-        float carryRange = isRuntime ? playerData.CarryRange : playerDataRaw.CarryData.CarryRange;
-        float carryAngle = isRuntime ? playerData.CarryAngle : playerDataRaw.CarryData.CarryAngle;
+        float carryRange = isRuntime ? playerData.CarryRange : playerDataRaw.Abilities.CarryRange;
+        float carryAngle = isRuntime ? playerData.CarryAngle : playerDataRaw.Abilities.CarryAngle;
 
         DrawWireArc(transform.position, transform.forward, carryAngle, carryRange);
     }

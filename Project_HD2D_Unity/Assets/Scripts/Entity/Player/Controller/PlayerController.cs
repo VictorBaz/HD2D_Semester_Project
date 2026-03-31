@@ -112,7 +112,7 @@ public class PlayerController : MonoBehaviour
         float accel = isMoving ? playerData.Acceleration : playerData.Deceleration;
         currentSpeed = Mathf.MoveTowards(currentSpeed, targetSpeed, accel * Time.fixedDeltaTime);
     
-        if (!isMoving && currentSpeed < 0.1f) currentSpeed = 0f;
+        if (!isMoving && currentSpeed < GameConstants.VELOCITY_TO_SNAP_TO_0) currentSpeed = 0f;
     }
     
     private void ApplyGroundMovement(Vector3 targetDirection)
@@ -131,8 +131,6 @@ public class PlayerController : MonoBehaviour
 
     private void ApplyAirMovement(Vector2 moveInput)
     {
-        float airControlForce = 17f;   
-        
         Vector3 camForward = cam.transform.forward;
         Vector3 camRight = cam.transform.right;
         
@@ -143,7 +141,7 @@ public class PlayerController : MonoBehaviour
         Vector3 currentHorizontalVel = rb.linearVelocity;
         currentHorizontalVel.y = 0;
         
-        Vector3 acceleration = targetDir * (airControlForce * Time.fixedDeltaTime);
+        Vector3 acceleration = targetDir * (playerData.AirControlForce * Time.fixedDeltaTime);
         Vector3 newHorizontalVel = currentHorizontalVel + acceleration;
         
         float maxSpeed = playerData.MoveSpeedRunning;
@@ -167,9 +165,8 @@ public class PlayerController : MonoBehaviour
     #region Ground & Slopes
     private void CheckGround()
     {
-        float sphereRadius = 0.2f;
-        Vector3 rayStart = transform.position - new Vector3(0, (playerData.PlayerHeight / 2) - sphereRadius, 0);
-        IsGrounded = Physics.SphereCast(rayStart, sphereRadius, -Vector3.up, out _, playerData.GroundCheckDistance, playerData.GroundMask);
+        Vector3 rayStart = transform.position - new Vector3(0, (playerData.PlayerHeight / 2) - GameConstants.CHECK_GROUND_RADIUS, 0);
+        IsGrounded = Physics.SphereCast(rayStart, GameConstants.CHECK_GROUND_RADIUS, -Vector3.up, out _, playerData.GroundCheckDistance, playerData.GroundMask);
     }
 
     private bool OnSlope()

@@ -30,7 +30,7 @@ public class PlayerCarryState : PlayerBaseState
         HandleMovement(psc);
 
         float magnitude     = psc.InputManager.MoveInput.magnitude;
-        float animMagnitude = magnitude > GameConstants.DEAD_STICK ? 1f : 0f;
+        float animMagnitude = magnitude > GameConstants.DEAD_STICK ? GameConstants.PLAYER_ANIM_MAGNITUDE_RUN : GameConstants.PLAYER_ANIM_MAGNITUDE_IDLE;
 
         blendInput = GetBlendTreeInput(psc);
         psc.AnimationManager.HandleAnimation(animMagnitude, blendInput, psc.Controller.IsGrounded);
@@ -38,6 +38,6 @@ public class PlayerCarryState : PlayerBaseState
 
     public override void FixedUpdateState(PlayerStateContext psc)
     {
-        HandlePhysics(psc, 0.5f);
+        HandlePhysics(psc, psc.PlayerData.CarrySpeedMultiplier);
     }
 }

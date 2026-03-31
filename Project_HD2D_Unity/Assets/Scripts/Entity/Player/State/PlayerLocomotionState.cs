@@ -27,7 +27,7 @@ public class PlayerLocomotionState : PlayerBaseState
         {
             airTimeBuffer += Time.deltaTime;
 
-            if (airTimeBuffer > psc.PlayerData.CoyotteTime || psc.Rb.linearVelocity.y > 1f)
+            if (airTimeBuffer > psc.PlayerData.CoyoteTime)
             {
                 DetermineState(psc);
                 return;
@@ -44,8 +44,10 @@ public class PlayerLocomotionState : PlayerBaseState
         HandleMovement(psc);
 
         float magnitude     = psc.InputManager.MoveInput.magnitude;
-        float animMagnitude = magnitude > psc.PlayerData.RunThreshold ? 1f :
-            magnitude > GameConstants.DEAD_STICK    ? 0.5f : 0f;
+        
+        float animMagnitude = magnitude > psc.PlayerData.RunThreshold ? GameConstants.PLAYER_ANIM_MAGNITUDE_RUN :
+            magnitude > GameConstants.DEAD_STICK ? GameConstants.PLAYER_ANIM_MAGNITUDE_WALK :
+            GameConstants.PLAYER_ANIM_MAGNITUDE_IDLE;
 
         blendInput = GetBlendTreeInput(psc);
         psc.AnimationManager.HandleAnimation(animMagnitude, blendInput, psc.Controller.IsGrounded);

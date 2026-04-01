@@ -167,7 +167,7 @@ public class EnemyManager : MonoBehaviour, IDamageable, ICarryable
             StateTxt.text = newState.Name;
 
         if (feedbackRenderer != null && data != null)
-            feedbackRenderer.sprite = data.GetSprite(currentState);
+            feedbackRenderer.sprite = data.GetSpriteByStateName(currentState.Name);
 
         currentState.EnterState(context);
     }

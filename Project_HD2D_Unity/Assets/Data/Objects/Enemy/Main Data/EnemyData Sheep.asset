@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a05d2377a64402d9e59dd88c20036aa, type: 3}
-  m_Name: EnemyData
+  m_Name: EnemyData Sheep
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   Navigation:
     PatrolSpeed: 1.5
@@ -27,6 +27,11 @@ MonoBehaviour:
     HitboxActiveDuration: 0.2
     AttackDashSpeed: 7
     AttackDashDuration: 0.2
+    AttackJumpForce: 7
+    GroundDetectionDistance: 1.77
+    NavMeshSampleMargin: 1
+    LandingStunDuration: 0.3
+    ShockwaveActiveDuration: 0.3
   Status:
     MaxKo: 10
     KoTime: 25

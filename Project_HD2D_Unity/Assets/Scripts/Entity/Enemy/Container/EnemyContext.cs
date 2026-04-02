@@ -3,7 +3,7 @@ using UnityEngine.AI;
 
 public class EnemyContext
 {
-    public EnemyManager Manager;
+    public EnemyBaseManager Manager;
     public NavMeshAgent Agent;
     public Rigidbody Rb;
     public EnemyMovement Movement;

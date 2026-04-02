@@ -43,6 +43,8 @@ public class EnemySearchState : EnemyBaseState
 
     private void MoveToRandomPoint(EnemyContext actx)
     {
+        if (!actx.IsNavReady) return;
+            
         Vector2 randomCircle = Random.insideUnitCircle * actx.Data.SearchRadius;
         Vector3 randomPoint  = searchCenter + new Vector3(randomCircle.x, 0, randomCircle.y);
 

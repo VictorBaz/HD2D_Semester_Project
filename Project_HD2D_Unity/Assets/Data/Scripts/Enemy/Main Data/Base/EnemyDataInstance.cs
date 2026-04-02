@@ -1,75 +1,10 @@
 ﻿using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyData", menuName = "Enemy/EnemyData")]
-public class EnemyData : ScriptableObject
-{
-    public NavigationSettings Navigation;
-    public AttackSettings Attack;
-    public StatusSettings Status; 
-    
-    public VisualSettings Visuals;
-
-    public EnemyDataInstance Init() => new EnemyDataInstance(this);
-}
-
-#region Serialized Settings Structures
-
-[System.Serializable]
-public class NavigationSettings
-{
-    public float PatrolSpeed = 2f;
-    public float ChaseSpeed = 4.5f;
-    public float Acceleration = 8f;
-    public float StoppingDistance = 1.2f;
-    public float DetectionRange = 15f;
-    public float ViewAngle = 90f;
-    public float SearchDuration = 10f;
-    public float SearchRadius = 5f;
-}
-
-[System.Serializable]
-public class AttackSettings
-{
-    public float AttackCooldown = 1f;
-    public float AnticipationTime = 0.4f;
-    public float HitboxActiveDuration = 0.2f;
-    public float AttackDashSpeed = 5f;
-    public float AttackDashDuration = 0.2f;
-}
-
-[System.Serializable]
-public class StatusSettings
-{
-    [Header("K-O & Stun")]
-    public int MaxKo = 100;
-    public float KoTime = 15f;
-    public float StunDuration = 0.2f;
-    
-    [Header("Exposed State")]
-    public float ExposedTime = 1f;
-    
-    [Header("Damage")]
-    public int DamageToApply = 1;
-}
-
-[System.Serializable]
-public class VisualSettings
-{
-    public Sprite SpriteSearch;
-    public Sprite SpriteAttackStart;
-    public Sprite SpriteChase;
-    public Sprite SpritePatrol;
-    public Sprite SpriteKo;
-    public Sprite SpriteFall;
-    public Sprite SpriteTakeDamage;
-    public Sprite SpriteExposed;
-}
-
-#endregion
-
 [System.Serializable]
 public class EnemyDataInstance
 {
+    public EnemyData BaseData;
+    
     public float PatrolSpeed;
     public float ChaseSpeed;
     public float Acceleration;
@@ -84,6 +19,12 @@ public class EnemyDataInstance
     public float HitboxActiveDuration;
     public float AttackDashSpeed;
     public float AttackDashDuration;
+
+    public float AttackJumpForce;
+    public float GroundDetectionDistance;
+    public float NavMeshSampleMargin;
+    public float LandingStunDuration;
+    public float ShockwaveActiveDuration;
 
     public int MaxKo;
     public float KoTime;
@@ -117,6 +58,12 @@ public class EnemyDataInstance
         HitboxActiveDuration = data.Attack.HitboxActiveDuration;
         AttackDashSpeed = data.Attack.AttackDashSpeed;
         AttackDashDuration = data.Attack.AttackDashDuration;
+
+        AttackJumpForce = data.Attack.AttackJumpForce;
+        GroundDetectionDistance = data.Attack.GroundDetectionDistance;
+        NavMeshSampleMargin = data.Attack.NavMeshSampleMargin;
+        LandingStunDuration = data.Attack.LandingStunDuration;
+        ShockwaveActiveDuration = data.Attack.ShockwaveActiveDuration;
 
         MaxKo = data.Status.MaxKo;
         KoTime = data.Status.KoTime;

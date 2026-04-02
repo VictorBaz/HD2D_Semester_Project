@@ -72,7 +72,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1033
   originTransform: {fileID: 115597726563387408}
-  manager: {fileID: 5035003027645983826}
+  manager: {fileID: 1216262872947051202}
   damage: 0
   targetTag: Player
 --- !u!1 &1196537580463438191
@@ -348,13 +348,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 115597726563387408}
-  - component: {fileID: 4622324164164168075}
+  - component: {fileID: 1216262872947051202}
   - component: {fileID: 398501220514201047}
-  - component: {fileID: 5035003027645983826}
+  - component: {fileID: 1345718932332441342}
   - component: {fileID: 212605884227892768}
   - component: {fileID: 7245836697288092329}
-  - component: {fileID: 1345718932332441342}
   - component: {fileID: 2790019675750846336}
+  - component: {fileID: 4622324164164168075}
   m_Layer: 6
   m_Name: Enemy Basic
   m_TagString: Enemy
@@ -382,33 +382,31 @@ Transform:
   - {fileID: 2456343389474041188}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!54 &4622324164164168075
-Rigidbody:
+--- !u!114 &1216262872947051202
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2571272836133710754}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 1
-  m_Interpolate: 0
-  m_Constraints: 80
-  m_CollisionDetection: 2
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0650969e8394a1db5ba5d2c3bf9efdd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySheepManager
+  rb: {fileID: 4622324164164168075}
+  agent: {fileID: 212605884227892768}
+  mainCollider: {fileID: 2790019675750846336}
+  enemyAnimationManager: {fileID: 1345718932332441342}
+  viewRangeTrigger: {fileID: 4437152815591005054}
+  attackRangeTrigger: {fileID: 291529075643011626}
+  enemyData: {fileID: 11400000, guid: d96629e6f36625f49b7913dc1df76deb, type: 2}
+  KoSlider: {fileID: 3750257275630220848}
+  feedbackRenderer: {fileID: 1446772484002405093}
+  patrolPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &398501220514201047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -428,7 +426,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
---- !u!114 &5035003027645983826
+--- !u!114 &1345718932332441342
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -437,27 +435,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 2571272836133710754}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c6ab837d913d2c94aae190e640f4a5b5, type: 3}
+  m_Script: {fileID: 11500000, guid: 1e10b40e16dd4469bf995f67772f5237, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AiBehavior
-  rb: {fileID: 4622324164164168075}
-  agent: {fileID: 212605884227892768}
-  mainCollider: {fileID: 2790019675750846336}
-  enemyAnimationManager: {fileID: 1345718932332441342}
-  viewRangeTrigger: {fileID: 4437152815591005054}
-  attackRangeTrigger: {fileID: 291529075643011626}
-  obstacleMask:
-    serializedVersion: 2
-    m_Bits: 537
-  eyeHeightOffset: 1.5
-  patrolPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  KoSlider: {fileID: 3750257275630220848}
-  StateTxt: {fileID: 6408203814767651474}
-  feedbackRenderer: {fileID: 1446772484002405093}
-  enemyDataRaw: {fileID: 11400000, guid: d96629e6f36625f49b7913dc1df76deb, type: 2}
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimationManager
+  animator: {fileID: 7245836697288092329}
+  colliderAttack: {fileID: 97624400551746965}
 --- !u!195 &212605884227892768
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -502,20 +484,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1345718932332441342
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2571272836133710754}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e10b40e16dd4469bf995f67772f5237, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimationManager
-  animator: {fileID: 7245836697288092329}
-  colliderAttack: {fileID: 97624400551746965}
 --- !u!136 &2790019675750846336
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -539,6 +507,33 @@ CapsuleCollider:
   m_Height: 2.11
   m_Direction: 1
   m_Center: {x: 0, y: 0.5, z: 0}
+--- !u!54 &4622324164164168075
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2571272836133710754}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 80
+  m_CollisionDetection: 2
 --- !u!1 &3349530868771284876
 GameObject:
   m_ObjectHideFlags: 0

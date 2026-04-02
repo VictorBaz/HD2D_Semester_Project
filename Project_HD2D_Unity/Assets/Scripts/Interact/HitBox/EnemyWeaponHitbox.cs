@@ -4,7 +4,7 @@ using UnityEngine;
 public class EnemyWeaponHitbox : BaseHitbox
 {
     [Header("Weapon Specific")]
-    [SerializeField] private EnemyManager manager;
+    [SerializeField] private EnemyBaseManager manager;
     [SerializeField] private int    damage    = 10;
     [SerializeField] private string targetTag = "Player";
 

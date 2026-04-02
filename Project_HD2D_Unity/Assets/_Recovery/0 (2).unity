@@ -10114,7 +10114,7 @@ Transform:
   m_GameObject: {fileID: 3001665521873414931}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 24.9, y: -0.506, z: 6.25}
+  m_LocalPosition: {x: 24.9, y: -0.55, z: 6.25}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -10417,7 +10417,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 115597726563387408, guid: 2b4fd7af5a3e4594c8289de81582ca1a, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.218
+      value: 0.391
       objectReference: {fileID: 0}
     - target: {fileID: 115597726563387408, guid: 2b4fd7af5a3e4594c8289de81582ca1a, type: 3}
       propertyPath: m_LocalPosition.z
@@ -10450,10 +10450,6 @@ PrefabInstance:
     - target: {fileID: 115597726563387408, guid: 2b4fd7af5a3e4594c8289de81582ca1a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 212605884227892768, guid: 2b4fd7af5a3e4594c8289de81582ca1a, type: 3}
-      propertyPath: m_AgentTypeID
-      value: 1479372276
       objectReference: {fileID: 0}
     - target: {fileID: 1216262872947051202, guid: 2b4fd7af5a3e4594c8289de81582ca1a, type: 3}
       propertyPath: 'patrolPoints.Array.data[0]'
@@ -11000,9 +10996,9 @@ CapsuleCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 1.63
-  m_Height: 3.607628
+  m_Height: 3.05
   m_Direction: 1
-  m_Center: {x: 0, y: 0.51077044, z: 0}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!135 &3265443274157364172
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -12209,12 +12205,9 @@ MonoBehaviour:
   agent: {fileID: 645600288939357841}
   mainCollider: {fileID: 3224249656836607793}
   enemyAnimationManager: {fileID: 1777239442157760079}
-  enemyLayerMask:
-    serializedVersion: 2
-    m_Bits: 64
   viewRangeTrigger: {fileID: 4005141648819100623}
   attackRangeTrigger: {fileID: 1012546581770490523}
-  enemyData: {fileID: 11400000, guid: b6a87fff77cd4c44d8cf283b1734ebdf, type: 2}
+  enemyData: {fileID: 11400000, guid: d96629e6f36625f49b7913dc1df76deb, type: 2}
   KoSlider: {fileID: 4471343226121516673}
   feedbackRenderer: {fileID: 2167645455605094996}
   patrolPoints:

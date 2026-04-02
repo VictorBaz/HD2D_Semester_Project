@@ -1,0 +1,371 @@
+﻿using Interface;
+using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.UI;
+
+public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
+{
+    #region State Properties
+    public EnemyPatrolState    PatrolState    { get; protected set; }
+    public EnemyChaseState     ChaseState     { get; protected set; }
+    public EnemySearchState    SearchState    { get; protected set; }
+    public EnemyGoToSpawnState GoToSpawnState { get; protected set; }
+    public EnemyKoState        KoState        { get; protected set; }
+    public EnemyHitState       HitState       { get; protected set; }
+    public EnemyDropState      DropState      { get; protected set; }
+    public EnemyFriendlyState  FriendlyState  { get; protected set; }
+    public EnemyExposedState   ExposedState   { get; protected set; }
+    public EnemyStaticState    StaticState    { get; protected set; }
+
+    public EnemyBaseState CurrentState      { get; private set; }
+    public EnemyBaseState PreviousBaseState { get; private set; }
+    public EnemyBaseState AttackState       { get; protected set; }
+    #endregion
+
+    #region Serialized Fields
+    [Header("Core Components")]
+    [SerializeField] protected Rigidbody             rb;
+    [SerializeField] protected NavMeshAgent          agent;
+    [SerializeField] protected Collider              mainCollider;
+    [SerializeField] protected EnemyAnimationManager enemyAnimationManager;
+    [SerializeField] protected LayerMask enemyLayerMask;
+
+    [Header("Triggers")]
+    [SerializeField] protected Trigger viewRangeTrigger;
+    [SerializeField] protected Trigger attackRangeTrigger;
+
+    [Header("Data & UI")]
+    [SerializeField] protected EnemyData enemyData;
+    [SerializeField] public    Slider    KoSlider;
+    [SerializeField] private Image feedbackRenderer;
+
+    [Header("Patrol Settings")]
+    public Transform[] patrolPoints; 
+    #endregion
+
+    protected EnemyContext context;
+    protected bool         isCarried;
+    private   bool         isInitialized;
+
+    #region Unity Lifecycle
+
+    protected virtual void Awake()
+    {
+        context = new EnemyContext
+        {
+            Manager        = this,
+            Agent          = agent,
+            Rb             = rb,
+            Movement       = GetComponent<EnemyMovement>(),
+            AnimManager    = enemyAnimationManager,
+            SpawnPosition  = transform.position,
+            LastKnownPosition = transform.position,
+            LayerMaskEnemy = gameObject.layer,
+            Data           = enemyData.Init(),
+        };
+
+        InitializeCommonStates();
+        isInitialized = true;
+    }
+
+    protected virtual void Start()
+    {
+        InitializeAttackState();
+        SubscribeEvents();
+        
+        if (KoSlider != null)
+        {
+            KoSlider.maxValue = context.Data.MaxKo;
+            KoSlider.value    = context.Data.CurrentKo;
+        }
+        
+        agent.speed            = context.Data.PatrolSpeed;
+        agent.stoppingDistance = context.Data.StoppingDistance;
+        
+        ChangeState(PatrolState);
+    }
+
+    protected virtual void OnEnable()
+    {
+        if (!isInitialized) return;
+        ChangeState(PatrolState);
+        
+    }
+
+    protected virtual void Update()
+    {
+        CurrentState?.UpdateState(context);
+    }
+
+    private void OnDestroy() => UnsubscribeEvents();
+
+    #endregion
+
+    #region Initialization
+
+    protected virtual void InitData()
+    {
+        
+    }
+
+    protected virtual void InitializeCommonStates()
+    {
+        PatrolState    = new EnemyPatrolState();
+        ChaseState     = new EnemyChaseState();
+        SearchState    = new EnemySearchState();
+        GoToSpawnState = new EnemyGoToSpawnState();
+        KoState        = new EnemyKoState();
+        HitState       = new EnemyHitState();
+        DropState      = new EnemyDropState();
+        FriendlyState  = new EnemyFriendlyState();
+        ExposedState   = new EnemyExposedState();
+        StaticState    = new EnemyStaticState();
+    }
+
+    protected abstract void InitializeAttackState();
+
+    #endregion
+
+    #region State Machine
+
+    public void ChangeState(EnemyBaseState newState)
+    {
+        if (newState == null || newState == CurrentState) return;
+
+        CurrentState?.ExitState(context);
+        PreviousBaseState = CurrentState;
+        CurrentState      = newState;
+        
+
+        if (feedbackRenderer != null && context.Data != null)
+            feedbackRenderer.sprite = context.Data.GetSpriteByStateName(CurrentState.Name);
+        
+        CurrentState.EnterState(context);
+    }
+
+    #endregion
+
+    #region Trigger Events
+
+    private void SubscribeEvents()
+    {
+        if (viewRangeTrigger != null)
+        {
+            viewRangeTrigger.EnteredTrigger += OnViewRangeEnter;
+            viewRangeTrigger.ExitedTrigger  += OnViewRangeExit;
+        }
+        if (attackRangeTrigger != null)
+        {
+            attackRangeTrigger.EnteredTrigger += OnAttackRangeEnter;
+            attackRangeTrigger.ExitedTrigger  += OnAttackRangeExit;
+        }
+    }
+
+    private void UnsubscribeEvents()
+    {
+        if (viewRangeTrigger != null)
+        {
+            viewRangeTrigger.EnteredTrigger -= OnViewRangeEnter;
+            viewRangeTrigger.ExitedTrigger  -= OnViewRangeExit;
+        }
+        if (attackRangeTrigger != null)
+        {
+            attackRangeTrigger.EnteredTrigger -= OnAttackRangeEnter;
+            attackRangeTrigger.ExitedTrigger  -= OnAttackRangeExit;
+        }
+    }
+
+    protected virtual void OnViewRangeEnter(Collider other)
+    {
+        if (!other.CompareTag(GameConstants.PLAYER_TAG)) return;
+        context.Target              = other.gameObject;
+        context.IsPlayerInViewRange = true;
+    }
+
+    protected virtual void OnViewRangeExit(Collider other)
+    {
+        if (!other.CompareTag(GameConstants.PLAYER_TAG)) return;
+        context.LastKnownPosition   = other.transform.position;
+        context.Target              = null;
+        context.IsPlayerInViewRange = false;
+    }
+
+    protected virtual void OnAttackRangeEnter(Collider other)
+    {
+        if (other.CompareTag(GameConstants.PLAYER_TAG))
+            context.IsPlayerInAttackRange = true;
+    }
+
+    protected virtual void OnAttackRangeExit(Collider other)
+    {
+        if (other.CompareTag(GameConstants.PLAYER_TAG))
+            context.IsPlayerInAttackRange = false;
+    }
+
+    #endregion
+
+    #region Detection
+
+    public bool CanSeePlayer()
+    {
+        if (context.Target == null) return false;
+
+        Vector3 eyePos = transform.position;
+        Vector3 toTarget = (context.Target.transform.position - eyePos);
+        float   dist     = toTarget.magnitude;
+
+        bool hit = Physics.Raycast(
+            eyePos, toTarget.normalized, out RaycastHit hitInfo,
+            dist, ~context.LayerMaskEnemy , QueryTriggerInteraction.Ignore);
+
+        if (hit && hitInfo.transform.CompareTag(GameConstants.PLAYER_TAG))
+        {
+            context.LastKnownPosition = context.Target.transform.position;
+            Debug.DrawLine(eyePos, hitInfo.point, Color.green);
+            return true;
+        }
+
+        Debug.DrawLine(eyePos, eyePos + toTarget.normalized * dist, Color.red);
+        return false;
+    }
+
+    #endregion
+
+    #region IDamageable
+
+    public virtual void TakeDamage(int damage, Vector3 hitDirection)
+    {
+        if (CurrentState != null && !CurrentState.CanTakeDamage) return;
+
+        context.HitDirection  = hitDirection;
+        context.Data.CurrentKo += damage;
+        ChangeState(HitState);
+    }
+
+    public Transform GetTransform()          => transform;
+    public bool      IsInParryWindow()        => CurrentState != null && CurrentState.CanBeParry;
+    public bool      IsInParryWindowPerfect() => false;
+
+    #endregion
+
+    #region Parry
+
+    public virtual void HandleParry()
+    {
+        ChangeState(ExposedState);
+    }
+
+    public virtual void HandlePerfectParry()
+    {
+        ChangeState(ExposedState);
+    }
+
+    #endregion
+
+    #region ICarryable
+
+    public bool IsCarryable() => CurrentState == KoState;
+
+    public void Carry(Transform anchor)
+    {
+        agent.enabled  = false;
+        rb.isKinematic = true;
+        rb.useGravity  = false;
+
+        transform.SetParent(anchor);
+        transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.identity;
+
+        mainCollider.enabled = false;
+        isCarried            = true;
+    }
+
+    public void Eject(bool isEscaping = false)
+    {
+        transform.SetParent(null, true);
+        mainCollider.enabled = true;
+
+        ApplyMovementMode(usePhysics: true);
+        rb.AddForce((transform.forward + Vector3.up) * 5f, ForceMode.Impulse);
+
+        isCarried = false;
+        ChangeState(DropState);
+    }
+
+    public bool IsCarry() => isCarried;
+
+    #endregion
+
+    #region Movement Mode
+
+    public void ApplyMovementMode(bool usePhysics)
+    {
+        if (usePhysics)
+        {
+            agent.enabled  = false;
+            rb.isKinematic = false;
+            rb.useGravity  = true;
+            return;
+        }
+
+        if (!rb.isKinematic)
+        {
+            rb.linearVelocity  = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
+
+        rb.isKinematic = true;
+        rb.useGravity  = false;
+
+        if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+        {
+            agent.enabled = true;
+            agent.Warp(hit.position);
+        }
+    }
+
+    public bool IsGrounded(float detectionDistance = 0.1f, float navMeshMargin = 0.1f)
+    {
+        Vector3 rayOrigin = transform.position;
+        float totalDist = detectionDistance;
+
+        
+        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, totalDist, ~context.LayerMaskEnemy))
+        {
+            return NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, navMeshMargin, NavMesh.AllAreas);
+        }
+        return false;
+    }
+    
+    public bool IsGroundedDebug(float detectionDistance = 0.1f, float navMeshMargin = 0.1f)
+    {
+        Vector3 rayOrigin = transform.position;
+        float totalDist = detectionDistance;
+
+        
+        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, totalDist, ~enemyLayerMask))
+        {
+            return NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, navMeshMargin, NavMesh.AllAreas);
+        }
+        return false;
+    }
+    
+    private void OnDrawGizmos()
+    {
+        float testDist = enemyData.Attack.GroundDetectionDistance;
+        float testMargin = enemyData.Attack.NavMeshSampleMargin;
+    
+        Vector3 start = transform.position;
+        Vector3 end = start + Vector3.down * (testDist);
+
+        Gizmos.color = IsGroundedDebug(testDist,testMargin) ? Color.green : Color.red;
+        Gizmos.DrawLine(start, end);
+    
+        Gizmos.DrawWireSphere(transform.position, 0.05f);
+
+        Gizmos.color = new Color(1, 1, 0, 0.2f);
+        Gizmos.DrawWireSphere(end, testMargin);
+    }
+    
+    #endregion
+}

@@ -46,6 +46,8 @@ public class BigGuyJumpAttackState : EnemyAttackState
         
         ExecuteShockwave(actx);
 
+        canTakeDamage = true;
+        
         actx.Rb.linearVelocity = Vector3.zero; 
         actx.Rb.angularVelocity = Vector3.zero;
         

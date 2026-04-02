@@ -29,6 +29,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     [SerializeField] protected Collider              mainCollider;
     [SerializeField] protected EnemyAnimationManager enemyAnimationManager;
     [SerializeField] protected LayerMask enemyLayerMask;
+    [SerializeField] protected Transform carryTransform;
 
     [Header("Triggers")]
     [SerializeField] protected Trigger viewRangeTrigger;
@@ -271,13 +272,22 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
         agent.enabled  = false;
         rb.isKinematic = true;
         rb.useGravity  = false;
+        mainCollider.enabled = false;
 
         transform.SetParent(anchor);
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
 
-        mainCollider.enabled = false;
-        isCarried            = true;
+        if (carryTransform != null)
+        {
+            Vector3 offset = transform.position - carryTransform.position;
+            transform.localPosition = offset;
+        }
+        else
+        {
+            transform.localPosition = Vector3.zero;
+        }
+
+        transform.localRotation = Quaternion.identity;
+        isCarried = true;
     }
 
     public void Eject(bool isEscaping = false)

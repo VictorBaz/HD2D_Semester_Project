@@ -1,4 +1,6 @@
-﻿public static class GameConstants
+﻿using UnityEngine;
+
+public static class GameConstants
 {
     public const float DEAD_STICK = 0.25f;
     public const float DEAD_STICK_SQUARE = 0.0625f; 
@@ -9,6 +11,7 @@
     
     public const float GRAVITY_FORCE = 9.81f;
     public const string PLAYER_TAG = "Player";
+    public const int PLAYER_LAYER = 9;
 
     public const float PLAYER_ANIM_MAGNITUDE_RUN = 1f;
     public const float PLAYER_ANIM_MAGNITUDE_WALK = 0.5f;

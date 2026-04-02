@@ -28,7 +28,7 @@ public class BigGuyJumpAttackState : EnemyAttackState
         
         actx.Manager.ApplyMovementMode(true);
         
-        actx.Rb.constraints |= RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        actx.Rb.constraints |= RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
         
         CanBeParry = false;
 
@@ -42,15 +42,19 @@ public class BigGuyJumpAttackState : EnemyAttackState
             yield return null;
         }
         
-        actx.Rb.constraints &= ~(RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ);
+        actx.Rb.constraints &= ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ);
         
         ExecuteShockwave(actx);
 
-        yield return new WaitForSeconds(data.LandingStunDuration); 
+        actx.Rb.linearVelocity = Vector3.zero; 
+        actx.Rb.angularVelocity = Vector3.zero;
         
+        yield return new WaitForSeconds(data.LandingStunDuration); 
         
         actx.Manager.ApplyMovementMode(false);
         
+        yield return new WaitForEndOfFrame();
+
         isCooldown = true;
         yield return new WaitForSeconds(data.AttackCooldown);
         isCooldown = false;

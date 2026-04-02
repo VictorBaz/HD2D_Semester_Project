@@ -19,6 +19,7 @@ public class EnemyDataInstance
     public float HitboxActiveDuration;
     public float AttackDashSpeed;
     public float AttackDashDuration;
+    public float AttackRange;
 
     public float AttackJumpForce;
     public float GroundDetectionDistance;
@@ -64,6 +65,7 @@ public class EnemyDataInstance
         NavMeshSampleMargin = data.Attack.NavMeshSampleMargin;
         LandingStunDuration = data.Attack.LandingStunDuration;
         ShockwaveActiveDuration = data.Attack.ShockwaveActiveDuration;
+        AttackRange = data.Attack.AttackRange;
 
         MaxKo = data.Status.MaxKo;
         KoTime = data.Status.KoTime;

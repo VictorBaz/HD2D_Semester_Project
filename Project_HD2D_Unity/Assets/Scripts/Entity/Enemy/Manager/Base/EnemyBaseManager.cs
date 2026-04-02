@@ -298,6 +298,8 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
     #region Movement Mode
 
+    
+    //TODO CHANGE FOR OFFSET BECAUSE STRANGE CLIPPING
     public void ApplyMovementMode(bool usePhysics)
     {
         if (usePhysics)
@@ -316,11 +318,23 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
         rb.isKinematic = true;
         rb.useGravity  = false;
-
+        
         if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 2f, NavMesh.AllAreas))
         {
-            agent.enabled = true;
-            agent.Warp(hit.position);
+            float heightOffset = agent.height / 2f; 
+            
+            Vector3 targetPosition = hit.position + new Vector3(0, heightOffset, 0);
+
+            if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
+            {
+                transform.position = targetPosition;
+                agent.enabled = true;
+            }
+            else
+            {
+                agent.enabled = true;
+                agent.Warp(targetPosition);
+            }
         }
     }
 

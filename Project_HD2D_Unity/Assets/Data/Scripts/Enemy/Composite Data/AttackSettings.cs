@@ -12,5 +12,6 @@ public class AttackSettings
     public float NavMeshSampleMargin = 0.5f;
     public float LandingStunDuration = 0.3f;
     public float ShockwaveActiveDuration = 0.3f;
+    public float AttackRange = 4f;
     
 }

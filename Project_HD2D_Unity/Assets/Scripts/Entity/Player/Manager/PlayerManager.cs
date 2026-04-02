@@ -86,7 +86,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
         lockOnSystem.InitData(playerData);
         playerController.InitData(playerData);
 
-        uiManager.UpdateEnergyTxt(playerData.Energy);
+        uiManager.SetupEnergyBar(playerData.MaxEnergy);
     }
 
     private void OnEnable()
@@ -134,6 +134,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
     private void Start()
     {
         DebugState();
+        uiManager.UpdateEnergyDisplay(playerData.Energy);
     }
 
     private void Update()
@@ -321,7 +322,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
             playerData.RemoveEnergy();
         }
 
-        uiManager.UpdateEnergyTxt(playerData.Energy);
+        uiManager.UpdateEnergyDisplay(playerData.Energy);
     }
 
     #endregion

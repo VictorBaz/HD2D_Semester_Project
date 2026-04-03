@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class EnemyAnimationManager : BaseAnimationManager
 {
@@ -7,6 +8,13 @@ public class EnemyAnimationManager : BaseAnimationManager
     private static readonly int IsExposedHash = Animator.StringToHash("IsExposed");
 
     [SerializeField] private GameObject colliderAttack;
+    [SerializeField] private GameObject colliderRepulse;
+
+    private void Awake()
+    {
+        ToggleRepulsiveCollider(false);
+        ToggleAttackCollider(false);
+    }
 
     public void UpdateMovement(float currentSpeed) => animator.SetFloat(SpeedHash, currentSpeed);
     public void SetKO(bool isKO) => animator.SetBool(IsKOHash, isKO);
@@ -17,5 +25,10 @@ public class EnemyAnimationManager : BaseAnimationManager
     public void ToggleAttackCollider(bool toggle)
     {
         if (colliderAttack != null) colliderAttack.SetActive(toggle);
+    }
+    
+    public void ToggleRepulsiveCollider(bool active)
+    {
+        if(colliderRepulse != null) colliderRepulse.SetActive(active);
     }
 }

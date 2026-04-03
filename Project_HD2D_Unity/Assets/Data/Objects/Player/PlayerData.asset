@@ -1,0 +1,86 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b075f1959f1262429105bdd193deedc, type: 3}
+  m_Name: PlayerData
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerData
+  Movement:
+    MoveSpeedWalking: 4
+    MoveSpeedRunning: 6
+    MoveSpeedSlope: 6
+    SpeedMultiplierCarry: 0.7
+    RotationSpeed: 100
+    Acceleration: 40
+    Deceleration: 100
+    RunThreshold: 0.7
+    GroundMask:
+      serializedVersion: 2
+      m_Bits: 9
+    GroundCheckDistance: 0.2
+    PlayerHeight: 1.85
+    MaxSlopeAngle: 45
+  Combat:
+    ComboWindow: 0.8
+    ComboHits:
+    - Clip: {fileID: 7400000, guid: 58a95d5abb991d6438e102d4e5feca35, type: 2}
+      DashSpeed: 15
+      DashStartOffset: 0.33
+      DashDuration: 0.1
+      HitboxStartOffset: 0.21
+      HitboxActiveDuration: 0.21
+    - Clip: {fileID: 7400000, guid: 7a110343ce47a1d4e8274d0e97fc8e07, type: 2}
+      DashSpeed: 15
+      DashStartOffset: 0.17
+      DashDuration: 0.1
+      HitboxStartOffset: 0.36
+      HitboxActiveDuration: 0.15
+    - Clip: {fileID: 7400000, guid: f10a072f6d6ba3344a95fcba0d77bf86, type: 2}
+      DashSpeed: 15
+      DashStartOffset: 0.15
+      DashDuration: 0.1
+      HitboxStartOffset: 0.25
+      HitboxActiveDuration: 0.15
+    ParryAnimationClip: {fileID: 7400000, guid: 1f7babac7bb2e4a42b2dd3e3dfb6af77, type: 2}
+    ParryHitboxStartOffset: 0
+    ParryActiveDuration: 0.5
+    PerfectParryStartOffset: 0.12
+    PerfectParryDuration: 0.05
+    ParryCooldown: 0.5
+    LockRange: 10
+    LockAngle: 135
+    LockableLayer:
+      serializedVersion: 2
+      m_Bits: 128
+    LockRotationSpeed: 20
+    HitDuration: 0.5
+    HitForceTaken: 5
+  Abilities:
+    JumpHeight: 1.85
+    JumpDuration: 0.3
+    JumpCooldown: 0.2
+    GravityMultiplier: 2
+    MaxGravityTime: 0.4
+    CoyoteTime: 0.2
+    AirControlForce: 12
+    FallAndJumpThreshold: 0.1
+    DashSpeed: 12
+    DashDuration: 0.5
+    DashCooldown: 0.7
+    CarryRange: 2
+    CarryAngle: 90
+    CarryLayer:
+      serializedVersion: 2
+      m_Bits: 64
+  Resources:
+    MaxLife: 5
+    MaxEnergy: 2
+    StartingLife: 5
+    StartingEnergy: 2

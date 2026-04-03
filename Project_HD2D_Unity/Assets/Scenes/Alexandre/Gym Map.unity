@@ -9033,7 +9033,7 @@ RectTransform:
   m_Father: {fileID: 1906749380}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -12512,6 +12512,10 @@ PrefabInstance:
       value: Player PlaceHolder
       objectReference: {fileID: 0}
     - target: {fileID: 480803297957582579, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
+      propertyPath: m_Radius
+      value: 0.44
+      objectReference: {fileID: 0}
+    - target: {fileID: 480803297957582579, guid: baf497efa9cabcd48b64614a968899f6, type: 3}
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 13400000, guid: 448fc2fd4cb418d42a4fa51e95502e66, type: 2}
@@ -14035,7 +14039,7 @@ RectTransform:
   m_Father: {fileID: 148281841}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -15794,7 +15798,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1478084279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15807,9 +15811,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a14657ee828f42479c9031eaaa94d6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UiManager
-  lifeBarSlider: {fileID: 1906749381}
-  energyBarSlider: {fileID: 148281842}
-  energyText: {fileID: 59346976}
+  energyContainer: {fileID: 0}
+  energyPointPrefab: {fileID: 0}
 --- !u!224 &1478084280
 RectTransform:
   m_ObjectHideFlags: 0

@@ -16,6 +16,8 @@ public class BigGuyJumpAttackState : EnemyAttackState
     {
         base.ExitState(actx);
         canTakeDamage = true;
+        actx.AnimManager.ToggleRepulsiveCollider(false);
+        actx.AnimManager.ToggleAttackCollider(false);
     }
 
     public override bool CanTakeDamage => canTakeDamage;
@@ -32,7 +34,10 @@ public class BigGuyJumpAttackState : EnemyAttackState
         
         CanBeParry = false;
 
+        actx.AnimManager.ToggleRepulsiveCollider(true);
+        
         Vector3 jumpDirection = Vector3.up * data.AttackJumpForce;
+        
         actx.Rb.AddForce(jumpDirection, ForceMode.Impulse);
         
         yield return new WaitForSeconds(0.3f);
@@ -41,6 +46,10 @@ public class BigGuyJumpAttackState : EnemyAttackState
         {
             yield return null;
         }
+        
+        actx.AnimManager.ToggleRepulsiveCollider(false);
+
+        yield return new WaitForEndOfFrame();
         
         actx.Rb.constraints &= ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ);
         

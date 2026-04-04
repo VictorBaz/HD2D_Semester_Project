@@ -115,6 +115,7 @@ public class ResourceSettings
     public int StartingEnergy = 0;
     public int StartingSap = 0;
     public int MaxSap = 3;
+    public LayerMask SapLayerMask;
 }
 
 [System.Serializable]
@@ -190,6 +191,8 @@ public class PlayerDataInstance
     public int MaxLife;
     public int Energy;
     public int MaxEnergy;
+
+    public LayerMask SapLayerMask;
     public int Sap;
     public int MaxSap;
 
@@ -243,6 +246,7 @@ public class PlayerDataInstance
         Energy = data.Resources.StartingEnergy;
         Sap = data.Resources.StartingSap;
         MaxSap = data.Resources.MaxSap;
+        SapLayerMask = data.Resources.SapLayerMask;
     }
 
     public void AddSap() => Sap = Mathf.Min(MaxSap, Sap + 1);

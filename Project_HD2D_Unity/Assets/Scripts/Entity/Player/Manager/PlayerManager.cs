@@ -86,8 +86,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
         lockOnSystem.InitData(playerData);
         playerController.InitData(playerData);
 
-        uiManager.SetupEnergyBar(playerData.MaxEnergy);
-        uiManager.SetupSapBar(playerData.MaxSap);
+        uiManager.SetupEnergyBar(playerData.MaxEnergy,playerData.Energy);
+        uiManager.SetupSapBar(playerData.MaxSap,playerData.Sap);
     }
 
     private void OnEnable()
@@ -109,6 +109,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
         inputManager.OnCarry += TryCarry;
 
         inputManager.OnParry += HandleParry;
+        
+        EventManager.OnRequestPlayerTransform = GetTransform;
     }
 
     private void OnDisable()
@@ -130,6 +132,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
         inputManager.OnCarry -= TryCarry;
 
         inputManager.OnParry -= HandleParry;
+        
+        EventManager.OnRequestPlayerTransform = null;
     }
 
     private void Start()
@@ -387,17 +391,17 @@ public class PlayerManager : MonoBehaviour, IDamageable
     {
         var targets = DetectionHelper.FindVisibleTargets<ISapLockable>(
             transform,
-            playerData.CarryRange,
-            playerData.CarryAngle,
-            playerData.CarryLayer
+            playerData.LockRange,
+            playerData.LockAngle,
+            playerData.SapLayerMask
         );
 
         targets.RemoveAll(t => !t.IsLockable());
 
         ISapLockable sap = DetectionHelper.GetBestTarget(transform, targets);
-
-        if (sap == null) return;
         
+        if (sap == null) return;
+                
         sap.GiveSap();
         Context.PlayerData.AddSap();
         uiManager.UpdateSapDisplay(Context.PlayerData.Sap);

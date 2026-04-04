@@ -1,28 +1,74 @@
 ﻿using UnityEngine;
+using Manager;
 
 public class Sap : MonoBehaviour, ISapLockable
 {
-    [SerializeField] private Transform lockTransform;
+    #region Variables
+    [Header("Settings")]
+    [SerializeField] private SpriteRenderer feedbackSprite;
+    [SerializeField] private FeedbackLogic  feedbackLogic;
 
-    private bool empty = false;
-    
-    public Transform GetLockTransform()
+    private bool      _isEmpty;
+    private Transform _playerTransform;
+    #endregion
+
+    #region Unity Lifecycle
+    private void Start()
     {
-        return lockTransform != null ? lockTransform : transform;
+        Initialize();
     }
 
-    public bool IsLockable()
+    private void Update()
     {
-        return !empty;
+        HandleFeedbackDisplay();
+    }
+    #endregion
+
+    #region Initialization
+    private void Initialize()
+    {
+        if (EventManager.OnRequestPlayerTransform != null)
+        {
+            _playerTransform = EventManager.OnRequestPlayerTransform.Invoke();
+            feedbackLogic.Initialize(_playerTransform);
+        }
+    }
+    #endregion
+
+    #region Feedback Logic
+    private void HandleFeedbackDisplay()
+    {
+        if (_isEmpty || feedbackSprite == null) return;
+
+        float alpha = feedbackLogic.CalculateAlpha(transform.position);
+        
+        UpdateSpriteVisuals(alpha);
+
     }
 
-    public float GetLockPriority()
+    private void UpdateSpriteVisuals(float alpha)
     {
-        return 1f;
+        Color c = feedbackSprite.color;
+        c.a = alpha;
+        feedbackSprite.color = c;
+        
+        feedbackSprite.enabled = alpha > 0.01f;
     }
+    #endregion
+
+    #region ISapLockable
+    public Transform GetLockTransform() => transform;
+
+    public bool IsLockable() => !_isEmpty;
+
+    public float GetLockPriority() => 1f;
 
     public void GiveSap()
     {
-        empty = true;
+        _isEmpty = true;
+        
+        if (feedbackSprite != null)
+            feedbackSprite.enabled = false;
     }
+    #endregion
 }

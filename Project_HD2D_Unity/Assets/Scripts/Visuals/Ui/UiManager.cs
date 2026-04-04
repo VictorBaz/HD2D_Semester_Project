@@ -32,24 +32,26 @@ public class UiManager : MonoBehaviour
 
     #region Energy Logic
 
-    public void SetupEnergyBar(int maxEnergy) => SetupBar(energyContainer, energyIcons, energyPointPrefab, maxEnergy);
+    public void SetupEnergyBar(int maxEnergy, int currentEnergy) 
+        => SetupBar(energyContainer, energyIcons, energyPointPrefab, maxEnergy, currentEnergy);
     public void UpdateEnergyDisplay(int currentEnergy) => UpdateDisplay(energyIcons, currentEnergy);
 
     #endregion
 
     #region Sap Logic
 
-    public void SetupSapBar(int maxSap) => SetupBar(sapContainer, sapIcons, sapPointPrefab, maxSap);
+    public void SetupSapBar(int maxSap, int currentSap) 
+        => SetupBar(sapContainer, sapIcons, sapPointPrefab, maxSap, currentSap);
     public void UpdateSapDisplay(int currentSap) => UpdateDisplay(sapIcons, currentSap);
 
     #endregion
 
     #region Generic Bar Logic 
 
-    private void SetupBar(Transform container, List<Image> icons, GameObject prefab, int maxCount)
+    private void SetupBar(Transform container, List<Image> icons, GameObject prefab, int maxCount, int currentCount)
     {
         ClearContainer(container, icons);
-        
+    
         for (int i = 0; i < maxCount; i++)
         {
             GameObject obj = Instantiate(prefab, container);
@@ -57,7 +59,21 @@ public class UiManager : MonoBehaviour
             {
                 img.raycastTarget = false;
                 icons.Add(img);
-                PlaySpawnAnimation(obj.transform, i);
+                
+                bool isActive = (i < currentCount);
+                
+                img.enabled = isActive;
+                img.color = new Color(img.color.r, img.color.g, img.color.b, isActive ? 1f : 0.2f);
+            
+                
+                if (isActive) 
+                {
+                    PlaySpawnAnimation(obj.transform, i);
+                }
+                else 
+                {
+                    obj.transform.localScale = Vector3.one; 
+                }
             }
         }
     }

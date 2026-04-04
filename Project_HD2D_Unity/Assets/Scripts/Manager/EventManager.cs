@@ -6,6 +6,7 @@ namespace Manager
 {
     public static class EventManager
     {
+        public static Func<Transform> OnRequestPlayerTransform;
         
         public static event Action<GridObject, Vector3Int> OnObjectRegister;
         

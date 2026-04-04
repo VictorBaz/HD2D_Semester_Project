@@ -1,7 +1,5 @@
-using System;
 using System.Collections;
 using Enum;
-using Manager;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour

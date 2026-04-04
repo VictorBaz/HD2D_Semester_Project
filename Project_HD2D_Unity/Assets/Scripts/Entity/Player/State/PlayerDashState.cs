@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using Manager;
 using UnityEngine;
 
 namespace Player.State

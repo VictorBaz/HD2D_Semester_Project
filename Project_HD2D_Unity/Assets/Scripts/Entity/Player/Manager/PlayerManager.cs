@@ -1,5 +1,5 @@
+using System;
 using Interface;
-using Manager;
 using Player.State;
 using TMPro;
 using UnityEngine;
@@ -88,6 +88,9 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         uiManager.SetupEnergyBar(playerData.MaxEnergy,playerData.Energy);
         uiManager.SetupSapBar(playerData.MaxSap,playerData.Sap);
+        
+        EventManager.OnRequestPlayerTransform = GetTransform;
+        EventManager.OnRequestPlayerContext = GetContext;
     }
 
     private void OnEnable()
@@ -110,7 +113,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         inputManager.OnParry += HandleParry;
         
-        EventManager.OnRequestPlayerTransform = GetTransform;
+        
     }
 
     private void OnDisable()
@@ -133,7 +136,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         inputManager.OnParry -= HandleParry;
         
-        EventManager.OnRequestPlayerTransform = null;
     }
 
     private void Start()
@@ -156,6 +158,12 @@ public class PlayerManager : MonoBehaviour, IDamageable
     private void FixedUpdate()
     {
         CurrentPlayerState.FixedUpdateState(Context);
+    }
+
+    private void OnDestroy()
+    {
+        EventManager.OnRequestPlayerTransform = null;
+        EventManager.OnRequestPlayerContext = null;
     }
 
     #endregion
@@ -491,4 +499,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
     }
 
     #endregion
+
+    private PlayerStateContext GetContext() => Context;
 }

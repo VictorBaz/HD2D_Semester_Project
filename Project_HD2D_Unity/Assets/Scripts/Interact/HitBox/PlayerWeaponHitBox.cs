@@ -14,8 +14,8 @@ public class PlayerWeaponHitbox : BaseHitbox
     private void OnTriggerEnter(Collider other)
     {
         if (!IsTarget(other)) return;
-
-        var target = other.GetComponentInParent<IDamageable>();
+        
+        var target = other.GetComponent<IDamageable>();
         if (target == null || alreadyHitTargets.Contains(target)) return;
 
         if (!HasClearLineTo(other)) return;
@@ -26,7 +26,6 @@ public class PlayerWeaponHitbox : BaseHitbox
 
     private bool IsTarget(Collider other)
     {
-        return other.CompareTag(targetTag) ||
-               (other.transform.parent != null && other.transform.parent.CompareTag(targetTag));
+        return other.CompareTag(targetTag);
     }
 }

@@ -1,6 +1,4 @@
-using System;
 using Enum;
-using Manager;
 using UnityEngine;
 
 public class CameraTriggerFollow : CameraTriggerBase

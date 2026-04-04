@@ -2,50 +2,39 @@ using System;
 using Grid;
 using UnityEngine;
 
-namespace Manager
+public static class EventManager
 {
-    public static class EventManager
-    {
-        public static Func<Transform> OnRequestPlayerTransform;
+    #region Player & Context
+    /// <summary> Requête pour obtenir le Transform du joueur </summary>
+    public static Func<Transform> OnRequestPlayerTransform;
         
-        public static event Action<GridObject, Vector3Int> OnObjectRegister;
-        
-        public static event Action<GridObject, Vector3Int> OnObjectUnregister;
+    /// <summary> Requête pour obtenir le contexte d'état du joueur </summary>
+    public static Func<PlayerStateContext> OnRequestPlayerContext;
+    #endregion
 
-        public static event Action<CameraSettings> OnCameraTrigger;
-        
-        public static event Action OnCameraShake;
-        /// <summary>
-        /// Vector3Int => from
-        /// Vector3Int => to
-        /// </summary>
-        public static event Action<GridObject, Vector3Int, Vector3Int> OnObjectMoved;
+    #region Grid Systems
+    public static event Action<GridObject, Vector3Int> OnObjectRegister;
+    public static event Action<GridObject, Vector3Int> OnObjectUnregister;
+    /// <summary> GridObject, FromPosition, ToPosition </summary>
+    public static event Action<GridObject, Vector3Int, Vector3Int> OnObjectMoved;
 
-        public static void RegisterObject(GridObject gridObject,  Vector3Int position)
-        {
-            OnObjectRegister?.Invoke(gridObject, position);
-        }
+    public static void RegisterObject(GridObject gridObject, Vector3Int position) => OnObjectRegister?.Invoke(gridObject, position);
+    public static void UnregisterObject(GridObject gridObject, Vector3Int position) => OnObjectUnregister?.Invoke(gridObject, position);
+    public static void MovedObject(GridObject gridObject, Vector3Int from, Vector3Int to) => OnObjectMoved?.Invoke(gridObject, from, to);
+    #endregion
 
-        public static void UnregisterObject(GridObject gridObject, Vector3Int position)
-        {
-            OnObjectUnregister?.Invoke(gridObject, position);
-        }
+    #region Camera & Feedback
+    public static event Action<CameraSettings> OnCameraTrigger;
+    public static event Action OnCameraShake;
 
-        public static void MovedObject(GridObject gridObject, Vector3Int fromPosition, Vector3Int toPosition)
-        {
-            OnObjectMoved?.Invoke(gridObject, fromPosition, toPosition);
-        }
+    public static void TriggerCamera(CameraSettings settings) => OnCameraTrigger?.Invoke(settings);
+    public static void CameraShake() => OnCameraShake?.Invoke();
+    #endregion
 
-        public static void TriggerCamera(CameraSettings cameraSettings)
-        {
-            OnCameraTrigger?.Invoke(cameraSettings);
-        }
+    #region Gameplay & Puzzles
+    /// <summary> Appelé quand un boss de zone est vaincu. Paramètre : ID du puzzle </summary>
+    public static event Action<string> OnPuzzleCompleted;
 
-        public static void CameraShake()
-        {
-            OnCameraShake?.Invoke();
-        }
-
-        
-    }
+    public static void TriggerPuzzleCompleted(string puzzleID) => OnPuzzleCompleted?.Invoke(puzzleID);
+    #endregion
 }

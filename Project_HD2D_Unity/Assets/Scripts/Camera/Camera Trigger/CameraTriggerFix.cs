@@ -1,5 +1,4 @@
 using Enum;
-using Manager;
 using UnityEngine;
 
 public class CameraTriggerFix : CameraTriggerBase

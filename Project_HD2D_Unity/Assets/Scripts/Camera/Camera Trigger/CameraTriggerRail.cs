@@ -17,6 +17,6 @@ public class CameraTriggerRail : CameraTriggerBase
             ActiveRail = railToUse
         };
 
-        Manager.EventManager.TriggerCamera(settings);
+        EventManager.TriggerCamera(settings);
     }
 }

@@ -4,7 +4,6 @@ using UnityEngine;
 public class VATManager : MonoBehaviour, IRootLink
 {
     #region Variables
-
     [Header("VAT Settings")]
     [SerializeField] protected Renderer targetRenderer;
     [SerializeField] protected MeshFilter targetMeshFilter;
@@ -14,55 +13,29 @@ public class VATManager : MonoBehaviour, IRootLink
     [SerializeField] protected float transitionSpeed = 2f;
     [SerializeField] protected Animator animator;
 
+    [Header("Blocking")]
+    [SerializeField] private List<Parasite> blockers; 
+
     protected float currentNormalizedValue = 0f;
     protected MaterialPropertyBlock propBlock;
     protected Root root;
-
     #endregion
 
     #region Unity Lifecycle
-
-    #if UNITY_EDITOR
-    protected virtual void OnValidate()
-    {
-        if (targetRenderer == null || targetMeshFilter == null) return;
-
-        Vector3 min = targetRenderer.sharedMaterial.GetVector("_minValues");
-        Vector3 max = targetRenderer.sharedMaterial.GetVector("_maxValues");
-
-        if (min == Vector3.zero && max == Vector3.zero) return;
-
-        Vector3 center = (min + max) * 0.5f;
-        Vector3 size = (max - min);
-
-        targetMeshFilter.sharedMesh.bounds = new Bounds(center, size);
-    }
-    #endif
     protected virtual void Awake()
     {
         propBlock = new MaterialPropertyBlock();
-        
-        Vector3 min = targetRenderer.sharedMaterial.GetVector("_minValues");
-        Vector3 max = targetRenderer.sharedMaterial.GetVector("_maxValues");
-        
-        Vector3 center = (min + max) * 0.5f;
-        Vector3 size = (max - min); 
-
-        Mesh meshInstance = targetMeshFilter.mesh; 
-        meshInstance.bounds = new Bounds(center, size);
-    
+        SetupBounds(); 
         targetRenderer.staticShadowCaster = false; 
     }
 
     protected virtual void Update() => UpdateVAT();
-
     #endregion
 
     #region VAT Methods
-
     protected void UpdateVAT()
     {
-        int targetIndex = Mathf.Clamp(CurrentEnergy, 0, MaxEnergyIndex);
+        int targetIndex = IsBlocked() ? 0 : Mathf.Clamp(CurrentEnergy, 0, MaxEnergyIndex);
         float targetValue = animationSteps[targetIndex];
 
         if (!Mathf.Approximately(currentNormalizedValue, targetValue))
@@ -89,20 +62,41 @@ public class VATManager : MonoBehaviour, IRootLink
         propBlock.SetFloat(shaderPropertyName, frameValue);
         targetRenderer.SetPropertyBlock(propBlock);
     }
+    #endregion
 
+    #region Logic Checks
+    public bool IsBlocked()
+    {
+        if (blockers == null || blockers.Count == 0) return false;
+
+        foreach (var parasite in blockers)
+        {
+            if (parasite != null) return true; 
+        }
+        return false;
+    }
     #endregion
 
     #region Helper Methods
-    
     protected int CurrentEnergy => root != null ? root.CurrentEnergy : 0;
     protected int MaxEnergyIndex => animationSteps.Count - 1;
 
-    protected virtual void OnValueUpdated(float newValue) { }
-
     public void SetRoot(Root root) => this.root = root;
-    public bool IsContainingEnergy() => CurrentEnergy > 0;
-    public bool IsAtMaximumEnergy() => CurrentEnergy >= MaxEnergyIndex;
+    public bool IsContainingEnergy() => CurrentEnergy > 0 && !IsBlocked();
+    public bool IsAtMaximumEnergy() => CurrentEnergy >= MaxEnergyIndex && !IsBlocked();
 
+    private void SetupBounds()
+    {
+        if (targetRenderer == null || targetMeshFilter == null) return;
+        Vector3 min = targetRenderer.sharedMaterial.GetVector("_minValues");
+        Vector3 max = targetRenderer.sharedMaterial.GetVector("_maxValues");
+        Vector3 center = (min + max) * 0.5f;
+        Vector3 size = (max - min);
+        targetMeshFilter.mesh.bounds = new Bounds(center, size);
+    }
+
+    protected virtual void OnValueUpdated(float newValue) { }
     #endregion
+    
     
 }

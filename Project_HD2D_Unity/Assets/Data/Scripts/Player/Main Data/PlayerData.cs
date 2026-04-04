@@ -249,6 +249,8 @@ public class PlayerDataInstance
         SapLayerMask = data.Resources.SapLayerMask;
     }
 
+    public bool IsSapEmpty() => Sap <= 0;
+    
     public void AddSap() => Sap = Mathf.Min(MaxSap, Sap + 1);
     public void RemoveSap() => Sap = Mathf.Max(0, Sap - 1);
     public float GetAttackClipLength(int index) => (ComboHits != null && index < ComboHits.Length && ComboHits[index].Clip != null) ? ComboHits[index].Clip.length : 0f;

@@ -86,54 +86,60 @@ public class Root : MonoBehaviour
     
     
     #region Debug Gizmos
-
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
 #if UNITY_EDITOR
         
         GUIStyle debugStyle = new GUIStyle
         {
-            normal =
-            {
-                textColor = Color.red
-            },
-            fontSize = 30,
+            normal = { textColor = Color.white },
+            fontSize = 16,
             fontStyle = FontStyle.Bold,
             alignment = TextAnchor.MiddleCenter
         };
 
         Handles.zTest = UnityEngine.Rendering.CompareFunction.Always;
-        Handles.Label(transform.position, "ENERGY: " + currentEnergy, debugStyle);
-#endif
+        Handles.Label(transform.position + Vector3.up * 0.8f, "ENERGY: " + currentEnergy, debugStyle);
+
+        float lineWidth = 4f; 
         
         if (flaws != null)
         {
-            Gizmos.color = Color.yellow;
             foreach (Flaw flaw in flaws)
             {
-                if (flaw != null)
-                {
-                    Gizmos.DrawLine(transform.position, flaw.transform.position);
-                    Gizmos.DrawWireSphere(flaw.transform.position, 0.3f);
-                }
+                if (flaw == null) continue;
+
+                Color flawColor = flaw.IsBlocked() ? new Color(1f, 0.5f, 0f) : Color.blue;
+                DrawThickLine(transform.position, flaw.transform.position, flawColor, lineWidth);
+            
+                Gizmos.color = flawColor;
+                Gizmos.DrawWireSphere(flaw.transform.position, 0.4f);
             }
         }
 
         if (vatManagers != null)
         {
-            Gizmos.color = Color.cyan;
             foreach (VATManager vatManager in vatManagers)
             {
-                if (vatManager != null)
-                {
-                    Gizmos.DrawLine(transform.position, vatManager.transform.position);
-                    Gizmos.DrawWireCube(vatManager.transform.position, Vector3.one * 0.5f);
-                }
+                if (vatManager == null) continue;
+
+                Color vatColor = vatManager.IsBlocked() ? Color.red : Color.green;
+                DrawThickLine(transform.position, vatManager.transform.position, vatColor, lineWidth);
+
+                Gizmos.color = vatColor;
+                Gizmos.DrawWireCube(vatManager.transform.position, Vector3.one * 0.6f);
             }
         }
-        
+#endif
     }
-    
 
+#if UNITY_EDITOR
+
+    private void DrawThickLine(Vector3 start, Vector3 end, Color color, float width)
+    {
+        Handles.color = color;
+        Handles.DrawBezier(start, end, start, end, color, null, width);
+    }
+#endif
     #endregion
 }

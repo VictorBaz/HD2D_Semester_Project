@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using Manager;
 
 public class Sap : MonoBehaviour, ISapLockable
 {

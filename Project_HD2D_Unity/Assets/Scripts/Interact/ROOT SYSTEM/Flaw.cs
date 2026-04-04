@@ -1,9 +1,8 @@
-using System;
+using System.Collections.Generic;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 using UnityEngine;
-using Manager;
 
 public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
 {
@@ -16,6 +15,9 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     
     [Header("Settings")]
     [SerializeField] private FeedbackLogic feedbackLogic;
+    
+    [Header("Blocking")]
+    [SerializeField] private List<Parasite> blockers;
 
     private Transform _playerTransform;
     #endregion
@@ -71,7 +73,7 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     #region IEnergyLockable
     public Transform GetLockTransform() => pivotPoint;
     
-    public bool IsLockable() => root != null; 
+    public bool IsLockable() => root != null && !IsBlocked();
     
     public float GetLockPriority() => 1f;
 
@@ -80,6 +82,13 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
 
     public void AddEnergy() => root?.AddEnergy();
     public void RemoveEnergy() => root?.RemoveEnergy();
+    
+    public bool IsBlocked()
+    {
+        if (blockers == null) return false;
+        foreach (var p in blockers) if (p != null) return true;
+        return false;
+    }
     #endregion
 
     #region Gizmos

@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using Manager;
 using UnityEngine;
 
 public class BigGuyJumpAttackState : EnemyAttackState

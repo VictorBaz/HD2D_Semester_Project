@@ -22,6 +22,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
     [SerializeField] private Rigidbody rb;
 
     [SerializeField] private PlayerData playerDataRaw;
+    
+    [SerializeField] private CapsuleCollider playerCollider;
 
     public PlayerBaseState CurrentPlayerState { get; private set; }
     public PlayerLocomotionState LocomotionState { get; private set; }
@@ -79,6 +81,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
             ShootDirection = transform.forward,
             PlayerHeadTransform = playerHead,
             TargetDirection = this.TargetDirection,
+            Collider = playerCollider
         };
 
         TransitionTo(LocomotionState);
@@ -87,7 +90,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
         playerController.InitData(playerData);
 
         uiManager.SetupEnergyBar(playerData.MaxEnergy,playerData.Energy);
-        //uiManager.SetupSapBar(playerData.MaxSap,playerData.Sap);
+        uiManager.SetupSapBar(playerData.MaxSap,playerData.Sap);
         
         EventManager.OnRequestPlayerTransform = GetTransform;
         EventManager.OnRequestPlayerContext = GetContext;

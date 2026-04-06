@@ -29,4 +29,6 @@ public class PlayerStateContext
     public PlayerManager StateMachine;
 
     public Vector3 TargetDirection;
+
+    public CapsuleCollider Collider;
 }

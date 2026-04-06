@@ -2,33 +2,55 @@
 
 public abstract class PlayerInAirBase : PlayerBaseState
 {
-    public override string Name => "InAir";
-    public override bool CanDash => true;
+    public override string Name   => "InAir";
+    public override bool CanDash  => true;
+    
+    private RaycastHit pendingSnapHit;
+    private bool       hasPendingSnap;
 
     protected void HandleAirMovement(PlayerStateContext psc)
-    {   
+    {
         HandleMovement(psc);
         HandleAnimation(psc);
-
-        if (psc.InputManager.MoveInput == Vector2.zero) return;
-        
-        CapsuleCollider collider = psc.StateMachine.GetComponentInChildren<CapsuleCollider>();
-        Vector3 snapOrigin = psc.Controller.transform.position +
-                             psc.Controller.transform.forward * collider.radius +
-                             Vector3.down * (collider.height / 2f - collider.radius - 0.2f);
-        Ray platformSnapRay = new Ray(snapOrigin, Vector3.down);
-        Debug.DrawRay(platformSnapRay.origin, platformSnapRay.direction * collider.radius, Color.cyan);
-        if (Physics.Raycast(platformSnapRay, out RaycastHit hit, collider.radius, psc.PlayerData.GroundMask))
-        {
-            if (hit.normal == Vector3.up)
-            {
-                psc.StateMachine.transform.position = hit.point + Vector3.up * collider.height / 2f;
-            }
-        }
+        CheckSnapToPlatformEdge(psc);
     }
 
     protected void AirControl(PlayerStateContext psc)
     {
         HandlePhysics(psc);
+        ApplySnapToPlatformEdge(psc);
+    }
+
+
+    private void CheckSnapToPlatformEdge(PlayerStateContext psc)
+    {
+        CapsuleCollider col = psc.Collider;
+        
+        float radius = col.radius;
+
+        float offsetToBottomSphere = (col.height / 2f) - radius;
+
+        Vector3 snapOrigin = psc.Rb.position 
+                             + Vector3.down * offsetToBottomSphere 
+                             + psc.Controller.transform.forward * (radius * 0.8f);
+
+        snapOrigin += Vector3.up * 0.1f;
+
+        float rayDistance = radius; 
+
+        Debug.DrawRay(snapOrigin, Vector3.down * rayDistance, Color.cyan);
+
+        hasPendingSnap = Physics.Raycast(snapOrigin, Vector3.down, out pendingSnapHit, rayDistance, psc.PlayerData.GroundMask)
+                         && Vector3.Dot(pendingSnapHit.normal, Vector3.up) >= 0.9f;
+    }
+
+    private void ApplySnapToPlatformEdge(PlayerStateContext psc)
+    {
+        if (!hasPendingSnap) return;
+
+        CapsuleCollider col = psc.Collider;
+        psc.Rb.MovePosition(pendingSnapHit.point + Vector3.up * (col.height / 2f));
+        psc.Rb.linearVelocity = new Vector3(psc.Rb.linearVelocity.x, 0f, psc.Rb.linearVelocity.z);
+        hasPendingSnap = false;
     }
 }

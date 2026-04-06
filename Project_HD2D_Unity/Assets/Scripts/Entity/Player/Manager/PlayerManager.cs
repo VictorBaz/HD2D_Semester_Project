@@ -87,7 +87,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
         playerController.InitData(playerData);
 
         uiManager.SetupEnergyBar(playerData.MaxEnergy,playerData.Energy);
-        uiManager.SetupSapBar(playerData.MaxSap,playerData.Sap);
+        //uiManager.SetupSapBar(playerData.MaxSap,playerData.Sap);
         
         EventManager.OnRequestPlayerTransform = GetTransform;
         EventManager.OnRequestPlayerContext = GetContext;

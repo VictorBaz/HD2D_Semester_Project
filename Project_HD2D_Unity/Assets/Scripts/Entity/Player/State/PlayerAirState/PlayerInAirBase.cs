@@ -10,13 +10,15 @@ public abstract class PlayerInAirBase : PlayerBaseState
         HandleMovement(psc);
         HandleAnimation(psc);
 
+        if (psc.InputManager.MoveInput == Vector2.zero) return;
+        
         CapsuleCollider collider = psc.StateMachine.GetComponentInChildren<CapsuleCollider>();
         Vector3 snapOrigin = psc.Controller.transform.position +
                              psc.Controller.transform.forward * collider.radius +
-                             Vector3.down * (collider.height / 2f - collider.radius);
+                             Vector3.down * (collider.height / 2f - collider.radius - 0.2f);
         Ray platformSnapRay = new Ray(snapOrigin, Vector3.down);
         Debug.DrawRay(platformSnapRay.origin, platformSnapRay.direction * collider.radius, Color.cyan);
-        if (Physics.Raycast(platformSnapRay, out RaycastHit hit, collider.radius))
+        if (Physics.Raycast(platformSnapRay, out RaycastHit hit, collider.radius, psc.PlayerData.GroundMask))
         {
             if (hit.normal == Vector3.up)
             {

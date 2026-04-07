@@ -8,8 +8,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: M_Grass
-  m_Shader: {fileID: 4800000, guid: 37017fe1d9267d44a9fe86cd2a4fef04, type: 3}
-  m_Parent: {fileID: 0}
+  m_Shader: {fileID: -6465566751694194690, guid: 532d5c034fa4d614d9156a2d130aca91, type: 3}
+  m_Parent: {fileID: 2100000, guid: e02cc5f9388df8847b3a5231a18d8938, type: 2}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -18,46 +18,80 @@ Material:
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}
-  disabledShaderPasses: []
+  disabledShaderPasses:
+  - MOTIONVECTORS
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _BladeTexture:
-        m_Texture: {fileID: 2800000, guid: c5bc6172e70537848bd65fec8622f2fc, type: 3}
+    - _AC_Diffuse:
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _GrassMap:
-        m_Texture: {fileID: 2800000, guid: d720b21773584a54cb7f91e756dabe4d, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _WindMap:
+    - _AC_Normal:
         m_Texture: {fileID: 2800000, guid: 7ee2646792d683247bd47de59625889d, type: 3}
-        m_Scale: {x: 0.01, y: 0.01}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _AC_SmoothHeight:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BC_Diffuse:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BC_Normal:
+        m_Texture: {fileID: 2800000, guid: 7ee2646792d683247bd47de59625889d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BC_SmoothHeight:
+        m_Texture: {fileID: 2800000, guid: 7ee2646792d683247bd47de59625889d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GC_Diffuse:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GC_Normal:
+        m_Texture: {fileID: 2800000, guid: 7ee2646792d683247bd47de59625889d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GC_SmoothHeight:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RC_Diffuse:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RC_Normal:
+        m_Texture: {fileID: 2800000, guid: 7ee2646792d683247bd47de59625889d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RC_SmoothHeight:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BendDelta: 0.247
-    - _BladeBendCurve: 2.437
-    - _BladeBendDistance: 0.39
-    - _BladeHeightMax: 1.315
-    - _BladeHeightMin: 0.287
-    - _BladeSegments: 1.26
-    - _BladeWidthMax: 0.0504
-    - _BladeWidthMin: 0.0246
-    - _DebugInteractor: 0
-    - _GrassFalloff: 0.17
-    - _GrassThreshold: 0.009
-    - _MaxWidth: 0.3
-    - _PositionArray: 0
-    - _PositionCount: 1
-    - _Radius: 1.02
-    - _TessellationGrassDistance: 0.087
-    - _WindFrequency: 0.036
-    m_Colors:
-    - _BaseColor: {r: 0.27962258, g: 0.5999999, b: 0.3935345, a: 1}
-    - _Positions: {r: 1, g: 1, b: 1, a: 1}
-    - _TipColor: {r: 0.12941177, g: 0.24705884, b: 0.20000002, a: 1}
-    - _WindVelocity: {r: 0.02, g: 0, b: 0.02, a: 0.02}
+    - _AC_TillingSize: 0
+    - _BC_TillingSize: 0
+    - _GC_TillingSize: 0
+    - _NormalStrengh: 1
+    - _RC_TillingSize: 1
+    m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1
+--- !u!114 &3381912735185277056
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Editor::UnityEditor.Rendering.Universal.AssetVersion
+  version: 10

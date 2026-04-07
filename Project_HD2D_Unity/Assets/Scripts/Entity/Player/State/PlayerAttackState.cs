@@ -61,6 +61,7 @@ namespace Player.State
 
             psc.AnimationManager.SetAttackState(true,comboIndex);
             currentAttackRoutine = psc.Controller.RunRoutine(AttackMeleeIe(psc));
+            psc.VfxManager.PlayFxCombo(comboIndex);
         }
 
         private void RotateTowardsInput(PlayerStateContext psc)

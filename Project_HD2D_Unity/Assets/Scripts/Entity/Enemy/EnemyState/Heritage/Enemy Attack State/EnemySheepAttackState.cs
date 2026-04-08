@@ -29,17 +29,26 @@ public class EnemySheepAttackState : EnemyAttackState
         actx.AnimManager.TriggerAttack();
 
         CanBeParry = true;
+        
         actx.AnimManager.ToggleAttackCollider(true);
 
         float elapsed = 0f;
+        
         Vector3 strikeDir = actx.Manager.transform.forward;
+        
         float activePhaseDuration = actx.Data.GetAnimationCLipLengthAttack();
 
+        
         while (elapsed < activePhaseDuration)
         {
+            
             elapsed += Time.deltaTime;
+            
             if (elapsed <= data.AttackDashDuration)
-                actx.Manager.transform.position += strikeDir * data.AttackDashSpeed * Time.deltaTime;
+            {
+                Vector3 nextPos = actx.Rb.position + strikeDir * (data.AttackDashSpeed * 0.05f);
+                actx.Rb.MovePosition(nextPos);
+            }
 
             if (elapsed >= data.HitboxActiveDuration)
                 actx.AnimManager.ToggleAttackCollider(false);
@@ -47,8 +56,13 @@ public class EnemySheepAttackState : EnemyAttackState
             yield return null;
         }
 
-        actx.AnimManager.ToggleAttackCollider(false);
+        
         yield return new WaitForFixedUpdate();
+        
+        actx.AnimManager.ToggleAttackCollider(false);
+        
+        yield return new WaitForFixedUpdate();
+        
         CanBeParry = false;
 
         isCooldown = true;

@@ -5,6 +5,8 @@ namespace Player.State
     public class PlayerHitState : PlayerBaseState
     {
         private float timer;
+ 
+        private const float STOP_DAMPING = 5f; 
 
         public override string Name => "Hit";
 
@@ -13,8 +15,8 @@ namespace Player.State
             timer = psc.PlayerData.HitDuration;
             
             psc.Controller.SetGravity(true);
-            
             psc.AnimationManager.SetHit(true);
+            
             Hit(psc);
         }
 
@@ -34,14 +36,16 @@ namespace Player.State
 
         public override void FixedUpdateState(PlayerStateContext psc)
         {
+            Vector3 currentVel = psc.Rb.linearVelocity;
             
+            Vector3 targetVel = new Vector3(0, currentVel.y, 0);
+            psc.Rb.linearVelocity = Vector3.Lerp(currentVel, targetVel, Time.fixedDeltaTime * STOP_DAMPING);
         }
 
         private void Hit(PlayerStateContext psc)
         {
             psc.Rb.AddForce(psc.HitDirection * psc.PlayerData.HitForceTaken, ForceMode.Impulse);
         }
-        
 
         public override bool CanMove { get; } = false;
         public override bool CanTakeDamage { get; } = false;

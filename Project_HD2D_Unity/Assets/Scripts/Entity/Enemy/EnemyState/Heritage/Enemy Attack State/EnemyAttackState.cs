@@ -6,6 +6,7 @@ public abstract class EnemyAttackState : EnemyBaseState
     protected Coroutine attackRoutine;
     protected bool isCooldown;
     protected bool isAnticipationTime;
+    
 
     public override string Name => "Attacking";
     public override bool CanMove => attackRoutine != null;
@@ -15,8 +16,7 @@ public abstract class EnemyAttackState : EnemyBaseState
         actx.StopAgent();
         
         actx.Manager.ApplyMovementMode(false);
-        
-        
+
         attackRoutine = null;
         isCooldown = false;
         CanBeParry = false;

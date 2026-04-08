@@ -1,5 +1,3 @@
-using System;
-using Manager;
 using UnityEngine;
 
 public class CameraTrigger : MonoBehaviour

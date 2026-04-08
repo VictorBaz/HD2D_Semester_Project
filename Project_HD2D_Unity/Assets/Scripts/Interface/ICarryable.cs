@@ -8,6 +8,8 @@ namespace Interface
         
         bool IsCarryable();
         
-        void Eject();
+        void Eject(bool isEscaping = false);
+
+        bool IsCarry();
     }
 }

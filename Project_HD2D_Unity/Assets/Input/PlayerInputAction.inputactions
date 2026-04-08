@@ -11,7 +11,7 @@
                     "type": "PassThrough",
                     "id": "f49b987e-47b4-4c32-97eb-e47f934ae672",
                     "expectedControlType": "",
-                    "processors": "",
+                    "processors": "StickDeadzone(min=0.2)",
                     "interactions": "",
                     "initialStateCheck": false
                 },
@@ -38,24 +38,6 @@
                     "type": "Button",
                     "id": "5a930695-7d81-46cf-8d2a-2a4f6fbcad9b",
                     "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Shoot",
-                    "type": "Button",
-                    "id": "6ce8859f-7f19-4158-9506-9b7391d31bd6",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Look",
-                    "type": "PassThrough",
-                    "id": "6ddc510d-9e32-44fd-b788-e9bb35134700",
-                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -92,6 +74,24 @@
                     "type": "Button",
                     "id": "f82c3de2-6239-40ba-b8e4-44b1d6e76806",
                     "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Parry",
+                    "type": "Button",
+                    "id": "9f31f85b-b706-4620-a48f-59723fc49f36",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Look",
+                    "type": "PassThrough",
+                    "id": "47a1fcb5-9b1d-4404-a434-20241797f020",
+                    "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -244,7 +244,7 @@
                 {
                     "name": "",
                     "id": "7dcfe26a-163a-42b2-8476-b5dc18030ecb",
-                    "path": "<Gamepad>/leftTrigger",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -276,94 +276,6 @@
                 },
                 {
                     "name": "",
-                    "id": "3f710432-10cd-4537-9947-c6b14fce925a",
-                    "path": "<Mouse>/leftButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Shoot",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "a3a9a3c7-bab5-47e4-aba2-c6b13891297e",
-                    "path": "<Gamepad>/buttonEast",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Shoot",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "be8cef93-c29e-4428-9dd9-5118d292818a",
-                    "path": "<Mouse>/delta",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "Right Joystick",
-                    "id": "d46f3f50-be2f-468d-bb58-9efc229b175b",
-                    "path": "2DVector(mode=2)",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Look",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "up",
-                    "id": "285f6c9d-0e8e-4c1c-ab27-05b2d4d82fd2",
-                    "path": "<Gamepad>/rightStick/up",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "70af429f-53f1-4360-8abb-8cb4c4f2fbd2",
-                    "path": "<Gamepad>/rightStick/down",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "6eb86b1b-ae1e-4f46-b1a2-e301612325de",
-                    "path": "<Gamepad>/rightStick/left",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "a8f7c1f5-4d87-407b-8a4e-d6508c825568",
-                    "path": "<Gamepad>/rightStick/right",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Look",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "",
                     "id": "b0ab7e47-2ea7-4192-ae1e-bf56a07bf314",
                     "path": "<Keyboard>/shift",
                     "interactions": "",
@@ -376,7 +288,7 @@
                 {
                     "name": "",
                     "id": "608bbcc4-419a-447b-a9a1-7ee281e157e6",
-                    "path": "<Gamepad>/rightTrigger",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -398,7 +310,7 @@
                 {
                     "name": "",
                     "id": "b31b1714-c1a6-4d62-9703-6562730cce7d",
-                    "path": "<Gamepad>/buttonNorth",
+                    "path": "<Gamepad>/buttonWest",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -431,7 +343,7 @@
                 {
                     "name": "",
                     "id": "bd11495f-4e97-4dec-8a91-025af205a3e5",
-                    "path": "<Gamepad>/buttonEast",
+                    "path": "<Gamepad>/buttonNorth",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -447,6 +359,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Carry",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c666ee13-3cec-4c80-ab32-1ea0444a3d5e",
+                    "path": "<Gamepad>/leftStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Parry",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "641f0a66-f39d-4f01-b741-1504a102096a",
+                    "path": "<Gamepad>/rightStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

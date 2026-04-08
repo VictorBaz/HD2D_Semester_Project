@@ -15,8 +15,6 @@ public class EnemyHitState : EnemyBaseState
         actx.Rb.AddForce(actx.HitDirection * 5f, ForceMode.Impulse);
         actx.AnimManager.SetHit(true);
 
-        actx.Data.CurrentKo += actx.Data.DamageToApply;
-
         if (actx.Data.IsKoFull())
         {
             actx.TransitionTo(actx.Manager.KoState);

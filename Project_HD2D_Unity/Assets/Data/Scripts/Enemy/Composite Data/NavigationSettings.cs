@@ -5,8 +5,7 @@ public class NavigationSettings
     public float ChaseSpeed = 4.5f;
     public float Acceleration = 8f;
     public float StoppingDistance = 1.2f;
-    public float DetectionRange = 15f;
-    public float ViewAngle = 90f;
     public float SearchDuration = 10f;
     public float SearchRadius = 5f;
+    public float RotationSpeed = 10f;
 }

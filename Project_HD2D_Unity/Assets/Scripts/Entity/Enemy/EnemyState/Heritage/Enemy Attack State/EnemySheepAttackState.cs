@@ -3,13 +3,28 @@ using UnityEngine;
 
 public class EnemySheepAttackState : EnemyAttackState
 {
+    private const float MULTIPLY_ANTICIPATION_TIME = 2f;
+
+    public override void EnterState(EnemyContext actx)
+    {
+        base.EnterState(actx);
+        actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_IDLE);
+    }
+
     protected override IEnumerator AttackSequence(EnemyContext actx)
     {
+        isAnticipationTime = true;
         var data = actx.Data;
+
+        actx.AnimManager.Animator.speed = MULTIPLY_ANTICIPATION_TIME;
         
         actx.AnimManager.TriggerCharge();
         
-        yield return new WaitForSeconds(data.GetAnimationCLipLengthChargeAttack());
+        yield return new WaitForSeconds(data.GetAnimationCLipLengthChargeAttack() / MULTIPLY_ANTICIPATION_TIME);
+
+        isAnticipationTime = false;
+        
+        actx.AnimManager.Animator.speed = 1;
         
         actx.AnimManager.TriggerAttack();
 
@@ -18,7 +33,7 @@ public class EnemySheepAttackState : EnemyAttackState
 
         float elapsed = 0f;
         Vector3 strikeDir = actx.Manager.transform.forward;
-        float activePhaseDuration = actx.Data.GetAnimationCLipLengthAttack(); /*Mathf.Max(data.AttackDashDuration, data.HitboxActiveDuration);*/
+        float activePhaseDuration = actx.Data.GetAnimationCLipLengthAttack();
 
         while (elapsed < activePhaseDuration)
         {
@@ -46,5 +61,6 @@ public class EnemySheepAttackState : EnemyAttackState
     {
         base.ExitState(actx);
         actx.AnimManager.ToggleAttackCollider(false);
+        actx.AnimManager.Animator.speed = 1;
     }
 }

@@ -13,6 +13,7 @@ public class EnemyChaseState : EnemyBaseState
         actx.Manager.ApplyMovementMode(false);
         actx.ResumeAgent();
         actx.UpdateAgentSpeed(actx.Data.ChaseSpeed, actx.Data.Acceleration, actx.Data.StoppingDistance);
+        actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_RUN);
     }
 
     public override void UpdateState(EnemyContext actx)
@@ -34,4 +35,5 @@ public class EnemyChaseState : EnemyBaseState
     }
 
     public override void ExitState(EnemyContext actx) { }
+    
 }

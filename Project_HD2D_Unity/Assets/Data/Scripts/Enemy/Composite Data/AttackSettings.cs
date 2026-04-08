@@ -4,7 +4,6 @@
 public class AttackSettings
 {
     public float AttackCooldown = 1f;
-    public float AnticipationTime = 0.4f;
     public float HitboxActiveDuration = 0.2f;
     public float AttackDashSpeed = 5f;
     public float AttackDashDuration = 0.2f;

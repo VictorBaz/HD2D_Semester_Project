@@ -217,7 +217,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void TryAttack()
     {
-        // Heu c'est au cas où on commence à 9h et que t'ais pas le temps de le faire M.Victor Baz
         if (lockOnSystem.IsLocked) return;
         
         if (CurrentPlayerState is PlayerAttackState meleeState)

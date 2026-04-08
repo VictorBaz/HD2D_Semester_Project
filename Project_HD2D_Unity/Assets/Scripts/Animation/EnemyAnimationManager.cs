@@ -3,9 +3,18 @@ using UnityEngine;
 
 public class EnemyAnimationManager : BaseAnimationManager
 {
+    public Animator Animator => animator;
+    
     private static readonly int SpeedHash = Animator.StringToHash("Speed");
+    
     private static readonly int IsKOHash = Animator.StringToHash("IsKO");
+    private static readonly int IsAlreadyKoHash = Animator.StringToHash("IsAlreadyKo");
+    
+    private static readonly int IsCarryHash = Animator.StringToHash("IsCarry");
+    
     private static readonly int IsExposedHash = Animator.StringToHash("IsExposed");
+    
+    private static readonly int IsChargingHash = Animator.StringToHash("IsCharging");
 
     [SerializeField] private GameObject colliderAttack;
     [SerializeField] private GameObject colliderRepulse;
@@ -17,10 +26,12 @@ public class EnemyAnimationManager : BaseAnimationManager
     }
 
     public void UpdateMovement(float currentSpeed) => animator.SetFloat(SpeedHash, currentSpeed);
-    public void SetKO(bool isKO) => animator.SetBool(IsKOHash, isKO);
     public void SetExposed(bool isExposed) => animator.SetBool(IsExposedHash, isExposed);
 
     public void TriggerAttack() => animator.SetTrigger(IsAttackingHash);
+    public void TriggerCharge() => animator.SetTrigger(IsChargingHash);
+    
+    public void SetCarry(bool isCarry) => animator.SetBool(IsCarryHash,isCarry);
 
     public void ToggleAttackCollider(bool toggle)
     {
@@ -30,5 +41,11 @@ public class EnemyAnimationManager : BaseAnimationManager
     public void ToggleRepulsiveCollider(bool active)
     {
         if(colliderRepulse != null) colliderRepulse.SetActive(active);
+    }
+
+    public void HandleKo(bool isKO,bool wasKo)
+    {
+        animator.SetBool(IsKOHash, isKO);
+        animator.SetBool(IsAlreadyKoHash, wasKo);
     }
 }

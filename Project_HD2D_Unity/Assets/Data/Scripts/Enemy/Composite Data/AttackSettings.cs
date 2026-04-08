@@ -1,4 +1,6 @@
-﻿[System.Serializable]
+﻿using UnityEngine;
+
+[System.Serializable]
 public class AttackSettings
 {
     public float AttackCooldown = 1f;
@@ -13,5 +15,8 @@ public class AttackSettings
     public float LandingStunDuration = 0.3f;
     public float ShockwaveActiveDuration = 0.3f;
     public float AttackRange = 4f;
+    
+    public AnimationClip ChargeAnimationClip;
+    public AnimationClip AttackAnimationClip;
     
 }

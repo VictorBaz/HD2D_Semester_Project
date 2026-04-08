@@ -5,7 +5,9 @@ public class StatusSettings
 {
     [Header("K-O & Stun")]
     public int MaxKo = 100;
-    public float KoTime = 15f;
+    public float KoTime = 0f;
+    public float KoTimeMax = 5f;
+    
     public float StunDuration = 0.2f;
     
     [Header("Exposed State")]

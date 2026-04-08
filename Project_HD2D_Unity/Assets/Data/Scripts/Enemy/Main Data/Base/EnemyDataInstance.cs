@@ -27,11 +27,16 @@ public class EnemyDataInstance
     public float LandingStunDuration;
     public float ShockwaveActiveDuration;
 
-    public int MaxKo;
     public float KoTime;
+    public float KoTimeMax;
+    
+    public int MaxKo;
     public int CurrentKo;
+    
     public float StunDuration;
+    
     public float ExposedTime;
+    
     public int DamageToApply;
 
     public Sprite SpriteSearch;
@@ -42,6 +47,9 @@ public class EnemyDataInstance
     public Sprite SpriteFall;
     public Sprite SpriteTakeDamage;
     public Sprite SpriteExposed;
+    
+    public AnimationClip ChargeAnimationClip;
+    public AnimationClip AttackAnimationClip;
 
     public EnemyDataInstance(EnemyData data)
     {
@@ -69,6 +77,7 @@ public class EnemyDataInstance
 
         MaxKo = data.Status.MaxKo;
         KoTime = data.Status.KoTime;
+        KoTimeMax =  data.Status.KoTimeMax;
         StunDuration = data.Status.StunDuration;
         ExposedTime = data.Status.ExposedTime;
         DamageToApply = data.Status.DamageToApply;
@@ -82,9 +91,13 @@ public class EnemyDataInstance
         SpriteFall = data.Visuals.SpriteFall;
         SpriteTakeDamage = data.Visuals.SpriteTakeDamage;
         SpriteExposed = data.Visuals.SpriteExposed;
+        
+        ChargeAnimationClip = data.Attack.ChargeAnimationClip;
+        AttackAnimationClip = data.Attack.AttackAnimationClip;
     }
 
     public bool IsKoFull() => CurrentKo >= MaxKo;
+    public bool IsKoTimerEmpty() => KoTime <= 0;
     public void ResetKo() => CurrentKo = 0;
 
     public Sprite GetSpriteByStateName(string stateName)
@@ -102,4 +115,7 @@ public class EnemyDataInstance
             _ => SpritePatrol
         };
     }
+    
+    public float GetAnimationCLipLengthChargeAttack() => ChargeAnimationClip.length;
+    public float GetAnimationCLipLengthAttack() => AttackAnimationClip.length;
 }

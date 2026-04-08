@@ -15,7 +15,6 @@ public abstract class EnemyAttackState : EnemyBaseState
         
         actx.Manager.ApplyMovementMode(false);
         
-        //Time.timeScale = 0;
         
         attackRoutine = null;
         isCooldown = false;

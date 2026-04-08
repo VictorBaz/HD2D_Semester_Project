@@ -30,7 +30,7 @@ public class EnemyDropState : EnemyBaseState
         LandingSequence(actx);
     }
 
-    public override void ExitState(EnemyContext actx)
+    public override void ExitState(EnemyContext actx) 
     {
         actx.AnimManager.SetFalling(false);
     }
@@ -39,7 +39,7 @@ public class EnemyDropState : EnemyBaseState
     {
         actx.Manager.ApplyMovementMode(false);
 
-        bool isStillKO = actx.Manager.KoSlider != null && actx.Manager.KoSlider.value > 0;
+        bool isStillKO = actx.Manager.KoSlider != null && actx.Data.KoTime > 0;
 
         if (isStillKO)
             actx.TransitionTo(actx.Manager.KoState);

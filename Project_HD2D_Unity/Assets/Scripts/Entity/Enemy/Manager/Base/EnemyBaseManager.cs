@@ -288,10 +288,14 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
         transform.localRotation = Quaternion.identity;
         isCarried = true;
+        
+        context.AnimManager.SetCarry(true);
     }
 
     public void Eject(bool isEscaping = false)
     {
+        context.AnimManager.SetCarry(false);
+        
         transform.SetParent(null, true);
         mainCollider.enabled = true;
 

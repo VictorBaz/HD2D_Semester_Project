@@ -25,7 +25,7 @@ MonoBehaviour:
     AttackCooldown: 1
     AnticipationTime: 0.25
     HitboxActiveDuration: 0.2
-    AttackDashSpeed: 7
+    AttackDashSpeed: 12
     AttackDashDuration: 0.2
     AttackJumpForce: 700
     GroundDetectionDistance: 1.77
@@ -33,9 +33,12 @@ MonoBehaviour:
     LandingStunDuration: 0.3
     ShockwaveActiveDuration: 0.3
     AttackRange: 4
+    ChargeAnimationClip: {fileID: 7400000, guid: 147aa1aac382cca40b8b97966e9ff0fc, type: 2}
+    AttackAnimationClip: {fileID: 7400000, guid: db369a4dd560bb741869d67264f4d613, type: 2}
   Status:
     MaxKo: 10
-    KoTime: 25
+    KoTime: 0
+    KoTimeMax: 5
     StunDuration: 0.35
     ExposedTime: 3.5
     DamageToApply: 0

@@ -236,6 +236,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void TryCarry()
     {
+        
         if (Context.CurrentTargetCarry != null)
         {
             Context.CurrentTargetCarry.Eject();

@@ -2,31 +2,51 @@ using UnityEngine;
 
 public class EnemyKoState : EnemyBaseState
 {
-    private float koTimer;
-
     public override string Name => "K-O";
 
     public override bool CanAttack     => false;
     public override bool CanMove       => false;
     public override bool CanTakeDamage => false;
 
+    private bool hasTransitionedToLoop;
+
     public override void EnterState(EnemyContext actx)
     {
         actx.Manager.ApplyMovementMode(true);
-        actx.Rb.isKinematic = true;
-        actx.AnimManager.SetKO(true);
+        actx.Rb.isKinematic    = true;
+        hasTransitionedToLoop  = false;
 
-        koTimer = actx.Data.KoTime;
+        if (actx.Data.KoTime <= 0)
+        {
+            actx.Data.KoTime = actx.Data.KoTimeMax;
+            actx.AnimManager.HandleKo(true, false);
+        }
+        else
+        {
+            actx.AnimManager.HandleKo(true, true);
+            hasTransitionedToLoop = true;
+        }
     }
 
     public override void UpdateState(EnemyContext actx)
     {
-        koTimer -= Time.deltaTime;
+        actx.Data.KoTime -= Time.deltaTime;
 
         if (actx.Manager.KoSlider != null)
-            actx.Manager.KoSlider.value = (koTimer / actx.Data.KoTime) * actx.Data.MaxKo;
+            actx.Manager.KoSlider.value = (actx.Data.KoTime / actx.Data.KoTimeMax) * actx.Data.MaxKo;
 
-        if (koTimer <= 0)
+        if (!hasTransitionedToLoop)
+        {
+            var stateInfo = actx.AnimManager.GetCurrentState(0);
+
+            if (stateInfo.normalizedTime >= 0.8f && !actx.AnimManager.Animator.IsInTransition(0))
+            {
+                actx.AnimManager.HandleKo(true, true);
+                hasTransitionedToLoop = true;
+            }
+        }
+
+        if (actx.Data.IsKoTimerEmpty())
         {
             actx.Data.ResetKo();
             DetermineNextState(actx);
@@ -35,7 +55,7 @@ public class EnemyKoState : EnemyBaseState
 
     public override void ExitState(EnemyContext actx)
     {
-        actx.AnimManager.SetKO(false);
+        actx.AnimManager.HandleKo(false, false);
     }
 
     private void DetermineNextState(EnemyContext actx)
@@ -46,8 +66,8 @@ public class EnemyKoState : EnemyBaseState
             return;
         }
 
-        Vector3 rayOrigin    = actx.Manager.transform.position + Vector3.up * 0.5f;
-        bool    isOnGround   = Physics.Raycast(rayOrigin, Vector3.down, 0.7f, actx.LayerMaskEnemy);
+        Vector3 rayOrigin  = actx.Manager.transform.position + Vector3.up * 0.5f;
+        bool    isOnGround = Physics.Raycast(rayOrigin, Vector3.down, 0.7f, actx.LayerMaskEnemy);
 
         if (!isOnGround)
             actx.TransitionTo(actx.Manager.DropState);

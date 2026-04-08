@@ -30,6 +30,8 @@ public class EnemyPatrolState : EnemyBaseState
             return;
         }
 
+        if (actx.Manager.patrolPoints.Length <= 0) return;
+        
         if (actx.IsNavReady && !actx.Agent.pathPending && actx.Agent.remainingDistance <= actx.Agent.stoppingDistance)
         {
             currentPointIndex = (currentPointIndex + 1) % actx.Manager.patrolPoints.Length;

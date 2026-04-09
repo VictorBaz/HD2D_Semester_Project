@@ -13,6 +13,7 @@ public class EnemyGoToSpawnState : EnemyBaseState
         actx.Manager.ApplyMovementMode(false);
         actx.ResumeAgent();
         actx.SetDestination(actx.SpawnPosition);
+        actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_WALK);
     }
 
     public override void UpdateState(EnemyContext actx)

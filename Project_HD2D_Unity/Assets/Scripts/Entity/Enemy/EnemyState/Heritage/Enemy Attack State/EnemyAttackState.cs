@@ -14,7 +14,6 @@ public abstract class EnemyAttackState : EnemyBaseState
     public override void EnterState(EnemyContext actx)
     {
         actx.StopAgent();
-        
         actx.Manager.ApplyMovementMode(false);
 
         attackRoutine = null;

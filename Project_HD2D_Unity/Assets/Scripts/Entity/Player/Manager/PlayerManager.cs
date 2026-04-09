@@ -236,13 +236,11 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void TryCarry()
     {
-        
         if (Context.CurrentTargetCarry != null)
         {
             Context.CurrentTargetCarry.Eject();
             Context.CurrentTargetCarry = null;
             TransitionTo(LocomotionState);
-            return;
         }
 
         if (!CurrentPlayerState.CanCarry) return;
@@ -388,6 +386,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void HandleParry()
     {
+        print("Parry");
         if (parryCooldownTimer > 0f) return;
         if (lockOnSystem.IsLocked) return;
         if (CurrentPlayerState is PlayerParryState) return;

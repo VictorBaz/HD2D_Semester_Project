@@ -20,6 +20,7 @@ public class EnemySearchState : EnemyBaseState
         actx.Manager.ApplyMovementMode(false);
         actx.ResumeAgent();
         MoveToRandomPoint(actx);
+        actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_WALK);
     }
 
     public override void UpdateState(EnemyContext actx)

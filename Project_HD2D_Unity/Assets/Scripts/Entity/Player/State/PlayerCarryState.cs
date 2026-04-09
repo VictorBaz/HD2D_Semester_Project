@@ -14,6 +14,7 @@ public class PlayerCarryState : PlayerBaseState
     public override void ExitState(PlayerStateContext psc)
     {
         psc.AnimationManager.SetCarrying(false);
+        psc.CurrentTargetCarry =  null;
     }
 
     public override void UpdateState(PlayerStateContext psc)

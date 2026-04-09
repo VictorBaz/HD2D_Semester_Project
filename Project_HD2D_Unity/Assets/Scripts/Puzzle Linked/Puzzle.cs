@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections;
 
@@ -12,7 +13,7 @@ public class Puzzle : MonoBehaviour
     [Tooltip("Le parasite 'Boss' qui valide le puzzle à sa mort")]
     [SerializeField] private Parasite bossParasite;
 
-    [Header("Visual Evolution")] public PuzzleVisuals visuals { get; private set; } = new PuzzleVisuals();
+    [Header("Visual Evolution")] public PuzzleVisuals visuals = new PuzzleVisuals();
 
     #endregion
 
@@ -21,6 +22,7 @@ public class Puzzle : MonoBehaviour
     {
         visuals.Initialize();
     }
+    
 
     private void OnEnable()
     {

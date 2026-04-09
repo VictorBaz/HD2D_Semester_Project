@@ -386,7 +386,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void HandleParry()
     {
-        print("Parry");
         if (parryCooldownTimer > 0f) return;
         if (lockOnSystem.IsLocked) return;
         if (CurrentPlayerState is PlayerParryState) return;

@@ -24,6 +24,13 @@ public class PlayerParryState : PlayerBaseState
         isWindowActive        = false;
         isPerfectWindowActive = false;
 
+        var data = psc.PlayerData;
+        float totalDuration = data.ParryAnimationClip.length;
+        float pivot = data.PerfectParryStartOffset + (data.PerfectParryDuration * 0.5f);
+    
+        psc.VfxManager.PlayParryVfx(totalDuration, pivot);
+        
+        
         if (parryRoutine != null) psc.Controller.StopCoroutine(parryRoutine);
         parryRoutine = psc.Controller.RunRoutine(ParrySequence(psc));
     }
@@ -47,6 +54,8 @@ public class PlayerParryState : PlayerBaseState
 
         psc.AnimationManager.SetParry(false);
         psc.Controller.SetGravity(true);
+        
+        psc.VfxManager.CancelShield();
     }
 
     public override void UpdateState(PlayerStateContext psc) { }
@@ -58,8 +67,8 @@ public class PlayerParryState : PlayerBaseState
         var   data          = psc.PlayerData;
         float animDuration  = data.ParryAnimationClip.length;
 
-        perfectParryRoutine = psc.Controller.RunRoutine(PerfectParryRoutine(data));
-
+        perfectParryRoutine = psc.Controller.RunRoutine(PerfectParryRoutine(data,psc));
+        
         yield return new WaitForSeconds(data.ParryHitboxStartOffset);
 
         isWindowActive = true;
@@ -76,7 +85,7 @@ public class PlayerParryState : PlayerBaseState
             DetermineState(psc);
     }
 
-    private IEnumerator PerfectParryRoutine(PlayerDataInstance data)
+    private IEnumerator PerfectParryRoutine(PlayerDataInstance data,PlayerStateContext psc)
     {
         isPerfectWindowActive = false;
         yield return new WaitForSeconds(data.PerfectParryStartOffset);

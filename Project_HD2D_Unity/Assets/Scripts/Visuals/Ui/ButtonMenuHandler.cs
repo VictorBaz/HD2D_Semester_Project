@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using DG.Tweening; // Requis pour DOTween
+using DG.Tweening; 
 
-public class ButtonHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
+public class ButtonMenuHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
 {
     [Header("Visual Feedback")]
     [SerializeField] private GameObject selectionVisual;

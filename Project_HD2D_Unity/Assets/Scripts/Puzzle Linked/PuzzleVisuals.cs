@@ -4,8 +4,8 @@ using UnityEngine;
 [System.Serializable]
 public class PuzzleVisuals
 {
-    [SerializeField] private string shaderProperty = "_GrowthProgress";
-    [SerializeField] private List<Renderer> affectedRenderers = new();
+    [SerializeField] private string shaderProperty = "_Corrupt";
+    public List<Renderer> affectedRenderers = new();
 
     private MaterialPropertyBlock _propBlock;
 

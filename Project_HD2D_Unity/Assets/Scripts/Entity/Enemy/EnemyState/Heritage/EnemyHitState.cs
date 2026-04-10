@@ -15,8 +15,6 @@ public class EnemyHitState : EnemyBaseState
         actx.Rb.AddForce(actx.HitDirection * 5f, ForceMode.Impulse);
         actx.AnimManager.SetHit(true);
 
-        actx.Data.CurrentKo += actx.Data.DamageToApply;
-
         if (actx.Data.IsKoFull())
         {
             actx.TransitionTo(actx.Manager.KoState);
@@ -30,8 +28,15 @@ public class EnemyHitState : EnemyBaseState
     {
         timer -= Time.deltaTime;
 
-        if (timer <= 0)
-            actx.TransitionTo(actx.Manager.PreviousBaseState);
+        if (!(timer <= 0)) return;
+        
+        if (actx.Manager.PreviousBaseState is EnemyExposedState)
+        {
+            actx.TransitionTo(actx.Manager.SearchState);
+            return;
+        }
+            
+        actx.TransitionTo(actx.Manager.PreviousBaseState);
     }
 
     public override void ExitState(EnemyContext actx)

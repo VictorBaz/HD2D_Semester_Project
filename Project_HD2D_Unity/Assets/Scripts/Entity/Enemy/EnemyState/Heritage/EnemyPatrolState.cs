@@ -22,8 +22,8 @@ public class EnemyPatrolState : EnemyBaseState
 
     public override void UpdateState(EnemyContext actx)
     {
-        actx.AnimManager.UpdateMovement(actx.Agent.speed);
-
+        UpdateMovementAnimation(actx);
+        
         if (actx.Manager.CanSeePlayer())
         {
             actx.TransitionTo(actx.Manager.ChaseState);
@@ -40,4 +40,16 @@ public class EnemyPatrolState : EnemyBaseState
     }
 
     public override void ExitState(EnemyContext actx) { }
+
+    private void UpdateMovementAnimation(EnemyContext actx)
+    {
+        if (actx.Manager.patrolPoints.Length > 0) //then nonstatic behavior
+        {
+            actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_WALK);
+        }
+        else
+        {
+            actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_IDLE);
+        }
+    }
 }

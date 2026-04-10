@@ -1,4 +1,5 @@
-﻿using Interface;
+﻿using System;
+using Interface;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
@@ -48,6 +49,8 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     protected bool         isCarried;
     private   bool         isInitialized;
 
+
+    public event Action OnTakeDamage;
     #region Unity Lifecycle
 
     protected virtual void Awake()
@@ -67,6 +70,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
         InitializeCommonStates();
         isInitialized = true;
+        
     }
 
     protected virtual void Start()
@@ -90,7 +94,8 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     {
         if (!isInitialized) return;
         ChangeState(PatrolState);
-        
+
+        OnTakeDamage += HandleDamageUI;
     }
 
     protected virtual void Update()
@@ -236,10 +241,11 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
     public virtual void TakeDamage(int damage, Vector3 hitDirection)
     {
-        if (CurrentState != null && !CurrentState.CanTakeDamage) return;
+        if (CurrentState is { CanTakeDamage: false }) return;
 
         context.HitDirection  = hitDirection;
         context.Data.CurrentKo += damage;
+        OnTakeDamage ?.Invoke();
         ChangeState(HitState);
     }
 
@@ -299,7 +305,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
         transform.SetParent(null, true);
         mainCollider.enabled = true;
 
-        ApplyMovementMode(usePhysics: true);
+        ApplyMovementMode(true);
         rb.AddForce((transform.forward + Vector3.up) * 5f, ForceMode.Impulse);
 
         isCarried = false;
@@ -395,5 +401,14 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
         Gizmos.DrawWireSphere(end, testMargin);
     }
     
+    #endregion
+
+    #region UI need to SRP
+
+    private void HandleDamageUI()
+    {
+        this.UpdateSlider(KoSlider,context.Data.CurrentKo,0.5f);
+    }
+
     #endregion
 }

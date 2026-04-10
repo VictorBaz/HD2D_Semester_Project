@@ -24,8 +24,9 @@ public class BigGuyJumpAttackState : EnemyAttackState
     protected override IEnumerator AttackSequence(EnemyContext actx)
     {
         var data = actx.Data;
-
-        yield return new WaitForSeconds(data.AnticipationTime);
+        
+        //TODO ANTICIPATION TIME
+        yield return new WaitForSeconds(0.5f);
         
         actx.Manager.ApplyMovementMode(true);
         

@@ -5,6 +5,8 @@ public abstract class EnemyAttackState : EnemyBaseState
 {
     protected Coroutine attackRoutine;
     protected bool isCooldown;
+    protected bool isAnticipationTime;
+    
 
     public override string Name => "Attacking";
     public override bool CanMove => attackRoutine != null;
@@ -12,13 +14,12 @@ public abstract class EnemyAttackState : EnemyBaseState
     public override void EnterState(EnemyContext actx)
     {
         actx.StopAgent();
-        
         actx.Manager.ApplyMovementMode(false);
-        
-        
+
         attackRoutine = null;
         isCooldown = false;
         CanBeParry = false;
+        isAnticipationTime = false;
     }
 
     public override void UpdateState(EnemyContext actx)
@@ -31,7 +32,7 @@ public abstract class EnemyAttackState : EnemyBaseState
             return;
         }
 
-        if (isCooldown || attackRoutine == null)
+        if (isCooldown || attackRoutine == null || isAnticipationTime)
             RotateTowardsTarget(actx);
 
         if (attackRoutine != null || isCooldown) return;
@@ -57,7 +58,7 @@ public abstract class EnemyAttackState : EnemyBaseState
             actx.Manager.transform.rotation = Quaternion.Slerp(
                 actx.Manager.transform.rotation, 
                 Quaternion.LookRotation(lookDir), 
-                Time.deltaTime * 5f);
+                Time.deltaTime * actx.Data.RotationSpeed);
         }
     }
 

@@ -3,23 +3,18 @@
 [System.Serializable]
 public class EnemyDataInstance
 {
-    public EnemyData BaseData;
-    
     public float PatrolSpeed;
     public float ChaseSpeed;
     public float Acceleration;
     public float StoppingDistance;
-    public float DetectionRange;
-    public float ViewAngle;
     public float SearchDuration;
     public float SearchRadius;
+    public float RotationSpeed;
 
     public float AttackCooldown;
-    public float AnticipationTime;
     public float HitboxActiveDuration;
     public float AttackDashSpeed;
     public float AttackDashDuration;
-    public float AttackRange;
 
     public float AttackJumpForce;
     public float GroundDetectionDistance;
@@ -37,8 +32,6 @@ public class EnemyDataInstance
     
     public float ExposedTime;
     
-    public int DamageToApply;
-
     public Sprite SpriteSearch;
     public Sprite SpriteAttackStart;
     public Sprite SpriteChase;
@@ -57,13 +50,11 @@ public class EnemyDataInstance
         ChaseSpeed = data.Navigation.ChaseSpeed;
         Acceleration = data.Navigation.Acceleration;
         StoppingDistance = data.Navigation.StoppingDistance;
-        DetectionRange = data.Navigation.DetectionRange;
-        ViewAngle = data.Navigation.ViewAngle;
         SearchDuration = data.Navigation.SearchDuration;
         SearchRadius = data.Navigation.SearchRadius;
+        RotationSpeed = data.Navigation.RotationSpeed;
 
         AttackCooldown = data.Attack.AttackCooldown;
-        AnticipationTime = data.Attack.AnticipationTime;
         HitboxActiveDuration = data.Attack.HitboxActiveDuration;
         AttackDashSpeed = data.Attack.AttackDashSpeed;
         AttackDashDuration = data.Attack.AttackDashDuration;
@@ -73,14 +64,12 @@ public class EnemyDataInstance
         NavMeshSampleMargin = data.Attack.NavMeshSampleMargin;
         LandingStunDuration = data.Attack.LandingStunDuration;
         ShockwaveActiveDuration = data.Attack.ShockwaveActiveDuration;
-        AttackRange = data.Attack.AttackRange;
 
         MaxKo = data.Status.MaxKo;
-        KoTime = data.Status.KoTime;
+        KoTime = 0;
         KoTimeMax =  data.Status.KoTimeMax;
         StunDuration = data.Status.StunDuration;
         ExposedTime = data.Status.ExposedTime;
-        DamageToApply = data.Status.DamageToApply;
         CurrentKo = 0;
 
         SpriteSearch = data.Visuals.SpriteSearch;

@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections;
+using UnityEngine;
 
 public class EnemySheepManager : EnemyBaseManager
 {
@@ -6,5 +8,5 @@ public class EnemySheepManager : EnemyBaseManager
     {
         AttackState = new EnemySheepAttackState();
     }
-
+    
 }

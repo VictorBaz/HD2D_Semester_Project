@@ -14,6 +14,13 @@ public class PlayerCarryState : PlayerBaseState
     public override void ExitState(PlayerStateContext psc)
     {
         psc.AnimationManager.SetCarrying(false);
+
+        if (psc.CurrentTargetCarry != null &&  psc.CurrentTargetCarry.IsCarry()) 
+        {
+            psc.CurrentTargetCarry.Eject();
+        }
+        
+        psc.CurrentTargetCarry =  null;
     }
 
     public override void UpdateState(PlayerStateContext psc)
@@ -30,7 +37,7 @@ public class PlayerCarryState : PlayerBaseState
         HandleMovement(psc);
 
         float magnitude     = psc.InputManager.MoveInput.magnitude;
-        float animMagnitude = magnitude > GameConstants.DEAD_STICK ? GameConstants.PLAYER_ANIM_MAGNITUDE_RUN : GameConstants.PLAYER_ANIM_MAGNITUDE_IDLE;
+        float animMagnitude = magnitude > GameConstants.DEAD_STICK ? GameConstants.ANIM_MAGNITUDE_RUN : GameConstants.ANIM_MAGNITUDE_IDLE;
 
         blendInput = GetBlendTreeInput(psc);
         psc.AnimationManager.HandleAnimation(animMagnitude, blendInput, psc.Controller.IsGrounded);

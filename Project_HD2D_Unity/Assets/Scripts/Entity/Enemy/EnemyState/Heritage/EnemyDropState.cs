@@ -27,6 +27,7 @@ public class EnemyDropState : EnemyBaseState
         if (!NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, 0.5f, NavMesh.AllAreas)) return;
 
         isGrounded = true;
+        
         LandingSequence(actx);
     }
 

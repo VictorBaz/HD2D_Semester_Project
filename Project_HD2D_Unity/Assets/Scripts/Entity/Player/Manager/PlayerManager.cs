@@ -100,6 +100,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
     {
         inputManager.OnLockToggle  += OnLockToggle;
         inputManager.OnLockRelease += OnLockRelease;
+        inputManager.OnLockToggle += uiManager.UpdateLockState;
+        inputManager.OnLockRelease += uiManager.UpdateLockState;
 
         inputManager.OnJumpPressed  += TryJump;
         inputManager.OnJumpReleased += TryJumpReleased;
@@ -117,12 +119,16 @@ public class PlayerManager : MonoBehaviour, IDamageable
         inputManager.OnParry += HandleParry;
 
         inputManager.OnInputShow += uiManager.DisplayPanelInput;
+        
+        EventManager.OnRequestIsPlayerLock = IsPlayerLock;
     }
 
     private void OnDisable()
     {
         inputManager.OnLockToggle  -= OnLockToggle;
         inputManager.OnLockRelease -= OnLockRelease;
+        inputManager.OnLockToggle -= uiManager.UpdateLockState;
+        inputManager.OnLockRelease -= uiManager.UpdateLockState;
 
         inputManager.OnJumpPressed  -= TryJump;
         inputManager.OnJumpReleased -= TryJumpReleased;
@@ -167,6 +173,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
     {
         EventManager.OnRequestPlayerTransform = null;
         EventManager.OnRequestPlayerContext = null;
+        EventManager.OnRequestIsPlayerLock = null;
     }
 
     #endregion
@@ -500,4 +507,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
     #endregion
 
     private PlayerStateContext GetContext() => Context;
+
+    private bool IsPlayerLock() => lockOnSystem.IsLocked;
 }

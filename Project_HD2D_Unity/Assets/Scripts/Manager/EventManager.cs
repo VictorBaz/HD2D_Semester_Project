@@ -10,6 +10,8 @@ public static class EventManager
         
     /// <summary> Requête pour obtenir le contexte d'état du joueur </summary>
     public static Func<PlayerStateContext> OnRequestPlayerContext;
+    
+    public static Func<bool> OnRequestIsPlayerLock;
     #endregion
 
     #region Grid Systems

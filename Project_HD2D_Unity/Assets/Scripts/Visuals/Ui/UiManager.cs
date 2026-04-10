@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -24,13 +25,22 @@ public class UiManager : MonoBehaviour
     [SerializeField] private float hideOffset = 200f; 
     [SerializeField] private float transitionDuration = 0.25f;
 
+    [Header("X Button Images")]
+    [SerializeField] private Image playerLockXButtonImage;
+    [SerializeField] private Image playerNotLockXButtonImage;
+    
+    [Header("A Button Images")]
+    [SerializeField] private Image playerLockAButtonImage;
+    [SerializeField] private Image playerNotLockAButtonImage;
+    
     private float openLeftPanelX;
     private float openRightPanelX;
-    private bool isPanelVisible = true; 
-
     
+    private bool isPanelVisible = true;
+    
+    private bool playerLock;
+    private bool lastPlayerLock;
     #endregion
-    
 
     #region Lifecycle
 
@@ -38,13 +48,18 @@ public class UiManager : MonoBehaviour
     {
         openLeftPanelX = canvasGroupLeftPanel.transform.localPosition.x;
         openRightPanelX = canvasGroupRightPanel.transform.localPosition.x;
-
+        
         ForceState(false);
+    }
+
+    private void Start()
+    {
+        UpdateLockState();
     }
 
     private void OnDestroy()
     {
-        DOTween.KillAll();
+        transform.DOKill(true);
     }
 
     #endregion
@@ -187,6 +202,32 @@ public class UiManager : MonoBehaviour
 
         canvasGroupLeftPanel.transform.DOLocalMoveX(leftX, transitionDuration).SetEase(Ease.OutCubic);
         canvasGroupRightPanel.transform.DOLocalMoveX(rightX, transitionDuration).SetEase(Ease.OutCubic);
+    }
+
+
+    public void UpdateLockState()
+    {
+        if (EventManager.OnRequestIsPlayerLock == null) return;
+        
+        bool currentLock = EventManager.OnRequestIsPlayerLock.Invoke();
+
+        if (currentLock == lastPlayerLock && Time.time > 0.1f) return; 
+        lastPlayerLock = currentLock;
+
+        float lockAlpha = currentLock ? 1f : 0f;
+        float unlockAlpha = currentLock ? 0f : 1f;
+
+        AnimateButtonSwap(playerLockXButtonImage, playerNotLockXButtonImage, lockAlpha, unlockAlpha);
+        AnimateButtonSwap(playerLockAButtonImage, playerNotLockAButtonImage, lockAlpha, unlockAlpha);
+    }
+
+    private void AnimateButtonSwap(Image lockImg, Image unlockImg, float lockTarget, float unlockTarget)
+    {
+        lockImg.DOKill();
+        unlockImg.DOKill();
+
+        lockImg.DOFade(lockTarget, transitionDuration).SetEase(Ease.InOutQuad);
+        unlockImg.DOFade(unlockTarget, transitionDuration).SetEase(Ease.InOutQuad);
     }
 
     #endregion

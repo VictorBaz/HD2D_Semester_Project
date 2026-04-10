@@ -78,6 +78,7 @@ public class InputManager : MonoBehaviour
         playerInputAction.Player.Parry.started += ReceiveParry;
         
         playerInputAction.Player.ShowInput.started += ReceiveInputShow;
+        playerInputAction.Player.ShowInput.canceled += ReceiveInputShow;
         
         playerInputAction.Enable();
     }
@@ -108,6 +109,7 @@ public class InputManager : MonoBehaviour
         playerInputAction.Player.Parry.started -= ReceiveParry;
         
         playerInputAction.Player.ShowInput.started -= ReceiveInputShow;
+        playerInputAction.Player.ShowInput.canceled -= ReceiveInputShow;
         
         playerInputAction.Disable();
     }

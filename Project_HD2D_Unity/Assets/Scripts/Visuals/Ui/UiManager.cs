@@ -9,6 +9,11 @@ public class UiManager : MonoBehaviour
 {
     #region Variables
 
+    [Header("State Panels")]
+    [SerializeField] private CanvasGroup pauseMenuPanel;
+    [SerializeField] private CanvasGroup mainMenuPanel;
+    [SerializeField] private CanvasGroup hudPanel;
+    
     [Header("Energy Settings")]
     [SerializeField] private Transform energyContainer; 
     [SerializeField] private GameObject energyPointPrefab; 
@@ -55,6 +60,24 @@ public class UiManager : MonoBehaviour
     private void Start()
     {
         UpdateLockState();
+    }
+
+    private void OnEnable()
+    {
+        EventManager.OnGameStateChanged += HandleUiState;
+        EventManager.OnEnergyChanged += HandleEnergyUpdate; 
+        EventManager.OnSapChanged += HandleSapUpdate;
+        EventManager.OnLockStateChanged += HandleLockUpdate;
+        EventManager.OnToggleInputPanel += DisplayPanelInput;
+    }
+    
+    private void OnDisable()
+    {
+        EventManager.OnGameStateChanged -= HandleUiState;
+        EventManager.OnEnergyChanged -= HandleEnergyUpdate;
+        EventManager.OnSapChanged -= HandleSapUpdate;
+        EventManager.OnLockStateChanged -= HandleLockUpdate;
+        EventManager.OnToggleInputPanel -= DisplayPanelInput;
     }
 
     private void OnDestroy()
@@ -228,6 +251,52 @@ public class UiManager : MonoBehaviour
 
         lockImg.DOFade(lockTarget, transitionDuration).SetEase(Ease.InOutQuad);
         unlockImg.DOFade(unlockTarget, transitionDuration).SetEase(Ease.InOutQuad);
+    }
+
+    #endregion
+
+    #region Lambda
+
+    private void HandleEnergyUpdate(int curr, int max) => UpdateEnergyDisplay(curr);
+    private void HandleSapUpdate(int curr, int max) => UpdateSapDisplay(curr);
+    private void HandleLockUpdate(bool isLocked) => UpdateLockState();
+
+    #endregion
+    
+    #region Handle State
+
+    private void HandleUiState(GameState state)
+    {
+        float duration = transitionDuration;
+
+        switch (state)
+        {
+            case GameState.Menu:
+                ToggleCanvasGroup(mainMenuPanel, true, duration);
+                ToggleCanvasGroup(pauseMenuPanel, false, duration);
+                ToggleCanvasGroup(hudPanel, false, duration);
+                break;
+
+            case GameState.Game:
+                ToggleCanvasGroup(mainMenuPanel, false, duration);
+                ToggleCanvasGroup(pauseMenuPanel, false, duration);
+                ToggleCanvasGroup(hudPanel, true, duration);
+                break;
+
+            case GameState.Pause:
+                ToggleCanvasGroup(mainMenuPanel, false, duration);
+                ToggleCanvasGroup(pauseMenuPanel, true, duration);
+                ToggleCanvasGroup(hudPanel, true, duration, 0.4f); 
+                break;
+        }
+    }
+
+    private void ToggleCanvasGroup(CanvasGroup group, bool show, float duration, float targetAlpha = 1f)
+    {
+        group.DOKill();
+        group.blocksRaycasts = show;
+        group.interactable = show;
+        group.DOFade(show ? targetAlpha : 0f, duration).SetUpdate(true);
     }
 
     #endregion

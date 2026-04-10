@@ -1,0 +1,1 @@
+﻿public enum GameState { Menu, Game, Pause,Null }

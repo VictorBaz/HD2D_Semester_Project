@@ -26,6 +26,8 @@ public class InputManager : MonoBehaviour
 
     public event Action<bool> OnInputShow;
     
+    public event Action OnPausePressed;
+    
     private PlayerInputAction playerInputAction;
 
     #endregion
@@ -80,6 +82,8 @@ public class InputManager : MonoBehaviour
         playerInputAction.Player.ShowInput.started += ReceiveInputShow;
         playerInputAction.Player.ShowInput.canceled += ReceiveInputShow;
         
+        playerInputAction.Player.Pause.started += ReceiveInputShow;
+        
         playerInputAction.Enable();
     }
 
@@ -110,6 +114,8 @@ public class InputManager : MonoBehaviour
         
         playerInputAction.Player.ShowInput.started -= ReceiveInputShow;
         playerInputAction.Player.ShowInput.canceled -= ReceiveInputShow;
+        
+        playerInputAction.Player.Pause.started -= ReceiveInputShow;
         
         playerInputAction.Disable();
     }
@@ -174,18 +180,13 @@ public class InputManager : MonoBehaviour
 
     private void ReceiveInputShow(InputAction.CallbackContext ctx)
     {
-        if (ctx.started)
-        {
-            OnInputShow?.Invoke(true);
-            return;
-        }
+        bool show = ctx.started;
+        EventManager.TriggerToggleInputPanel(show);
+    }
 
-        if (ctx.canceled)
-        {
-            OnInputShow?.Invoke(false);
-            return;
-        }
-        
+    private void ReceivePause(InputAction.CallbackContext ctx)
+    {
+        OnPausePressed?.Invoke();
     }
     
     #endregion

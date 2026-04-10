@@ -12,7 +12,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
     [SerializeField] private PlayerController playerController;
     [SerializeField] private PlayerAnimationManager animationManager;
     [SerializeField] private LockOnSystem lockOnSystem;
-    [SerializeField] private UiManager uiManager;
     [SerializeField] private VfxManager vfxManager;
 
     [SerializeField] private Transform cameraTransform;
@@ -88,9 +87,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         lockOnSystem.InitData(playerData);
         playerController.InitData(playerData);
-
-        uiManager.SetupEnergyBar(playerData.MaxEnergy,playerData.Energy);
-        uiManager.SetupSapBar(playerData.MaxSap,playerData.Sap);
         
         EventManager.OnRequestPlayerTransform = GetTransform;
         EventManager.OnRequestPlayerContext = GetContext;
@@ -100,8 +96,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
     {
         inputManager.OnLockToggle  += OnLockToggle;
         inputManager.OnLockRelease += OnLockRelease;
-        inputManager.OnLockToggle += uiManager.UpdateLockState;
-        inputManager.OnLockRelease += uiManager.UpdateLockState;
 
         inputManager.OnJumpPressed  += TryJump;
         inputManager.OnJumpReleased += TryJumpReleased;
@@ -117,18 +111,16 @@ public class PlayerManager : MonoBehaviour, IDamageable
         inputManager.OnCarry += TryCarry;
 
         inputManager.OnParry += HandleParry;
-
-        inputManager.OnInputShow += uiManager.DisplayPanelInput;
         
         EventManager.OnRequestIsPlayerLock = IsPlayerLock;
+        
+        inputManager.OnPausePressed += GameManager.Instance.TogglePause;
     }
 
     private void OnDisable()
     {
         inputManager.OnLockToggle  -= OnLockToggle;
         inputManager.OnLockRelease -= OnLockRelease;
-        inputManager.OnLockToggle -= uiManager.UpdateLockState;
-        inputManager.OnLockRelease -= uiManager.UpdateLockState;
 
         inputManager.OnJumpPressed  -= TryJump;
         inputManager.OnJumpReleased -= TryJumpReleased;
@@ -145,13 +137,14 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         inputManager.OnParry -= HandleParry;
         
-        inputManager.OnInputShow -= uiManager.DisplayPanelInput;
+        
+        inputManager.OnPausePressed -= GameManager.Instance.TogglePause;
     }
 
     private void Start()
     {
-        uiManager.UpdateEnergyDisplay(playerData.Energy);
-        uiManager.UpdateSapDisplay(Context.PlayerData.Sap);
+        EventManager.TriggerEnergyChanged(playerData.Energy, playerData.MaxEnergy);
+        EventManager.TriggerSapChanged(Context.PlayerData.Sap, Context.PlayerData.MaxSap);
     }
 
     private void Update()
@@ -346,7 +339,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
             playerData.RemoveEnergy();
         }
 
-        uiManager.UpdateEnergyDisplay(playerData.Energy);
+        EventManager.TriggerEnergyChanged(playerData.Energy, playerData.MaxEnergy);
     }
 
     #endregion
@@ -378,12 +371,14 @@ public class PlayerManager : MonoBehaviour, IDamageable
     private void OnLockToggle()
     {
         lockOnSystem.TryLock();
+        EventManager.TriggerLockStateChanged(lockOnSystem.IsLocked);
         HandleSap();
     }
 
     private void OnLockRelease()
     {
         lockOnSystem.Unlock();
+        EventManager.TriggerLockStateChanged(false);
     }
 
     #endregion
@@ -422,7 +417,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
                 
         sap.GiveSap();
         Context.PlayerData.AddSap();
-        uiManager.UpdateSapDisplay(Context.PlayerData.Sap);
+        EventManager.TriggerSapChanged(Context.PlayerData.Sap, Context.PlayerData.MaxSap);
     }
 
     #endregion

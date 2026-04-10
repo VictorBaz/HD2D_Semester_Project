@@ -181,6 +181,15 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ShowInput"",
+                    ""type"": ""Button"",
+                    ""id"": ""62a8d583-5244-432d-b52e-89c137e9c5e3"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -480,6 +489,17 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                     ""action"": ""Look"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""b94d2dbc-fcdb-4a86-974e-ad806605dbc3"",
+                    ""path"": ""<Keyboard>/i"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ShowInput"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -498,6 +518,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         m_Player_Carry = m_Player.FindAction("Carry", throwIfNotFound: true);
         m_Player_Parry = m_Player.FindAction("Parry", throwIfNotFound: true);
         m_Player_Look = m_Player.FindAction("Look", throwIfNotFound: true);
+        m_Player_ShowInput = m_Player.FindAction("ShowInput", throwIfNotFound: true);
     }
 
     ~@PlayerInputAction()
@@ -588,6 +609,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Carry;
     private readonly InputAction m_Player_Parry;
     private readonly InputAction m_Player_Look;
+    private readonly InputAction m_Player_ShowInput;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -639,6 +661,10 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Look".
         /// </summary>
         public InputAction @Look => m_Wrapper.m_Player_Look;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/ShowInput".
+        /// </summary>
+        public InputAction @ShowInput => m_Wrapper.m_Player_ShowInput;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -695,6 +721,9 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @Look.started += instance.OnLook;
             @Look.performed += instance.OnLook;
             @Look.canceled += instance.OnLook;
+            @ShowInput.started += instance.OnShowInput;
+            @ShowInput.performed += instance.OnShowInput;
+            @ShowInput.canceled += instance.OnShowInput;
         }
 
         /// <summary>
@@ -736,6 +765,9 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
             @Look.started -= instance.OnLook;
             @Look.performed -= instance.OnLook;
             @Look.canceled -= instance.OnLook;
+            @ShowInput.started -= instance.OnShowInput;
+            @ShowInput.performed -= instance.OnShowInput;
+            @ShowInput.canceled -= instance.OnShowInput;
         }
 
         /// <summary>
@@ -846,5 +878,12 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnLook(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "ShowInput" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnShowInput(InputAction.CallbackContext context);
     }
 }

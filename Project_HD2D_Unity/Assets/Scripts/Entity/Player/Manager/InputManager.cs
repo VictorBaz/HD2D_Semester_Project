@@ -23,6 +23,8 @@ public class InputManager : MonoBehaviour
     public event Action OnDash;
     
     public event Action OnParry;
+
+    public event Action<bool> OnInputShow;
     
     private PlayerInputAction playerInputAction;
 
@@ -75,6 +77,8 @@ public class InputManager : MonoBehaviour
         
         playerInputAction.Player.Parry.started += ReceiveParry;
         
+        playerInputAction.Player.ShowInput.started += ReceiveInputShow;
+        
         playerInputAction.Enable();
     }
 
@@ -102,6 +106,8 @@ public class InputManager : MonoBehaviour
         playerInputAction.Player.Carry.started -= ReceiveCarry;
         
         playerInputAction.Player.Parry.started -= ReceiveParry;
+        
+        playerInputAction.Player.ShowInput.started -= ReceiveInputShow;
         
         playerInputAction.Disable();
     }
@@ -162,6 +168,22 @@ public class InputManager : MonoBehaviour
     private void ReceiveParry(InputAction.CallbackContext ctx)
     {
         OnParry?.Invoke();
+    }
+
+    private void ReceiveInputShow(InputAction.CallbackContext ctx)
+    {
+        if (ctx.started)
+        {
+            OnInputShow?.Invoke(true);
+            return;
+        }
+
+        if (ctx.canceled)
+        {
+            OnInputShow?.Invoke(false);
+            return;
+        }
+        
     }
     
     #endregion

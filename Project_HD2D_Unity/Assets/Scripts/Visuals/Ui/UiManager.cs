@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
-using TMPro;
+
 
 public class UiManager : MonoBehaviour
 {
@@ -17,11 +17,30 @@ public class UiManager : MonoBehaviour
     [SerializeField] private Transform sapContainer; 
     [SerializeField] private GameObject sapPointPrefab; 
     private List<Image> sapIcons = new List<Image>();
+    
+    [Header("Panel Settings")]
+    [SerializeField] private CanvasGroup canvasGroupLeftPanel;
+    [SerializeField] private CanvasGroup canvasGroupRightPanel;
+    [SerializeField] private float hideOffset = 200f; 
+    [SerializeField] private float transitionDuration = 0.25f;
 
+    private float openLeftPanelX;
+    private float openRightPanelX;
+    private bool isPanelVisible = true; 
+
+    
     #endregion
     
 
     #region Lifecycle
+
+    private void Awake()
+    {
+        openLeftPanelX = canvasGroupLeftPanel.transform.localPosition.x;
+        openRightPanelX = canvasGroupRightPanel.transform.localPosition.x;
+
+        ForceState(false);
+    }
 
     private void OnDestroy()
     {
@@ -133,6 +152,41 @@ public class UiManager : MonoBehaviour
             icon.transform.DOScale(1.0f, 0.1f);
         });
         icon.DOFade(1f, 0.2f);
+    }
+
+    #endregion
+
+    #region Panel Input Display
+
+    private void ForceState(bool on)
+    {
+        isPanelVisible = on;
+        canvasGroupLeftPanel.alpha = on ? 1f : 0f;
+        canvasGroupRightPanel.alpha = on ? 1f : 0f;
+    
+        canvasGroupLeftPanel.transform.localPosition = new Vector3(on ? openLeftPanelX : openLeftPanelX - hideOffset, 0, 0);
+        canvasGroupRightPanel.transform.localPosition = new Vector3(on ? openRightPanelX : openRightPanelX + hideOffset, 0, 0);
+    }
+
+    public void DisplayPanelInput(bool on)
+    {
+        if (isPanelVisible == on) return;
+        isPanelVisible = on;
+
+        float targetAlpha = on ? 1f : 0f;
+        float leftX = on ? openLeftPanelX : openLeftPanelX - hideOffset;
+        float rightX = on ? openRightPanelX : openRightPanelX + hideOffset;
+
+        canvasGroupLeftPanel.DOKill();
+        canvasGroupRightPanel.DOKill();
+        canvasGroupLeftPanel.transform.DOKill();
+        canvasGroupRightPanel.transform.DOKill();
+
+        canvasGroupLeftPanel.DOFade(targetAlpha, transitionDuration);
+        canvasGroupRightPanel.DOFade(targetAlpha, transitionDuration);
+
+        canvasGroupLeftPanel.transform.DOLocalMoveX(leftX, transitionDuration).SetEase(Ease.OutCubic);
+        canvasGroupRightPanel.transform.DOLocalMoveX(rightX, transitionDuration).SetEase(Ease.OutCubic);
     }
 
     #endregion

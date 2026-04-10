@@ -115,8 +115,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
         inputManager.OnCarry += TryCarry;
 
         inputManager.OnParry += HandleParry;
-        
-        
+
+        inputManager.OnInputShow += uiManager.DisplayPanelInput;
     }
 
     private void OnDisable()
@@ -139,11 +139,11 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         inputManager.OnParry -= HandleParry;
         
+        inputManager.OnInputShow -= uiManager.DisplayPanelInput;
     }
 
     private void Start()
     {
-        DebugState();
         uiManager.UpdateEnergyDisplay(playerData.Energy);
         uiManager.UpdateSapDisplay(Context.PlayerData.Sap);
     }
@@ -178,7 +178,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
         CurrentPlayerState?.ExitState(Context);
         CurrentPlayerState = newState;
         CurrentPlayerState.EnterState(Context);
-        DebugState();
     }
 
     #endregion
@@ -423,10 +422,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
     
     #region Gizmos & Debugging
     
-    private void DebugState()
-    {
-        stateText.text = $"State: {CurrentPlayerState.Name}";
-    }
 
     private void OnDrawGizmos()
     {

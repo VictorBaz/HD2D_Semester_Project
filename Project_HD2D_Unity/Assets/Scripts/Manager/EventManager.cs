@@ -58,4 +58,7 @@ public static class EventManager
     public static event Action<bool> OnLockStateChanged;
     public static void TriggerLockStateChanged(bool isLocked) => OnLockStateChanged?.Invoke(isLocked);
     #endregion
+    
+    public static event Action OnLoadingStarted;
+    public static void TriggerLoadingStarted() => OnLoadingStarted?.Invoke();
 }

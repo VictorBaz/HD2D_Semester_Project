@@ -1,64 +1,56 @@
+using DG.Tweening;
+using Enum;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using DG.Tweening; 
 
-public class ButtonMenuHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
+public class ButtonMenuHandler : MonoBehaviour, 
+    ISelectHandler, IDeselectHandler, IPointerClickHandler, ISubmitHandler
 {
     [Header("Visual Feedback")]
     [SerializeField] private GameObject selectionVisual;
-    [SerializeField] private bool disableOnExit = true;
-
-    [Header("DOTween Settings")]
     [SerializeField] private float scaleDuration = 0.1f;
-    [SerializeField] private Ease hoverEase = Ease.OutQuad;
-
+    [SerializeField] private ButtonAction action;
+    
     private Vector3 originalScale;
     private CanvasGroup visualCanvasGroup;
 
     private void Awake()
     {
         originalScale = transform.localScale;
-
-        if (selectionVisual != null)
-        {
-            if (!selectionVisual.TryGetComponent(out visualCanvasGroup))
-                visualCanvasGroup = selectionVisual.AddComponent<CanvasGroup>();
-            
-            visualCanvasGroup.alpha = 0;
-            selectionVisual.SetActive(true); 
-        }
+        if (selectionVisual != null && !selectionVisual.TryGetComponent(out visualCanvasGroup))
+            visualCanvasGroup = selectionVisual.AddComponent<CanvasGroup>();
         
+        if (visualCanvasGroup != null) visualCanvasGroup.alpha = 0;
     }
 
-    public void OnPointerEnter(PointerEventData eventData)
+    public void OnSelect(BaseEventData eventData)
     {
-        transform.DOScale(originalScale * 1.05f, scaleDuration).SetEase(hoverEase);
-
-        if (visualCanvasGroup != null)
-            visualCanvasGroup.DOFade(1f, scaleDuration);
+        transform.DOScale(originalScale * 1.05f, scaleDuration).SetEase(Ease.OutQuad);
+        visualCanvasGroup?.DOFade(1f, scaleDuration);
     }
 
-    public void OnPointerExit(PointerEventData eventData)
+    public void OnDeselect(BaseEventData eventData)
     {
-        transform.DOScale(originalScale, scaleDuration).SetEase(hoverEase);
-
-        if (disableOnExit && visualCanvasGroup != null)
-            visualCanvasGroup.DOFade(0f, scaleDuration);
+        transform.DOScale(originalScale, scaleDuration).SetEase(Ease.OutQuad);
+        visualCanvasGroup?.DOFade(0f, scaleDuration);
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    public void OnPointerClick(PointerEventData eventData)
     {
-        transform.DOScale(originalScale * 0.92f, scaleDuration).SetEase(Ease.OutQuad);
+        ExecuteAction();
     }
-
-    public void OnPointerUp(PointerEventData eventData)
+    
+    public void OnSubmit(BaseEventData eventData)
     {
-        transform.DOScale(originalScale * 1.05f, scaleDuration).SetEase(Ease.OutBack);
+        ExecuteAction();
     }
-
-    private void OnDestroy()
+    
+    private void ExecuteAction()
     {
+        Debug.Log($"Action détectée : {action}");
+        GameManager.Instance.ExecuteButtonAction(action);
+        
         transform.DOKill();
-        if (visualCanvasGroup != null) visualCanvasGroup.DOKill();
+        transform.DOPunchScale(Vector3.one * 0.1f, 0.2f).SetUpdate(true);
     }
 }

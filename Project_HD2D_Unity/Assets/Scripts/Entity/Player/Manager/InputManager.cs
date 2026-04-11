@@ -82,7 +82,7 @@ public class InputManager : MonoBehaviour
         playerInputAction.Player.ShowInput.started += ReceiveInputShow;
         playerInputAction.Player.ShowInput.canceled += ReceiveInputShow;
         
-        playerInputAction.Player.Pause.started += ReceiveInputShow;
+        playerInputAction.Player.Pause.started += ReceivePause;
         
         playerInputAction.Enable();
     }
@@ -115,7 +115,7 @@ public class InputManager : MonoBehaviour
         playerInputAction.Player.ShowInput.started -= ReceiveInputShow;
         playerInputAction.Player.ShowInput.canceled -= ReceiveInputShow;
         
-        playerInputAction.Player.Pause.started -= ReceiveInputShow;
+        playerInputAction.Player.Pause.started -= ReceivePause;
         
         playerInputAction.Disable();
     }

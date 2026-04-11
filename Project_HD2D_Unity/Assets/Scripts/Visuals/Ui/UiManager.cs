@@ -1,4 +1,4 @@
-using System;
+using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,6 +38,11 @@ public class UiManager : MonoBehaviour
     [SerializeField] private Image playerLockAButtonImage;
     [SerializeField] private Image playerNotLockAButtonImage;
     
+    [Header("Loading Settings")]
+    [SerializeField] private CanvasGroup loadingPanel;
+    [SerializeField] private RectTransform loadingIcon;
+    [SerializeField] private float rotationSpeed = 200f;
+    
     private float openLeftPanelX;
     private float openRightPanelX;
     
@@ -45,6 +50,8 @@ public class UiManager : MonoBehaviour
     
     private bool playerLock;
     private bool lastPlayerLock;
+    
+    private Tween rotationTween;
     #endregion
 
     #region Lifecycle
@@ -55,11 +62,11 @@ public class UiManager : MonoBehaviour
         openRightPanelX = canvasGroupRightPanel.transform.localPosition.x;
         
         ForceState(false);
-    }
-
-    private void Start()
-    {
-        UpdateLockState();
+        
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        
+        DontDestroyOnLoad(gameObject);
     }
 
     private void OnEnable()
@@ -69,6 +76,7 @@ public class UiManager : MonoBehaviour
         EventManager.OnSapChanged += HandleSapUpdate;
         EventManager.OnLockStateChanged += HandleLockUpdate;
         EventManager.OnToggleInputPanel += DisplayPanelInput;
+        
     }
     
     private void OnDisable()
@@ -78,6 +86,7 @@ public class UiManager : MonoBehaviour
         EventManager.OnSapChanged -= HandleSapUpdate;
         EventManager.OnLockStateChanged -= HandleLockUpdate;
         EventManager.OnToggleInputPanel -= DisplayPanelInput;
+        
     }
 
     private void OnDestroy()
@@ -275,6 +284,8 @@ public class UiManager : MonoBehaviour
                 ToggleCanvasGroup(mainMenuPanel, true, duration);
                 ToggleCanvasGroup(pauseMenuPanel, false, duration);
                 ToggleCanvasGroup(hudPanel, false, duration);
+                GameObject Button = mainMenuPanel.GetComponentInChildren<ButtonMenuHandler>().gameObject;
+                EventSystem.current.SetSelectedGameObject(Button);
                 break;
 
             case GameState.Game:
@@ -287,6 +298,8 @@ public class UiManager : MonoBehaviour
                 ToggleCanvasGroup(mainMenuPanel, false, duration);
                 ToggleCanvasGroup(pauseMenuPanel, true, duration);
                 ToggleCanvasGroup(hudPanel, true, duration, 0.4f); 
+                GameObject firstButton = pauseMenuPanel.GetComponentInChildren<ButtonPauseHandler>().gameObject;
+                EventSystem.current.SetSelectedGameObject(firstButton);
                 break;
         }
     }
@@ -298,6 +311,9 @@ public class UiManager : MonoBehaviour
         group.interactable = show;
         group.DOFade(show ? targetAlpha : 0f, duration).SetUpdate(true);
     }
+    
 
     #endregion
+
+  
 }

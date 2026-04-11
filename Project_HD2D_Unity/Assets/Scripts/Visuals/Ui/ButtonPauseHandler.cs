@@ -1,16 +1,15 @@
 ﻿using DG.Tweening;
+using Enum;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class ButtonPauseHandler : MonoBehaviour, 
-    IPointerEnterHandler, IPointerExitHandler, 
-    ISelectHandler, IDeselectHandler,
-    IPointerDownHandler, IPointerUpHandler
+    ISelectHandler, IDeselectHandler, IPointerClickHandler, ISubmitHandler
 {
     [Header("Settings")]
     [SerializeField] private CanvasGroup canvasGroupSelectedButton;
     [SerializeField] private float fadeDuration = 0.15f;
-    [SerializeField] private float punchScaleAmount = 0.95f; 
+    [SerializeField] private ButtonAction action;
 
     private void Awake()
     {
@@ -18,40 +17,34 @@ public class ButtonPauseHandler : MonoBehaviour,
             canvasGroupSelectedButton.alpha = 0;
     }
 
-    private void ToggleHighlight(bool show)
-    {
-        if (canvasGroupSelectedButton == null) return;
-
-        canvasGroupSelectedButton.DOKill();
-        canvasGroupSelectedButton.DOFade(show ? 1f : 0f, fadeDuration).SetUpdate(true); 
-    
-    }
-
-    #region Hover & Selection
-    public void OnPointerEnter(PointerEventData eventData) => ToggleHighlight(true);
-    public void OnPointerExit(PointerEventData eventData) => ToggleHighlight(false);
-
-    public void OnSelect(BaseEventData eventData) => ToggleHighlight(true);
-    public void OnDeselect(BaseEventData eventData) => ToggleHighlight(false);
-    #endregion
-
-    #region Click Feedback
-    public void OnPointerDown(PointerEventData eventData)
-    {
-        transform.DOKill();
-        transform.DOScale(punchScaleAmount, 0.1f).SetUpdate(true);
-    }
-
-    public void OnPointerUp(PointerEventData eventData)
-    {
-        transform.DOKill();
-        transform.DOScale(1f, 0.1f).SetUpdate(true);
-    }
-    #endregion
-
-    private void OnDestroy()
+    public void OnSelect(BaseEventData eventData)
     {
         canvasGroupSelectedButton?.DOKill();
-        transform.DOKill();
+        canvasGroupSelectedButton?.DOFade(1f, fadeDuration).SetUpdate(true);
     }
+
+    public void OnDeselect(BaseEventData eventData)
+    {
+        canvasGroupSelectedButton?.DOKill();
+        canvasGroupSelectedButton?.DOFade(0f, fadeDuration).SetUpdate(true);
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        ExecuteAction();
+    }
+    
+    public void OnSubmit(BaseEventData eventData)
+    {
+        ExecuteAction();
+    }
+
+    private void ExecuteAction()
+    {
+        GameManager.Instance.ExecuteButtonAction(action);
+        
+        transform.DOPunchScale(Vector3.one * 0.1f, 0.2f).SetUpdate(true);
+    }
+
+    
 }

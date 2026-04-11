@@ -524,7 +524,7 @@ public partial class @PlayerInputAction: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""b954a824-8d02-475e-81b9-d9a23f997d8a"",
-                    ""path"": ""<Keyboard>/n"",
+                    ""path"": ""<Gamepad>/start"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",

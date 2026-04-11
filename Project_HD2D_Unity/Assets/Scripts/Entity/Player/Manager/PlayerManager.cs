@@ -114,7 +114,10 @@ public class PlayerManager : MonoBehaviour, IDamageable
         
         EventManager.OnRequestIsPlayerLock = IsPlayerLock;
         
-        inputManager.OnPausePressed += GameManager.Instance.TogglePause;
+        if (GameManager.Instance != null)
+        {
+            inputManager.OnPausePressed += GameManager.Instance.TogglePause;
+        }
     }
 
     private void OnDisable()
@@ -136,9 +139,12 @@ public class PlayerManager : MonoBehaviour, IDamageable
         inputManager.OnCarry -= TryCarry;
 
         inputManager.OnParry -= HandleParry;
+
+        if (GameManager.Instance != null)
+        {
+            inputManager.OnPausePressed -= GameManager.Instance.TogglePause;
+        }
         
-        
-        inputManager.OnPausePressed -= GameManager.Instance.TogglePause;
     }
 
     private void Start()

@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
         if (currentState == newState) return;
 
         currentState = newState;
-        //NewStateBehaviorTime(currentState);
+        NewStateBehaviorTime(currentState);
         
         EventManager.TriggerGameStateChanged(newState);
     }

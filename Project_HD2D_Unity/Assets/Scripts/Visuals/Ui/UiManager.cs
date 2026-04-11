@@ -288,7 +288,6 @@ public class UiManager : MonoBehaviour
     
     #region Handle State
 
-    //TODO FIX 
     private void HandleUiState(GameState state)
     {
         float duration = transitionDuration;

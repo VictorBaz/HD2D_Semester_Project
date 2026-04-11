@@ -112,12 +112,12 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         inputManager.OnParry += HandleParry;
         
-        PlayerEvents.OnRequestIsPlayerLock = IsPlayerLock;
-        
         if (GameManager.Instance != null)
         {
             inputManager.OnPausePressed += GameManager.Instance.TogglePause;
         }
+        
+        PlayerEvents.OnRequestCurrentLockTarget = GetTransform;
     }
 
     private void OnDisable()
@@ -172,7 +172,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
     {
         PlayerEvents.OnRequestPlayerTransform = null;
         PlayerEvents.OnRequestPlayerContext = null;
-        PlayerEvents.OnRequestIsPlayerLock = null;
+        PlayerEvents.OnRequestCurrentLockTarget = null;
     }
 
     #endregion
@@ -509,5 +509,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private PlayerStateContext GetContext() => Context;
 
-    private bool IsPlayerLock() => lockOnSystem.IsLocked;
+    private Transform GetCurrentTargetLock()
+    {
+        return lockOnSystem.CurrentTarget?.GetLockTransform();
+    }
 }

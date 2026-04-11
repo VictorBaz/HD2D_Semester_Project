@@ -9,14 +9,14 @@ public class GameManager : MonoBehaviour
     public static GameManager Instance { get; private set; }
 
     [SerializeField] private GameState initialState = GameState.Menu;
-    
+
     private GameState currentState = GameState.Null;
-    
+
     public GameState CurrentState => currentState;
-    
+
     [SerializeField] private string GameSceneName;
     [SerializeField] private string MenuSceneName;
-    
+
     private bool isLoading = false;
 
     private void Awake()
@@ -30,8 +30,6 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        
-        
     }
 
     private void Start()
@@ -45,7 +43,7 @@ public class GameManager : MonoBehaviour
 
         currentState = newState;
         NewStateBehaviorTime(currentState);
-        
+
         EventManager.TriggerGameStateChanged(newState);
     }
 
@@ -54,16 +52,12 @@ public class GameManager : MonoBehaviour
         switch (newState)
         {
             case GameState.Menu:
-                Time.timeScale = 1f;
-                break;
             case GameState.Game:
+            case GameState.Null:
                 Time.timeScale = 1f;
                 break;
             case GameState.Pause:
                 Time.timeScale = 0f;
-                break;
-            case GameState.Null:
-                Time.timeScale = 1f;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
@@ -85,16 +79,16 @@ public class GameManager : MonoBehaviour
             StartCoroutine(LoadAsync(sceneName));
         }
     }
-    
+
     private IEnumerator LoadAsync(string sceneName)
     {
         isLoading = true;
-        
-        EventManager.TriggerLoadingStarted(); 
+
+        EventManager.TriggerLoadingStarted();
 
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
-        
-        operation.allowSceneActivation = false; 
+
+        operation.allowSceneActivation = false;
 
         while (!operation.isDone)
         {
@@ -106,11 +100,13 @@ public class GameManager : MonoBehaviour
         }
 
         isLoading = false;
+
+        EventManager.TriggerLoadingFinished();
     }
 
     public void LoadGame() => LoadScene(GameSceneName);
     public void LoadMenu() => LoadScene(MenuSceneName);
-    
+
     #endregion
 
     #region Helper
@@ -119,10 +115,12 @@ public class GameManager : MonoBehaviour
     {
         switch (action)
         {
-            case ButtonAction.ReturnToGame:
             case ButtonAction.Game:
                 ChangeState(GameState.Game);
                 LoadGame();
+                break;
+            case ButtonAction.ReturnToGame:
+                ChangeState(GameState.Game);
                 break;
 
             case ButtonAction.Pause:
@@ -143,7 +141,6 @@ public class GameManager : MonoBehaviour
                 break;
 
             case ButtonAction.Credits:
-                // Logique pour les crédits
                 break;
         }
     }

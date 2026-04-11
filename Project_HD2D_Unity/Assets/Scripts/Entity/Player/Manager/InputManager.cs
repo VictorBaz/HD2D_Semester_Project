@@ -181,7 +181,7 @@ public class InputManager : MonoBehaviour
     private void ReceiveInputShow(InputAction.CallbackContext ctx)
     {
         bool show = ctx.started;
-        EventManager.TriggerToggleInputPanel(show);
+        UiEvents.TriggerToggleInputPanel(show);
     }
 
     private void ReceivePause(InputAction.CallbackContext ctx)

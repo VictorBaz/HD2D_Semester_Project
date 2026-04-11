@@ -26,9 +26,9 @@ public class Sap : MonoBehaviour, ISapLockable
     #region Initialization
     private void Initialize()
     {
-        if (EventManager.OnRequestPlayerTransform != null)
+        if (PlayerEvents.OnRequestPlayerTransform != null)
         {
-            _playerTransform = EventManager.OnRequestPlayerTransform.Invoke();
+            _playerTransform = PlayerEvents.OnRequestPlayerTransform.Invoke();
             feedbackLogic.Initialize(_playerTransform);
         }
     }

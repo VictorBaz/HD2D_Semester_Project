@@ -29,8 +29,8 @@ public class Parasite : MonoBehaviour, IDamageable
     private void Init()
     {
         life = lifeMax;
-        if (EventManager.OnRequestPlayerContext != null)
-            _playerContext = EventManager.OnRequestPlayerContext.Invoke();
+        if (PlayerEvents.OnRequestPlayerContext != null)
+            _playerContext = PlayerEvents.OnRequestPlayerContext.Invoke();
     }
     #endregion
 

@@ -5,58 +5,59 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
-
 public class UiManager : MonoBehaviour
 {
     #region Variables
-    
+
     private static UiManager Instance;
 
     [Header("State Panels")]
     [SerializeField] private CanvasGroup pauseMenuPanel;
     [SerializeField] private CanvasGroup mainMenuPanel;
     [SerializeField] private CanvasGroup hudPanel;
-    
+
     [Header("Energy Settings")]
-    [SerializeField] private Transform energyContainer; 
-    [SerializeField] private GameObject energyPointPrefab; 
+    [SerializeField] private Transform energyContainer;
+    [SerializeField] private GameObject energyPointPrefab;
     private List<Image> energyIcons = new List<Image>();
+    private int lastMaxEnergy = -1;
 
     [Header("Sap Settings")]
-    [SerializeField] private Transform sapContainer; 
-    [SerializeField] private GameObject sapPointPrefab; 
+    [SerializeField] private Transform sapContainer;
+    [SerializeField] private GameObject sapPointPrefab;
     private List<Image> sapIcons = new List<Image>();
-    
+    private int lastMaxSap = -1;
+
     [Header("Panel Settings")]
     [SerializeField] private CanvasGroup canvasGroupLeftPanel;
     [SerializeField] private CanvasGroup canvasGroupRightPanel;
-    [SerializeField] private float hideOffset = 200f; 
+    [SerializeField] private float hideOffset = 200f;
     [SerializeField] private float transitionDuration = 0.25f;
 
     [Header("X Button Images")]
     [SerializeField] private Image playerLockXButtonImage;
     [SerializeField] private Image playerNotLockXButtonImage;
-    
+
     [Header("A Button Images")]
     [SerializeField] private Image playerLockAButtonImage;
     [SerializeField] private Image playerNotLockAButtonImage;
-    
+
     [Header("Loading Settings")]
     [SerializeField] private CanvasGroup loadingPanel;
     [SerializeField] private RectTransform loadingIcon;
     [SerializeField] private float rotationSpeed = 200f;
-    
+
     private float openLeftPanelX;
     private float openRightPanelX;
-    
+
     private bool isPanelVisible = true;
-    
-    private bool playerLock;
+
     private bool lastPlayerLock;
-    
+
     private Tween rotationTween;
-    
+
     private Coroutine focusRetryCoroutine;
+
     #endregion
 
     #region Lifecycle
@@ -72,13 +73,12 @@ public class UiManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        
-        
+
         openLeftPanelX = canvasGroupLeftPanel.transform.localPosition.x;
         openRightPanelX = canvasGroupRightPanel.transform.localPosition.x;
-        
+
         ForceState(false);
-        
+
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }
@@ -86,21 +86,23 @@ public class UiManager : MonoBehaviour
     private void OnEnable()
     {
         EventManager.OnGameStateChanged += HandleUiState;
-        EventManager.OnEnergyChanged += HandleEnergyUpdate; 
-        EventManager.OnSapChanged += HandleSapUpdate;
-        EventManager.OnLockStateChanged += HandleLockUpdate;
-        EventManager.OnToggleInputPanel += DisplayPanelInput;
-        
+        UiEvents.OnEnergyChanged += HandleEnergyUpdate;
+        UiEvents.OnSapChanged += HandleSapUpdate;
+        UiEvents.OnLockStateChanged += HandleLockUpdate;
+        UiEvents.OnToggleInputPanel += DisplayPanelInput;
+        EventManager.OnLoadingStarted += HandleLoadingStarted;
+        EventManager.OnLoadingFinished += HandleLoadingFinished;
     }
-    
+
     private void OnDisable()
     {
         EventManager.OnGameStateChanged -= HandleUiState;
-        EventManager.OnEnergyChanged -= HandleEnergyUpdate;
-        EventManager.OnSapChanged -= HandleSapUpdate;
-        EventManager.OnLockStateChanged -= HandleLockUpdate;
-        EventManager.OnToggleInputPanel -= DisplayPanelInput;
-        
+        UiEvents.OnEnergyChanged -= HandleEnergyUpdate;
+        UiEvents.OnSapChanged -= HandleSapUpdate;
+        UiEvents.OnLockStateChanged -= HandleLockUpdate;
+        UiEvents.OnToggleInputPanel -= DisplayPanelInput;
+        EventManager.OnLoadingStarted -= HandleLoadingStarted;
+        EventManager.OnLoadingFinished -= HandleLoadingFinished;
     }
 
     private void OnDestroy()
@@ -112,7 +114,7 @@ public class UiManager : MonoBehaviour
 
     #region Energy Logic
 
-    public void SetupEnergyBar(int maxEnergy, int currentEnergy) 
+    public void SetupEnergyBar(int maxEnergy, int currentEnergy)
         => SetupBar(energyContainer, energyIcons, energyPointPrefab, maxEnergy, currentEnergy);
     public void UpdateEnergyDisplay(int currentEnergy) => UpdateDisplay(energyIcons, currentEnergy);
 
@@ -120,18 +122,18 @@ public class UiManager : MonoBehaviour
 
     #region Sap Logic
 
-    public void SetupSapBar(int maxSap, int currentSap) 
+    public void SetupSapBar(int maxSap, int currentSap)
         => SetupBar(sapContainer, sapIcons, sapPointPrefab, maxSap, currentSap);
     public void UpdateSapDisplay(int currentSap) => UpdateDisplay(sapIcons, currentSap);
 
     #endregion
 
-    #region Generic Bar Logic 
+    #region Generic Bar Logic
 
     private void SetupBar(Transform container, List<Image> icons, GameObject prefab, int maxCount, int currentCount)
     {
         ClearContainer(container, icons);
-    
+
         for (int i = 0; i < maxCount; i++)
         {
             GameObject obj = Instantiate(prefab, container);
@@ -139,21 +141,16 @@ public class UiManager : MonoBehaviour
             {
                 img.raycastTarget = false;
                 icons.Add(img);
-                
+
                 bool isActive = (i < currentCount);
-                
+
                 img.enabled = isActive;
                 img.color = new Color(img.color.r, img.color.g, img.color.b, isActive ? 1f : 0.2f);
-            
-                
-                if (isActive) 
-                {
+
+                if (isActive)
                     PlaySpawnAnimation(obj.transform, i);
-                }
-                else 
-                {
-                    obj.transform.localScale = Vector3.one; 
-                }
+                else
+                    obj.transform.localScale = Vector3.one;
             }
         }
     }
@@ -167,9 +164,9 @@ public class UiManager : MonoBehaviour
 
             if (icon.enabled != shouldBeActive)
             {
-                if (shouldBeActive) 
+                if (shouldBeActive)
                     AnimateGain(icon);
-                else 
+                else
                     AnimateLoss(icon);
             }
         }
@@ -177,9 +174,9 @@ public class UiManager : MonoBehaviour
 
     private void ClearContainer(Transform container, List<Image> icons)
     {
-        foreach (Transform child in container) 
+        foreach (Transform child in container)
         {
-            child.DOKill(); 
+            child.DOKill();
             Destroy(child.gameObject);
         }
         icons.Clear();
@@ -200,18 +197,14 @@ public class UiManager : MonoBehaviour
     private void AnimateLoss(Image icon)
     {
         icon.transform.DOPunchRotation(new Vector3(0, 0, 15), 0.3f);
-        icon.DOFade(0.2f, 0.2f).OnComplete(() => {
-            icon.enabled = false;
-        });
+        icon.DOFade(0.2f, 0.2f).OnComplete(() => icon.enabled = false);
     }
 
     private void AnimateGain(Image icon)
     {
         icon.enabled = true;
-        icon.transform.DOKill(); 
-        icon.transform.DOScale(1.2f, 0.1f).OnComplete(() => {
-            icon.transform.DOScale(1.0f, 0.1f);
-        });
+        icon.transform.DOKill();
+        icon.transform.DOScale(1.2f, 0.1f).OnComplete(() => icon.transform.DOScale(1.0f, 0.1f));
         icon.DOFade(1f, 0.2f);
     }
 
@@ -224,7 +217,7 @@ public class UiManager : MonoBehaviour
         isPanelVisible = on;
         canvasGroupLeftPanel.alpha = on ? 1f : 0f;
         canvasGroupRightPanel.alpha = on ? 1f : 0f;
-    
+
         canvasGroupLeftPanel.transform.localPosition = new Vector3(on ? openLeftPanelX : openLeftPanelX - hideOffset, 0, 0);
         canvasGroupRightPanel.transform.localPosition = new Vector3(on ? openRightPanelX : openRightPanelX + hideOffset, 0, 0);
     }
@@ -250,23 +243,6 @@ public class UiManager : MonoBehaviour
         canvasGroupRightPanel.transform.DOLocalMoveX(rightX, transitionDuration).SetEase(Ease.OutCubic);
     }
 
-
-    public void UpdateLockState()
-    {
-        if (EventManager.OnRequestIsPlayerLock == null) return;
-        
-        bool currentLock = EventManager.OnRequestIsPlayerLock.Invoke();
-
-        if (currentLock == lastPlayerLock && Time.time > 0.1f) return; 
-        lastPlayerLock = currentLock;
-
-        float lockAlpha = currentLock ? 1f : 0f;
-        float unlockAlpha = currentLock ? 0f : 1f;
-
-        AnimateButtonSwap(playerLockXButtonImage, playerNotLockXButtonImage, lockAlpha, unlockAlpha);
-        AnimateButtonSwap(playerLockAButtonImage, playerNotLockAButtonImage, lockAlpha, unlockAlpha);
-    }
-
     private void AnimateButtonSwap(Image lockImg, Image unlockImg, float lockTarget, float unlockTarget)
     {
         lockImg.DOKill();
@@ -278,20 +254,74 @@ public class UiManager : MonoBehaviour
 
     #endregion
 
-    #region Lambda
+    #region Event Handlers
 
-    private void HandleEnergyUpdate(int curr, int max) => UpdateEnergyDisplay(curr);
-    private void HandleSapUpdate(int curr, int max) => UpdateSapDisplay(curr);
-    private void HandleLockUpdate(bool isLocked) => UpdateLockState();
+    private void HandleEnergyUpdate(int curr, int max)
+    {
+        if (max != lastMaxEnergy)
+        {
+            lastMaxEnergy = max;
+            SetupEnergyBar(max, curr);
+        }
+        else
+        {
+            UpdateEnergyDisplay(curr);
+        }
+    }
+
+    private void HandleSapUpdate(int curr, int max)
+    {
+        if (max != lastMaxSap)
+        {
+            lastMaxSap = max;
+            SetupSapBar(max, curr);
+        }
+        else
+        {
+            UpdateSapDisplay(curr);
+        }
+    }
+
+    private void HandleLockUpdate(bool isLocked)
+    {
+        if (isLocked == lastPlayerLock && Time.time > 0.1f) return;
+        lastPlayerLock = isLocked;
+
+        float lockAlpha = isLocked ? 1f : 0f;
+        float unlockAlpha = isLocked ? 0f : 1f;
+
+        AnimateButtonSwap(playerLockXButtonImage, playerNotLockXButtonImage, lockAlpha, unlockAlpha);
+        AnimateButtonSwap(playerLockAButtonImage, playerNotLockAButtonImage, lockAlpha, unlockAlpha);
+    }
+
+    private void HandleLoadingStarted()
+    {
+        ToggleCanvasGroup(loadingPanel, true, transitionDuration);
+
+        rotationTween?.Kill();
+        rotationTween = loadingIcon
+            .DORotate(new Vector3(0, 0, -360), 360f / rotationSpeed, RotateMode.FastBeyond360)
+            .SetLoops(-1, LoopType.Restart)
+            .SetEase(Ease.Linear)
+            .SetUpdate(true);
+    }
+
+    private void HandleLoadingFinished()
+    {
+        ToggleCanvasGroup(loadingPanel, false, transitionDuration);
+
+        rotationTween?.Kill();
+        rotationTween = null;
+    }
 
     #endregion
-    
+
     #region Handle State
 
     private void HandleUiState(GameState state)
     {
         float duration = transitionDuration;
-    
+
         if (focusRetryCoroutine != null) StopCoroutine(focusRetryCoroutine);
 
         switch (state)
@@ -300,7 +330,7 @@ public class UiManager : MonoBehaviour
                 ToggleCanvasGroup(mainMenuPanel, true, duration);
                 ToggleCanvasGroup(pauseMenuPanel, false, duration);
                 ToggleCanvasGroup(hudPanel, false, duration);
-            
+
                 GameObject menuButton = mainMenuPanel.GetComponentInChildren<ButtonMenuHandler>().gameObject;
                 focusRetryCoroutine = StartCoroutine(EnsureFocusRoutine(menuButton));
                 break;
@@ -315,14 +345,14 @@ public class UiManager : MonoBehaviour
             case GameState.Pause:
                 ToggleCanvasGroup(mainMenuPanel, false, duration);
                 ToggleCanvasGroup(pauseMenuPanel, true, duration);
-                ToggleCanvasGroup(hudPanel, true, duration, 0.4f); 
-            
+                ToggleCanvasGroup(hudPanel, true, duration, 0.4f);
+
                 GameObject pauseButton = pauseMenuPanel.GetComponentInChildren<ButtonPauseHandler>().gameObject;
                 focusRetryCoroutine = StartCoroutine(EnsureFocusRoutine(pauseButton));
                 break;
         }
     }
-    
+
     private IEnumerator EnsureFocusRoutine(GameObject target)
     {
         while (EventSystem.current.currentSelectedGameObject != target)
@@ -333,7 +363,6 @@ public class UiManager : MonoBehaviour
             if (EventSystem.current.currentSelectedGameObject == target)
                 yield break;
 
-            
             yield return new WaitForSecondsRealtime(0.1f);
         }
     }
@@ -345,9 +374,6 @@ public class UiManager : MonoBehaviour
         group.interactable = show;
         group.DOFade(show ? targetAlpha : 0f, duration).SetUpdate(true);
     }
-    
 
     #endregion
-
-  
 }

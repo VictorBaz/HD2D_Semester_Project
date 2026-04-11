@@ -47,7 +47,7 @@ public class Puzzle : MonoBehaviour
         
         StartCoroutine(AnimateEnvironment());
 
-        EventManager.TriggerPuzzleCompleted(puzzleID);
+        GameplayEvents.TriggerPuzzleCompleted(puzzleID);
     }
 
     private IEnumerator AnimateEnvironment()

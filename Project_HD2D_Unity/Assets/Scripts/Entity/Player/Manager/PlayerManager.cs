@@ -88,8 +88,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
         lockOnSystem.InitData(playerData);
         playerController.InitData(playerData);
         
-        EventManager.OnRequestPlayerTransform = GetTransform;
-        EventManager.OnRequestPlayerContext = GetContext;
+        PlayerEvents.OnRequestPlayerTransform = GetTransform;
+        PlayerEvents.OnRequestPlayerContext = GetContext;
     }
 
     private void OnEnable()
@@ -112,7 +112,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         inputManager.OnParry += HandleParry;
         
-        EventManager.OnRequestIsPlayerLock = IsPlayerLock;
+        PlayerEvents.OnRequestIsPlayerLock = IsPlayerLock;
         
         if (GameManager.Instance != null)
         {
@@ -149,8 +149,8 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void Start()
     {
-        EventManager.TriggerEnergyChanged(playerData.Energy, playerData.MaxEnergy);
-        EventManager.TriggerSapChanged(Context.PlayerData.Sap, Context.PlayerData.MaxSap);
+        UiEvents.TriggerEnergyChanged(playerData.Energy, playerData.MaxEnergy);
+        UiEvents.TriggerSapChanged(Context.PlayerData.Sap, Context.PlayerData.MaxSap);
     }
 
     private void Update()
@@ -170,9 +170,9 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void OnDestroy()
     {
-        EventManager.OnRequestPlayerTransform = null;
-        EventManager.OnRequestPlayerContext = null;
-        EventManager.OnRequestIsPlayerLock = null;
+        PlayerEvents.OnRequestPlayerTransform = null;
+        PlayerEvents.OnRequestPlayerContext = null;
+        PlayerEvents.OnRequestIsPlayerLock = null;
     }
 
     #endregion
@@ -345,7 +345,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
             playerData.RemoveEnergy();
         }
 
-        EventManager.TriggerEnergyChanged(playerData.Energy, playerData.MaxEnergy);
+        UiEvents.TriggerEnergyChanged(playerData.Energy, playerData.MaxEnergy);
     }
 
     #endregion
@@ -377,14 +377,14 @@ public class PlayerManager : MonoBehaviour, IDamageable
     private void OnLockToggle()
     {
         lockOnSystem.TryLock();
-        EventManager.TriggerLockStateChanged(lockOnSystem.IsLocked);
+        UiEvents.TriggerLockStateChanged(lockOnSystem.IsLocked);
         HandleSap();
     }
 
     private void OnLockRelease()
     {
         lockOnSystem.Unlock();
-        EventManager.TriggerLockStateChanged(false);
+        UiEvents.TriggerLockStateChanged(false);
     }
 
     #endregion
@@ -423,7 +423,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
                 
         sap.GiveSap();
         Context.PlayerData.AddSap();
-        EventManager.TriggerSapChanged(Context.PlayerData.Sap, Context.PlayerData.MaxSap);
+        UiEvents.TriggerSapChanged(Context.PlayerData.Sap, Context.PlayerData.MaxSap);
     }
 
     #endregion

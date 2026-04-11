@@ -37,9 +37,9 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     #region Initialization
     private void Initialize()
     {
-        if (EventManager.OnRequestPlayerTransform != null)
+        if (PlayerEvents.OnRequestPlayerTransform != null)
         {
-            _playerTransform = EventManager.OnRequestPlayerTransform.Invoke();
+            _playerTransform = PlayerEvents.OnRequestPlayerTransform.Invoke();
             feedbackLogic.Initialize(_playerTransform);
         }
     }

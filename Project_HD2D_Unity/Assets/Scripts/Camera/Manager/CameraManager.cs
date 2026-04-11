@@ -69,14 +69,14 @@ public class CameraManager : MonoBehaviour
 
     private void OnEnable()
     {
-        EventManager.OnCameraTrigger += OnCameraTrigger;
-        EventManager.OnCameraShake += Shake;
+        CameraEvents.OnCameraTrigger += OnCameraTrigger;
+        CameraEvents.OnCameraShake += Shake;
     }
 
     private void OnDisable()
     {
-        EventManager.OnCameraTrigger -= OnCameraTrigger;
-        EventManager.OnCameraShake -= Shake;
+        CameraEvents.OnCameraTrigger -= OnCameraTrigger;
+        CameraEvents.OnCameraShake -= Shake;
     }
 
     private void LateUpdate()

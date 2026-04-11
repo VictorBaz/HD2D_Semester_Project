@@ -17,7 +17,7 @@ public class CameraTriggerFix : CameraTriggerBase
             CameraPlayerState = CameraPlayerState.Fix
         };
         
-        EventManager.TriggerCamera(settings);
+        CameraEvents.TriggerCamera(settings);
     }
     
     private void OnDrawGizmosSelected()

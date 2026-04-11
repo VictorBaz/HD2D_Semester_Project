@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,6 +9,8 @@ using DG.Tweening;
 public class UiManager : MonoBehaviour
 {
     #region Variables
+    
+    private static UiManager Instance;
 
     [Header("State Panels")]
     [SerializeField] private CanvasGroup pauseMenuPanel;
@@ -52,12 +55,25 @@ public class UiManager : MonoBehaviour
     private bool lastPlayerLock;
     
     private Tween rotationTween;
+    
+    private Coroutine focusRetryCoroutine;
     #endregion
 
     #region Lifecycle
 
     private void Awake()
     {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+        
+        
         openLeftPanelX = canvasGroupLeftPanel.transform.localPosition.x;
         openRightPanelX = canvasGroupRightPanel.transform.localPosition.x;
         
@@ -65,8 +81,6 @@ public class UiManager : MonoBehaviour
         
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
-        
-        DontDestroyOnLoad(gameObject);
     }
 
     private void OnEnable()
@@ -274,9 +288,12 @@ public class UiManager : MonoBehaviour
     
     #region Handle State
 
+    //TODO FIX 
     private void HandleUiState(GameState state)
     {
         float duration = transitionDuration;
+    
+        if (focusRetryCoroutine != null) StopCoroutine(focusRetryCoroutine);
 
         switch (state)
         {
@@ -284,23 +301,41 @@ public class UiManager : MonoBehaviour
                 ToggleCanvasGroup(mainMenuPanel, true, duration);
                 ToggleCanvasGroup(pauseMenuPanel, false, duration);
                 ToggleCanvasGroup(hudPanel, false, duration);
-                GameObject Button = mainMenuPanel.GetComponentInChildren<ButtonMenuHandler>().gameObject;
-                EventSystem.current.SetSelectedGameObject(Button);
+            
+                GameObject menuButton = mainMenuPanel.GetComponentInChildren<ButtonMenuHandler>().gameObject;
+                focusRetryCoroutine = StartCoroutine(EnsureFocusRoutine(menuButton));
                 break;
 
             case GameState.Game:
                 ToggleCanvasGroup(mainMenuPanel, false, duration);
                 ToggleCanvasGroup(pauseMenuPanel, false, duration);
                 ToggleCanvasGroup(hudPanel, true, duration);
+                EventSystem.current.SetSelectedGameObject(null);
                 break;
 
             case GameState.Pause:
                 ToggleCanvasGroup(mainMenuPanel, false, duration);
                 ToggleCanvasGroup(pauseMenuPanel, true, duration);
                 ToggleCanvasGroup(hudPanel, true, duration, 0.4f); 
-                GameObject firstButton = pauseMenuPanel.GetComponentInChildren<ButtonPauseHandler>().gameObject;
-                EventSystem.current.SetSelectedGameObject(firstButton);
+            
+                GameObject pauseButton = pauseMenuPanel.GetComponentInChildren<ButtonPauseHandler>().gameObject;
+                focusRetryCoroutine = StartCoroutine(EnsureFocusRoutine(pauseButton));
                 break;
+        }
+    }
+    
+    private IEnumerator EnsureFocusRoutine(GameObject target)
+    {
+        while (EventSystem.current.currentSelectedGameObject != target)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(target);
+
+            if (EventSystem.current.currentSelectedGameObject == target)
+                yield break;
+
+            
+            yield return new WaitForSecondsRealtime(0.1f);
         }
     }
 

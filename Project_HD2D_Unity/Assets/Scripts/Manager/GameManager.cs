@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Enum;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -38,12 +39,35 @@ public class GameManager : MonoBehaviour
         ChangeState(initialState);
     }
 
-    public void ChangeState(GameState newState)
+    private void ChangeState(GameState newState)
     {
         if (currentState == newState) return;
 
         currentState = newState;
+        //NewStateBehaviorTime(currentState);
+        
         EventManager.TriggerGameStateChanged(newState);
+    }
+
+    private void NewStateBehaviorTime(GameState newState)
+    {
+        switch (newState)
+        {
+            case GameState.Menu:
+                Time.timeScale = 1f;
+                break;
+            case GameState.Game:
+                Time.timeScale = 1f;
+                break;
+            case GameState.Pause:
+                Time.timeScale = 0f;
+                break;
+            case GameState.Null:
+                Time.timeScale = 1f;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
+        }
     }
 
     public void TogglePause()

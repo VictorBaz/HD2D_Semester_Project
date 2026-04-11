@@ -15,7 +15,7 @@ public class CameraTrigger : MonoBehaviour
         if (other.CompareTag(PLAYER_TAG))
         {
             hasTriggered = true;
-            EventManager.TriggerCamera(newCameraSettings);
+            CameraEvents.TriggerCamera(newCameraSettings);
         }
     }
 

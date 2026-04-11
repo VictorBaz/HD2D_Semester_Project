@@ -12,7 +12,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
     [SerializeField] private PlayerController playerController;
     [SerializeField] private PlayerAnimationManager animationManager;
     [SerializeField] private LockOnSystem lockOnSystem;
-    [SerializeField] private UiManager uiManager;
     [SerializeField] private VfxManager vfxManager;
 
     [SerializeField] private Transform cameraTransform;
@@ -88,12 +87,9 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         lockOnSystem.InitData(playerData);
         playerController.InitData(playerData);
-
-        uiManager.SetupEnergyBar(playerData.MaxEnergy,playerData.Energy);
-        uiManager.SetupSapBar(playerData.MaxSap,playerData.Sap);
         
-        EventManager.OnRequestPlayerTransform = GetTransform;
-        EventManager.OnRequestPlayerContext = GetContext;
+        PlayerEvents.OnRequestPlayerTransform = GetTransform;
+        PlayerEvents.OnRequestPlayerContext = GetContext;
     }
 
     private void OnEnable()
@@ -116,7 +112,12 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
         inputManager.OnParry += HandleParry;
         
+        if (GameManager.Instance != null)
+        {
+            inputManager.OnPausePressed += GameManager.Instance.TogglePause;
+        }
         
+        PlayerEvents.OnRequestCurrentLockTarget = GetCurrentTargetLock;
     }
 
     private void OnDisable()
@@ -138,14 +139,18 @@ public class PlayerManager : MonoBehaviour, IDamageable
         inputManager.OnCarry -= TryCarry;
 
         inputManager.OnParry -= HandleParry;
+
+        if (GameManager.Instance != null)
+        {
+            inputManager.OnPausePressed -= GameManager.Instance.TogglePause;
+        }
         
     }
 
     private void Start()
     {
-        DebugState();
-        uiManager.UpdateEnergyDisplay(playerData.Energy);
-        uiManager.UpdateSapDisplay(Context.PlayerData.Sap);
+        UiEvents.TriggerEnergyChanged(playerData.Energy, playerData.MaxEnergy);
+        UiEvents.TriggerSapChanged(Context.PlayerData.Sap, Context.PlayerData.MaxSap);
     }
 
     private void Update()
@@ -165,8 +170,9 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void OnDestroy()
     {
-        EventManager.OnRequestPlayerTransform = null;
-        EventManager.OnRequestPlayerContext = null;
+        PlayerEvents.OnRequestPlayerTransform = null;
+        PlayerEvents.OnRequestPlayerContext = null;
+        PlayerEvents.OnRequestCurrentLockTarget = null;
     }
 
     #endregion
@@ -178,7 +184,6 @@ public class PlayerManager : MonoBehaviour, IDamageable
         CurrentPlayerState?.ExitState(Context);
         CurrentPlayerState = newState;
         CurrentPlayerState.EnterState(Context);
-        DebugState();
     }
 
     #endregion
@@ -340,7 +345,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
             playerData.RemoveEnergy();
         }
 
-        uiManager.UpdateEnergyDisplay(playerData.Energy);
+        UiEvents.TriggerEnergyChanged(playerData.Energy, playerData.MaxEnergy);
     }
 
     #endregion
@@ -372,12 +377,14 @@ public class PlayerManager : MonoBehaviour, IDamageable
     private void OnLockToggle()
     {
         lockOnSystem.TryLock();
+        UiEvents.TriggerLockStateChanged(lockOnSystem.IsLocked);
         HandleSap();
     }
 
     private void OnLockRelease()
     {
         lockOnSystem.Unlock();
+        UiEvents.TriggerLockStateChanged(false);
     }
 
     #endregion
@@ -416,17 +423,13 @@ public class PlayerManager : MonoBehaviour, IDamageable
                 
         sap.GiveSap();
         Context.PlayerData.AddSap();
-        uiManager.UpdateSapDisplay(Context.PlayerData.Sap);
+        UiEvents.TriggerSapChanged(Context.PlayerData.Sap, Context.PlayerData.MaxSap);
     }
 
     #endregion
     
     #region Gizmos & Debugging
     
-    private void DebugState()
-    {
-        stateText.text = $"State: {CurrentPlayerState.Name}";
-    }
 
     private void OnDrawGizmos()
     {
@@ -505,4 +508,9 @@ public class PlayerManager : MonoBehaviour, IDamageable
     #endregion
 
     private PlayerStateContext GetContext() => Context;
+
+    private Transform GetCurrentTargetLock()
+    {
+        return lockOnSystem.CurrentTarget?.GetLockTransform();
+    }
 }

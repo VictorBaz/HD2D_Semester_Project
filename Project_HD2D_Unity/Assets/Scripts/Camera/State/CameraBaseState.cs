@@ -18,4 +18,26 @@ public abstract class CameraBaseState
 
         return targetPos;
     }
+
+    protected void ApplyRestrictedRotation(CameraStateContext context, Vector3 targetPos)
+    {
+        Vector3 direction = targetPos - context.CameraTransform.position;
+    
+        if (direction.sqrMagnitude < 0.01f) return; 
+
+        Quaternion fullRotation = Quaternion.LookRotation(direction);
+    
+        Vector3 currentEuler = fullRotation.eulerAngles;
+        Quaternion targetRotation = Quaternion.Euler(
+            context.Manager.FixedX, 
+            currentEuler.y, 
+            context.Manager.FixedZ
+        );
+
+        context.CameraTransform.rotation = Quaternion.Slerp(
+            context.CameraTransform.rotation, 
+            targetRotation, 
+            Time.deltaTime / context.Manager.RotationSmoothTime
+        );
+    }
 }

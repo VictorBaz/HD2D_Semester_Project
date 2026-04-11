@@ -20,7 +20,7 @@ public class CameraCinematicState : CameraBaseState
             context.Manager.TravelDuration 
         );
 
-        //context.CameraTransform.LookAt(context.PlayerTransform.position + Vector3.up * 1.5f);
+        ApplyRestrictedRotation(context, context.PlayerTransform.position + Vector3.up * 1.5f);
 
         float distance = Vector3.Distance(context.CameraTransform.position, context.CurrentSettings.CameraPosition);
         

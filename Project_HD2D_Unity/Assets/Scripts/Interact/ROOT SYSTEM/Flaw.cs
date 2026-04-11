@@ -12,7 +12,7 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     
     [Header("References")]
     [SerializeField] private Transform pivotPoint;
-    [SerializeField] private SpriteRenderer feedbackSprite;
+    [SerializeField] private CanvasGroup feedbackCanvasGroup; 
     
     [Header("Blocking")]
     [SerializeField] private List<Parasite> blockers;
@@ -23,12 +23,13 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     #region Unity Lifecycle
     private void Start()
     {
-        if (feedbackSprite != null)
+        if (feedbackCanvasGroup != null)
         {
-            Color c = feedbackSprite.color;
-            c.a = 0f;
-            feedbackSprite.color = c;
-            feedbackSprite.enabled = false;
+            feedbackCanvasGroup.alpha = 0f;
+            feedbackCanvasGroup.gameObject.SetActive(true); 
+            
+            feedbackCanvasGroup.interactable = false;
+            feedbackCanvasGroup.blocksRaycasts = false;
         }
     }
 
@@ -41,34 +42,35 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     #region Feedback Logic
     private void HandleFeedback()
     {
-        if (feedbackSprite == null) return;
+        if (feedbackCanvasGroup == null) return;
 
-        bool isTargeted = false;
-        if (PlayerEvents.OnRequestCurrentLockTarget != null)
-        {
-            isTargeted = PlayerEvents.OnRequestCurrentLockTarget.Invoke() == pivotPoint;
-        }
+        Transform currentTarget = PlayerEvents.OnRequestCurrentLockTarget?.Invoke();
+    
+        bool isTargeted = currentTarget != null && currentTarget == GetLockTransform();
 
         bool finalTargetState = isTargeted && IsLockable();
 
         if (finalTargetState != _isCurrentlyTargeted)
         {
             _isCurrentlyTargeted = finalTargetState;
-            AnimateSprite(finalTargetState);
+            AnimateFeedback(finalTargetState);
         }
     }
 
-    private void AnimateSprite(bool show)
+    private void AnimateFeedback(bool show)
     {
-        feedbackSprite.DOKill();
+        feedbackCanvasGroup.DOKill();
 
-        if (show) feedbackSprite.enabled = true;
+        feedbackCanvasGroup.DOFade(show ? 1f : 0f, 0.25f)
+            .SetEase(show ? Ease.OutCubic : Ease.InQuad)
+            .SetUpdate(true); 
 
-        feedbackSprite.DOFade(show ? 1f : 0f, 0.2f)
-            .SetEase(Ease.OutCubic)
-            .OnComplete(() => {
-                if (!show) feedbackSprite.enabled = false;
-            });
+        if (show)
+        {
+            feedbackCanvasGroup.transform.DOKill();
+            feedbackCanvasGroup.transform.localScale = Vector3.one * 0.7f;
+            feedbackCanvasGroup.transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).SetUpdate(true);
+        }
     }
     #endregion
     
@@ -90,11 +92,17 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     #endregion
 
     #region Gizmos & Init
+    private void OnDestroy()
+    {
+        feedbackCanvasGroup?.DOKill();
+        feedbackCanvasGroup?.transform.DOKill();
+    }
+
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        GUIStyle style = new GUIStyle { normal = { textColor = Color.white }, alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
-        Handles.Label(transform.position, "Flaw", style);
+        GUIStyle style = new GUIStyle { normal = { textColor = Color.cyan }, alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
+        Handles.Label(transform.position + Vector3.up * 0.5f, "Flaw (Lockable)", style);
     }
 #endif
 

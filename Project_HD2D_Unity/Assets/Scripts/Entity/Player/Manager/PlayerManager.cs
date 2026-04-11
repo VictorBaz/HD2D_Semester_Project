@@ -117,7 +117,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
             inputManager.OnPausePressed += GameManager.Instance.TogglePause;
         }
         
-        PlayerEvents.OnRequestCurrentLockTarget = GetTransform;
+        PlayerEvents.OnRequestCurrentLockTarget = GetCurrentTargetLock;
     }
 
     private void OnDisable()

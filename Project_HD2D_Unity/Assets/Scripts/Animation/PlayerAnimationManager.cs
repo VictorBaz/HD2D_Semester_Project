@@ -16,6 +16,8 @@ public class PlayerAnimationManager : BaseAnimationManager
     
     public void HandleAnimation(float inputRawMagnitude, Vector2 inputBlendTree, bool isGrounded)
     {
+        if (Time.timeScale == 0) return;
+        
         UpdateMovement(inputBlendTree);
         
         animator.SetFloat(InputMagnitudeHash, inputRawMagnitude);

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using DG.Tweening;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -12,25 +11,21 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     
     [Header("References")]
     [SerializeField] private Transform pivotPoint;
-    [SerializeField] private CanvasGroup feedbackCanvasGroup; 
+    [SerializeField] private SpriteRenderer feedbackSprite;
+    
+    [Header("Settings")]
+    [SerializeField] private FeedbackLogic feedbackLogic;
     
     [Header("Blocking")]
     [SerializeField] private List<Parasite> blockers;
 
-    private bool _isCurrentlyTargeted; 
+    private Transform _playerTransform;
     #endregion
 
     #region Unity Lifecycle
     private void Start()
     {
-        if (feedbackCanvasGroup != null)
-        {
-            feedbackCanvasGroup.alpha = 0f;
-            feedbackCanvasGroup.gameObject.SetActive(true); 
-            
-            feedbackCanvasGroup.interactable = false;
-            feedbackCanvasGroup.blocksRaycasts = false;
-        }
+        Initialize();
     }
 
     private void Update()
@@ -39,47 +34,52 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     }
     #endregion
 
+    #region Initialization
+    private void Initialize()
+    {
+        if (EventManager.OnRequestPlayerTransform != null)
+        {
+            _playerTransform = EventManager.OnRequestPlayerTransform.Invoke();
+            feedbackLogic.Initialize(_playerTransform);
+        }
+    }
+    #endregion
+
     #region Feedback Logic
     private void HandleFeedback()
     {
-        if (feedbackCanvasGroup == null) return;
+        if (feedbackSprite == null) return;
 
-        Transform currentTarget = PlayerEvents.OnRequestCurrentLockTarget?.Invoke();
-    
-        bool isTargeted = currentTarget != null && currentTarget == GetLockTransform();
-
-        bool finalTargetState = isTargeted && IsLockable();
-
-        if (finalTargetState != _isCurrentlyTargeted)
+        if (!IsLockable())
         {
-            _isCurrentlyTargeted = finalTargetState;
-            AnimateFeedback(finalTargetState);
+            feedbackSprite.enabled = false;
+            return;
         }
+
+        float alpha = feedbackLogic.CalculateAlpha(transform.position);
+        UpdateVisuals(alpha);
+        
     }
 
-    private void AnimateFeedback(bool show)
+    private void UpdateVisuals(float alpha)
     {
-        feedbackCanvasGroup.DOKill();
-
-        feedbackCanvasGroup.DOFade(show ? 1f : 0f, 0.25f)
-            .SetEase(show ? Ease.OutCubic : Ease.InQuad)
-            .SetUpdate(true); 
-
-        if (show)
-        {
-            feedbackCanvasGroup.transform.DOKill();
-            feedbackCanvasGroup.transform.localScale = Vector3.one * 0.7f;
-            feedbackCanvasGroup.transform.DOScale(1f, 0.3f).SetEase(Ease.OutBack).SetUpdate(true);
-        }
+        Color c = feedbackSprite.color;
+        c.a = alpha;
+        feedbackSprite.color = c;
+        feedbackSprite.enabled = alpha > 0.01f;
     }
     #endregion
     
     #region IEnergyLockable
     public Transform GetLockTransform() => pivotPoint;
+    
     public bool IsLockable() => root != null && !IsBlocked();
+    
     public float GetLockPriority() => 1f;
+
     public bool IsContainingEnergy() => root != null && root.IsContainingEnergy();
     public bool IsAtMaximumEnergy() => root != null && root.IsAtMaximumEnergy();
+
     public void AddEnergy() => root?.AddEnergy();
     public void RemoveEnergy() => root?.RemoveEnergy();
     
@@ -91,21 +91,26 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     }
     #endregion
 
-    #region Gizmos & Init
-    private void OnDestroy()
-    {
-        feedbackCanvasGroup?.DOKill();
-        feedbackCanvasGroup?.transform.DOKill();
-    }
-
+    #region Gizmos
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        GUIStyle style = new GUIStyle { normal = { textColor = Color.cyan }, alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold };
-        Handles.Label(transform.position + Vector3.up * 0.5f, "Flaw (Lockable)", style);
+        GUIStyle style = new GUIStyle
+        {
+            normal = { textColor = Color.white },
+            alignment = TextAnchor.MiddleCenter,
+            fontStyle = FontStyle.Bold
+        };
+
+        Handles.Label(transform.position, "Flaw", style);
     }
 #endif
+    #endregion
 
-    public void SetRoot(Root root) => this.root = root;
+    #region Init
+    public void SetRoot(Root root)
+    {
+        this.root = root;
+    }
     #endregion
 }

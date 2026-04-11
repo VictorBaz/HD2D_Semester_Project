@@ -35,10 +35,6 @@ public class CameraManager : MonoBehaviour
     public float TravelDuration => travelDuration;
     
     [SerializeField] private CameraPlayerState startingState;
-    
-    private float fixedXRotation;
-    private float fixedZRotation;
-    [SerializeField] private float rotationSmoothTime = 0.15f;
     #endregion
 
     #region Unity Lifecycle
@@ -68,23 +64,19 @@ public class CameraManager : MonoBehaviour
             CollisionPadding = this.CollisionPadding,
         };
 
-        Vector3 currentEuler = cameraTransform.eulerAngles;
-        fixedXRotation = currentEuler.x;
-        fixedZRotation = currentEuler.z;
-        
         TransitionTo(ConvertEnumToState(startingState));
     }
 
     private void OnEnable()
     {
-        CameraEvents.OnCameraTrigger += OnCameraTrigger;
-        CameraEvents.OnCameraShake += Shake;
+        EventManager.OnCameraTrigger += OnCameraTrigger;
+        EventManager.OnCameraShake += Shake;
     }
 
     private void OnDisable()
     {
-        CameraEvents.OnCameraTrigger -= OnCameraTrigger;
-        CameraEvents.OnCameraShake -= Shake;
+        EventManager.OnCameraTrigger -= OnCameraTrigger;
+        EventManager.OnCameraShake -= Shake;
     }
 
     private void LateUpdate()
@@ -220,9 +212,5 @@ public class CameraManager : MonoBehaviour
         }
         
     }
-    
-    public float RotationSmoothTime => rotationSmoothTime;
-    public float FixedX => fixedXRotation;
-    public float FixedZ => fixedZRotation;
     
 }

@@ -24,7 +24,7 @@ public class CameraTriggerCinematic : CameraTriggerBase
             holdDuration = isCinematic ? holdDuration : 0f
         };
 
-        CameraEvents.TriggerCamera(settings);
+        EventManager.TriggerCamera(settings);
     }
     
     private void OnDrawGizmosSelected()

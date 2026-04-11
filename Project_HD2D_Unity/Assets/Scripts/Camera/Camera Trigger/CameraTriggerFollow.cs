@@ -14,7 +14,7 @@ public class CameraTriggerFollow : CameraTriggerBase
             CameraPlayerState = CameraPlayerState.FollowPlayer
         };
         
-        CameraEvents.TriggerCamera(settings);
+        EventManager.TriggerCamera(settings);
     }
 
     

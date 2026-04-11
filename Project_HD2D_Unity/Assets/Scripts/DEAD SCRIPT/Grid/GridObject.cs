@@ -14,7 +14,7 @@ namespace Grid
 
         private void RegisterGridObject()
         {
-            GridEvents.RegisterObject(
+            EventManager.RegisterObject(
                 this,
                 GridHelper.WorldToGrid(
                     transform.position,
@@ -23,7 +23,7 @@ namespace Grid
         
         private void UnregisterGridObject()
         {
-            GridEvents.UnregisterObject(this, currentGridPosition);
+            EventManager.UnregisterObject(this, currentGridPosition);
         }
 
         #endregion

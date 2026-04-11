@@ -50,16 +50,16 @@ namespace Grid
 
         private void SetupSub()
         {
-            GridEvents.OnObjectRegister += RegisterObject;
-            GridEvents.OnObjectUnregister += UnregisterObject;
-            GridEvents.OnObjectMoved += MoveObject;
+            EventManager.OnObjectRegister += RegisterObject;
+            EventManager.OnObjectUnregister += UnregisterObject;
+            EventManager.OnObjectMoved += MoveObject;
         }
 
         private void CleanSub()
         {
-            GridEvents.OnObjectRegister -= RegisterObject;
-            GridEvents.OnObjectUnregister -= UnregisterObject;
-            GridEvents.OnObjectMoved -= MoveObject;
+            EventManager.OnObjectRegister -= RegisterObject;
+            EventManager.OnObjectUnregister -= UnregisterObject;
+            EventManager.OnObjectMoved -= MoveObject;
         }
 
         #endregion

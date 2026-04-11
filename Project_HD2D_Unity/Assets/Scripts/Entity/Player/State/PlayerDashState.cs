@@ -51,7 +51,7 @@ namespace Player.State
             float elapsed = 0f;
             Vector3 dashDirection = psc.PlayerTransform.forward;
 
-            CameraEvents.CameraShake();
+            EventManager.CameraShake();
             
             psc.VfxManager.ToggleDashTrail(true);
             

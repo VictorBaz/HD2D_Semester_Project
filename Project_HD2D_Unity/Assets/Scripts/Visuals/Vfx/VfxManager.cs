@@ -13,7 +13,7 @@ public class VfxManager : MonoBehaviour
 
     [Header("Shield Settings")]
     [SerializeField] private Renderer rendererShield;
-   
+    [SerializeField] private string shieldProgressionProperty = "_Progression";
 
     private MaterialPropertyBlock _propBlockShield;
     private Coroutine _shieldCoroutine;

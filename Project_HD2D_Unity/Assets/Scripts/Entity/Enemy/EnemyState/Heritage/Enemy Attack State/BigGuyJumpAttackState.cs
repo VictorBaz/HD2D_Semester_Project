@@ -74,7 +74,7 @@ public class BigGuyJumpAttackState : EnemyAttackState
 
     private void ExecuteShockwave(EnemyContext actx)
     {
-        CameraEvents.CameraShake();
+        EventManager.CameraShake();
         actx.AnimManager.ToggleAttackCollider(true); 
         actx.Manager.StartCoroutine(DisableHitboxLate(actx, actx.Data.ShockwaveActiveDuration));
     }

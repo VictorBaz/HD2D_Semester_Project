@@ -7,12 +7,12 @@ public class PuzzleManager : MonoBehaviour
 
     private void OnEnable()
     {
-        GameplayEvents.OnPuzzleCompleted += RegisterPuzzleCompletion;
+        EventManager.OnPuzzleCompleted += RegisterPuzzleCompletion;
     }
 
     private void OnDisable()
     {
-        GameplayEvents.OnPuzzleCompleted -= RegisterPuzzleCompletion;
+        EventManager.OnPuzzleCompleted -= RegisterPuzzleCompletion;
     }
 
     private void RegisterPuzzleCompletion(string id)

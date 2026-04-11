@@ -18,8 +18,6 @@ public class CameraFollowState : CameraBaseState
             ref context.Velocity, 
             context.SmoothTimeFollow
         );
-        
-        ApplyRestrictedRotation(context, context.PlayerTransform.position + Vector3.up * 1.5f);
     }
 
     public override void ExitState(CameraStateContext context) { }

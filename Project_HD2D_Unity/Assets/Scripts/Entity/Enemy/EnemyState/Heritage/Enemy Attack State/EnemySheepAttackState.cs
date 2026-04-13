@@ -13,6 +13,8 @@ public class EnemySheepAttackState : EnemyAttackState
 
     protected override IEnumerator AttackSequence(EnemyContext actx)
     {
+        canTakeDamage = true;
+        
         isAnticipationTime = true;
         var data = actx.Data;
 
@@ -27,6 +29,8 @@ public class EnemySheepAttackState : EnemyAttackState
         actx.AnimManager.Animator.speed = 1;
         
         actx.AnimManager.TriggerAttack();
+        
+        canTakeDamage = false;
 
         CanBeParry = true;
         
@@ -63,11 +67,15 @@ public class EnemySheepAttackState : EnemyAttackState
         
         yield return new WaitForFixedUpdate();
         
+        canTakeDamage = true;
+        
         CanBeParry = false;
 
         isCooldown = true;
         yield return new WaitForSeconds(data.AttackCooldown);
+        
         isCooldown = false;
+        
         attackRoutine = null;
     }
 

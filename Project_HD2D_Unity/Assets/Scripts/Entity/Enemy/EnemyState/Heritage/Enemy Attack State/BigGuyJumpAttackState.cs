@@ -3,23 +3,15 @@ using UnityEngine;
 
 public class BigGuyJumpAttackState : EnemyAttackState
 {
-    private bool canTakeDamage;
-
-    public override void EnterState(EnemyContext actx)
-    {
-        canTakeDamage = false;
-        base.EnterState(actx);
-    }
-
+    
     public override void ExitState(EnemyContext actx)
     {
         base.ExitState(actx);
-        canTakeDamage = true;
         actx.AnimManager.ToggleRepulsiveCollider(false);
         actx.AnimManager.ToggleAttackCollider(false);
     }
 
-    public override bool CanTakeDamage => canTakeDamage;
+    
 
     protected override IEnumerator AttackSequence(EnemyContext actx)
     {

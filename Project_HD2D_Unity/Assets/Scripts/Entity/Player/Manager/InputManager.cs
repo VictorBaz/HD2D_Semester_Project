@@ -23,6 +23,10 @@ public class InputManager : MonoBehaviour
     public event Action OnDash;
     
     public event Action OnParry;
+
+    public event Action<bool> OnInputShow;
+    
+    public event Action OnPausePressed;
     
     private PlayerInputAction playerInputAction;
 
@@ -75,6 +79,11 @@ public class InputManager : MonoBehaviour
         
         playerInputAction.Player.Parry.started += ReceiveParry;
         
+        playerInputAction.Player.ShowInput.started += ReceiveInputShow;
+        playerInputAction.Player.ShowInput.canceled += ReceiveInputShow;
+        
+        playerInputAction.Player.Pause.started += ReceivePause;
+        
         playerInputAction.Enable();
     }
 
@@ -102,6 +111,11 @@ public class InputManager : MonoBehaviour
         playerInputAction.Player.Carry.started -= ReceiveCarry;
         
         playerInputAction.Player.Parry.started -= ReceiveParry;
+        
+        playerInputAction.Player.ShowInput.started -= ReceiveInputShow;
+        playerInputAction.Player.ShowInput.canceled -= ReceiveInputShow;
+        
+        playerInputAction.Player.Pause.started -= ReceivePause;
         
         playerInputAction.Disable();
     }
@@ -162,6 +176,17 @@ public class InputManager : MonoBehaviour
     private void ReceiveParry(InputAction.CallbackContext ctx)
     {
         OnParry?.Invoke();
+    }
+
+    private void ReceiveInputShow(InputAction.CallbackContext ctx)
+    {
+        bool show = ctx.started;
+        UiEvents.TriggerToggleInputPanel(show);
+    }
+
+    private void ReceivePause(InputAction.CallbackContext ctx)
+    {
+        OnPausePressed?.Invoke();
     }
     
     #endregion

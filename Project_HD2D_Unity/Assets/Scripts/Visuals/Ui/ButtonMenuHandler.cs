@@ -47,7 +47,6 @@ public class ButtonMenuHandler : MonoBehaviour,
     
     private void ExecuteAction()
     {
-        Debug.Log($"Action détectée : {action}");
         GameManager.Instance.ExecuteButtonAction(action);
         
         transform.DOKill();

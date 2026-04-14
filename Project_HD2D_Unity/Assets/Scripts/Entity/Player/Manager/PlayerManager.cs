@@ -149,7 +149,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
 
     private void Start()
     {
-        UiEvents.TriggerEnergyChanged(playerData.Energy, playerData.MaxEnergy);
+        UiEvents.TriggerEnergySetup(Context.PlayerData.MaxEnergy,Context.PlayerData.Energy);
         UiEvents.TriggerSapChanged(Context.PlayerData.Sap, Context.PlayerData.MaxSap);
     }
 

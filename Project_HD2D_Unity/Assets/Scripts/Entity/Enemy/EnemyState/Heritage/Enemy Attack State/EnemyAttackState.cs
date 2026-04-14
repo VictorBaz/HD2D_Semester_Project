@@ -7,7 +7,10 @@ public abstract class EnemyAttackState : EnemyBaseState
     protected bool isCooldown;
     protected bool isAnticipationTime;
     
-
+    protected bool canTakeDamage;
+    
+    public override bool CanTakeDamage => canTakeDamage;
+    
     public override string Name => "Attacking";
     public override bool CanMove => attackRoutine != null;
 
@@ -20,6 +23,7 @@ public abstract class EnemyAttackState : EnemyBaseState
         isCooldown = false;
         CanBeParry = false;
         isAnticipationTime = false;
+        canTakeDamage = true;
     }
 
     public override void UpdateState(EnemyContext actx)
@@ -65,5 +69,6 @@ public abstract class EnemyAttackState : EnemyBaseState
     public override void ExitState(EnemyContext actx)
     {
         if (attackRoutine != null) actx.Manager.StopCoroutine(attackRoutine);
+        canTakeDamage = true;
     }
 }

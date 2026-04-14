@@ -1,1 +1,10 @@
-﻿public enum GameState { Menu, Game, Pause,Null }
+﻿public enum GameState
+{
+    Menu,
+    Game,
+    Pause,
+    Credits,
+    Dead,
+    Settings,
+    Null,
+}

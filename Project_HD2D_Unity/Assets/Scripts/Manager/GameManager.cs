@@ -6,18 +6,24 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    #region Singleton & Variables
+    
     public static GameManager Instance { get; private set; }
 
     [SerializeField] private GameState initialState = GameState.Menu;
 
     private GameState currentState = GameState.Null;
+    private GameState previousState = GameState.Null; 
 
     public GameState CurrentState => currentState;
+    public GameState PreviousState => previousState;
 
     [SerializeField] private string GameSceneName;
     [SerializeField] private string MenuSceneName;
 
     private bool isLoading = false;
+    
+    #endregion
 
     private void Awake()
     {
@@ -37,10 +43,12 @@ public class GameManager : MonoBehaviour
         ChangeState(initialState);
     }
 
-    private void ChangeState(GameState newState)
+    public void ChangeState(GameState newState)
     {
         if (currentState == newState) return;
 
+        previousState = currentState;
+        
         currentState = newState;
         NewStateBehaviorTime(currentState);
 
@@ -53,14 +61,24 @@ public class GameManager : MonoBehaviour
         {
             case GameState.Menu:
             case GameState.Game:
+            case GameState.Credits:
             case GameState.Null:
                 Time.timeScale = 1f;
                 break;
+            case GameState.Settings:
             case GameState.Pause:
                 Time.timeScale = 0f;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
+        }
+    }
+
+    public void GoBack()
+    {
+        if (previousState != GameState.Null)
+        {
+            ChangeState(previousState);
         }
     }
 
@@ -119,6 +137,7 @@ public class GameManager : MonoBehaviour
                 ChangeState(GameState.Game);
                 LoadGame();
                 break;
+
             case ButtonAction.ReturnToGame:
                 ChangeState(GameState.Game);
                 break;
@@ -128,19 +147,24 @@ public class GameManager : MonoBehaviour
                 break;
 
             case ButtonAction.Menu:
+                
+                if (SceneManager.GetActiveScene().name != MenuSceneName)
+                {
+                    LoadMenu();
+                }
+                
                 ChangeState(GameState.Menu);
-                LoadMenu();
+                break;
+
+            case ButtonAction.Credits:
+                ChangeState(GameState.Credits);
                 break;
 
             case ButtonAction.Quit:
                 Application.Quit();
                 break;
-
             case ButtonAction.Settings:
-                // EventManager.TriggerOpenSettings();
-                break;
-
-            case ButtonAction.Credits:
+                ChangeState(GameState.Settings);
                 break;
         }
     }

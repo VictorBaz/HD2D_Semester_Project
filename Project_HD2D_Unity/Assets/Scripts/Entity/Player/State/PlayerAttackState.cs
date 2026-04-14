@@ -66,7 +66,6 @@ namespace Player.State
             if (currentAttackRoutine != null)
                 psc.Controller.StopCoroutine(currentAttackRoutine);
 
-            //RotateTowardsInput(psc);
             psc.AnimationManager.SetAttackState(true, comboIndex);
             currentAttackRoutine = psc.Controller.RunRoutine(AttackMeleeIe(psc));
         }
@@ -89,6 +88,8 @@ namespace Player.State
 
             bufferWindowOpen = true;
 
+            psc.VfxManager.PlayFxCombo(comboIndex);
+            
             float actionDuration = Mathf.Max(
                 animLength,
                 hit.DashStartOffset    + hit.DashDuration,
@@ -134,7 +135,6 @@ namespace Player.State
             if (shouldBeActive && !hitboxIsActive)
             {
                 psc.Controller.AttackOn();
-                psc.VfxManager.PlayFxCombo(comboIndex);
                 hitboxIsActive = true;
             }
             else if (!shouldBeActive && hitboxIsActive)

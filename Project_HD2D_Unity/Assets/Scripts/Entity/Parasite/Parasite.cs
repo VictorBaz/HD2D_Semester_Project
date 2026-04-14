@@ -51,6 +51,7 @@ public class Parasite : MonoBehaviour, IDamageable
     private void ApplyDamage()
     {
         _playerContext.PlayerData.RemoveSap();
+        UiEvents.TriggerSapChanged(_playerContext.PlayerData.Sap);
         life--;
         if (life <= 0) Die();
     }

@@ -8,12 +8,16 @@ public class Puzzle : MonoBehaviour
     #region Variables
     [Header("Puzzle Info")]
     [SerializeField] private string puzzleID;
+    public string PuzzleID => puzzleID;
+    
+    [SerializeField] private Transform spawnPoint;
+    public Transform SpawnPoint => spawnPoint;
     
     [Header("Win Condition")]
     [Tooltip("Le parasite 'Boss' qui valide le puzzle à sa mort")]
     [SerializeField] private Parasite bossParasite;
 
-    [Header("Visual Evolution")] public PuzzleVisuals visuals = new PuzzleVisuals();
+    [Header("Visual Evolution")] public PuzzleVisuals visuals = new();
 
     #endregion
 

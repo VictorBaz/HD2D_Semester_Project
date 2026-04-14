@@ -235,11 +235,12 @@ public class UiManager : MonoBehaviour
 
     private void HandleEnergyUpdate(int curr, int max) => UpdateEnergyDisplay(curr);
 
-    private void HandleSapUpdate(int curr, int max)
+    private void HandleSapUpdate(int curr)
     {
         if (sapCountText != null)
             sapCountText.text = curr.ToString();
     }
+    
 
     private void HandleLockUpdate(bool isLocked)
     {

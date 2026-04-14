@@ -3,8 +3,10 @@ using Interface;
 using Player.State;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class PlayerManager : MonoBehaviour, IDamageable
+
+public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 {
     #region Variables
 
@@ -150,7 +152,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
     private void Start()
     {
         UiEvents.TriggerEnergySetup(Context.PlayerData.MaxEnergy,Context.PlayerData.Energy);
-        UiEvents.TriggerSapChanged(Context.PlayerData.Sap, Context.PlayerData.MaxSap);
+        UiEvents.TriggerSapChanged(Context.PlayerData.Sap);
     }
 
     private void Update()
@@ -161,6 +163,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
         TickParryTimer();
 
         playerController.SetJumping(jumpCooldownTimer > 0 || CurrentPlayerState is PlayerBumpState);
+        
     }
 
     private void FixedUpdate()
@@ -423,7 +426,7 @@ public class PlayerManager : MonoBehaviour, IDamageable
                 
         sap.GiveSap();
         Context.PlayerData.AddSap();
-        UiEvents.TriggerSapChanged(Context.PlayerData.Sap, Context.PlayerData.MaxSap);
+        UiEvents.TriggerSapChanged(Context.PlayerData.Sap);
     }
 
     #endregion
@@ -513,4 +516,34 @@ public class PlayerManager : MonoBehaviour, IDamageable
     {
         return lockOnSystem.CurrentTarget?.GetLockTransform();
     }
+
+    #region Save System
+ 
+    public void LoadData(GameData data)
+    {
+        if (data.PlayerData != null)
+        {
+            playerData.Life   = data.PlayerData.Life;
+            playerData.Energy = data.PlayerData.Energy;
+            playerData.Sap    = data.PlayerData.Sap;
+        }
+ 
+        if (string.IsNullOrEmpty(data.LastCompletedPuzzleId)) return;
+ 
+        Puzzle lastPuzzle = PuzzleManager.Instance.GetPuzzleById(data.LastCompletedPuzzleId);
+ 
+        if (lastPuzzle != null)
+        {
+            transform.position = lastPuzzle.SpawnPoint.position;
+            Physics.SyncTransforms();
+        }
+    }
+ 
+    public void SaveData(ref GameData data)
+    {
+        data.PlayerData = new PlayerSaveData(playerData);
+    }
+ 
+    #endregion
+    
 }

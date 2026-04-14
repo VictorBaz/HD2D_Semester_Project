@@ -119,6 +119,7 @@ GameObject:
   - component: {fileID: 7459953298653950144}
   - component: {fileID: 5517195392810808536}
   - component: {fileID: 2850999364860100435}
+  - component: {fileID: 7639307828989827210}
   m_Layer: 9
   m_Name: Player Alpha
   m_TagString: Player
@@ -197,7 +198,7 @@ MonoBehaviour:
   playerHead: {fileID: 1369301271926253614}
   stateText: {fileID: 0}
   rb: {fileID: 4806072438962667457}
-  playerDataRaw: {fileID: 11400000, guid: 9ede9041946be91489e4fbdff264cb8b, type: 2}
+  playerDataRaw: {fileID: 11400000, guid: 749d1e472313c2e40802217798818d4b, type: 2}
   playerCollider: {fileID: 2545271687510050259}
 --- !u!114 &143367907673488275
 MonoBehaviour:
@@ -266,6 +267,26 @@ MonoBehaviour:
     - {fileID: 4821841287818765893}
     - {fileID: 6383431184870391244}
   rendererShield: {fileID: 709668345432453594}
+--- !u!114 &7639307828989827210
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3143151671570077153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1 &3561949359964513721
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,7 +5,7 @@ using UnityEditor;
 #endif
 using UnityEngine;
 
-public class Root : MonoBehaviour
+public class Root : MonoBehaviour, IDataPersistence
 {
     #region Variables
 
@@ -14,6 +14,9 @@ public class Root : MonoBehaviour
     
     [Header("Link Flaws")]
     public List<Flaw> flaws;
+    
+    [Header("Identification")]
+    [SerializeField] private EntityID entityID;
     
     [Header("Current State")]
     [SerializeField] private int currentEnergy = 0;
@@ -84,7 +87,6 @@ public class Root : MonoBehaviour
 
     #endregion
     
-    
     #region Debug Gizmos
     private void OnDrawGizmosSelected()
     {
@@ -141,5 +143,36 @@ public class Root : MonoBehaviour
         Handles.DrawBezier(start, end, start, end, color, null, width);
     }
 #endif
+    #endregion
+
+    #region Save
+
+    public void LoadData(GameData data)
+    {
+        RootSaveData myData = data.rootDataList.Find(x => x.id == entityID.ID);
+        
+        if (myData != null)
+        {
+            this.currentEnergy = myData.energy;
+        }
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        int index = data.rootDataList.FindIndex(x => x.id == entityID.ID);
+
+        if (index != -1)
+        {
+            data.rootDataList[index].energy = this.currentEnergy;
+        }
+        else
+        {
+            data.rootDataList.Add(new RootSaveData { 
+                id = entityID.ID, 
+                energy = this.currentEnergy 
+            });
+        }
+    }
+
     #endregion
 }

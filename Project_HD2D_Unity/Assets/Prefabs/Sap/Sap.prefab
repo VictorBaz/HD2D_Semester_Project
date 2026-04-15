@@ -243,6 +243,7 @@ GameObject:
   - component: {fileID: 4091188556708308534}
   - component: {fileID: 841013652209539410}
   - component: {fileID: 8785961805877531883}
+  - component: {fileID: 7914279490211993410}
   m_Layer: 13
   m_Name: Sap
   m_TagString: Untagged
@@ -278,10 +279,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0b0c1c7d314910b74acfbc74065920, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Sap
-  feedbackSprite: {fileID: 7737176949402943025}
-  feedbackLogic:
-    maxDistance: 5
-    minDistance: 2
+  entityID: {fileID: 7914279490211993410}
 --- !u!65 &8785961805877531883
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -303,3 +301,16 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 2.0517554, z: 1}
   m_Center: {x: 0, y: -0.006378114, z: 0}
+--- !u!114 &7914279490211993410
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8840789575719049928}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec13ad9ff2db40389e9fabb3340b498a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EntityID
+  id: b4ec308b-b00c-4127-9c31-a3ffc4204162

@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class PuzzleManager : MonoBehaviour, IDataPersistence
 {
     [SerializeField] private List<Puzzle> puzzles = new();
-    
     [SerializeField] private List<string> completedPuzzles = new();
+
+    public static PuzzleManager Instance;
 
     public string LastPuzzleCompleted()
     {
@@ -18,8 +18,6 @@ public class PuzzleManager : MonoBehaviour, IDataPersistence
         return completedPuzzles[^1];
     }
     
-    public static PuzzleManager Instance;
-
     private void Awake()
     {
         if (Instance == null)
@@ -50,14 +48,17 @@ public class PuzzleManager : MonoBehaviour, IDataPersistence
         }
     }
 
+    #region IDataPersistence
+
     public void LoadData(GameData data)
     {
         completedPuzzles.Clear();
-
-        if (data.CompletedPuzzles is { Count: > 0 })
+        if (data.CompletedPuzzles != null)
         {
             completedPuzzles = new List<string>(data.CompletedPuzzles);
         }
+
+        RefreshPuzzlesInScene();
     }
 
     public void SaveData(ref GameData data)
@@ -65,18 +66,27 @@ public class PuzzleManager : MonoBehaviour, IDataPersistence
         data.CompletedPuzzles = new List<string>(completedPuzzles);
         data.LastCompletedPuzzleId = LastPuzzleCompleted();
     }
+
+    #endregion
+
+    private void RefreshPuzzlesInScene()
+    {
+        foreach (Puzzle puzzle in puzzles)
+        {
+            if (puzzle == null) continue;
+
+            bool isDone = completedPuzzles.Contains(puzzle.PuzzleID);
+            puzzle.SetCompletedState(isDone);
+        }
+    }
     
     public Puzzle GetPuzzleById(string puzzleID)
     {
         foreach (var puzzle in puzzles)
         {
-            if (puzzle.PuzzleID == puzzleID)
-            {
-                Debug.Log("Puzzle Found: " + puzzle.PuzzleID);
+            if (puzzle != null && puzzle.PuzzleID == puzzleID)
                 return puzzle;
-            }
         }
-        Debug.Log("Puzzle Not Found");
         return null;
     }
 }

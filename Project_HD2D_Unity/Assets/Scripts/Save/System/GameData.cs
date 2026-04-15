@@ -8,6 +8,10 @@ public class GameData
     public PlayerSaveData PlayerData;
 
     public List<string> CompletedPuzzles = new();
+    
+    public List<RootSaveData> rootDataList = new();
+    public List<SapSaveData> sapDataList = new();
+    public List<ParasiteSaveData> parasiteDataList = new();
 
     public string LastCompletedPuzzleId;
 }

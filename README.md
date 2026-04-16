@@ -34,7 +34,7 @@ Le système est **Data-Driven**. Grâce à `PlayerData.cs`, toutes les variables
 ---
 
 ## LOGIQUE DE COMBAT ET SENSATIONS (GAME FEEL)
-* **Système de Parade Frame-Perfect** : Implémentation d'une double fenêtre de détection (Parry classique vs Perfect Parry) gérée par des coroutines pour une précision chirurgicale.
+* **Système de Parade Frame-Perfect** : Implémentation d'une double fenêtre de détection (Parry classique vs Perfect Parry).
 * **Conservation de Momentum** : Le `PlayerDashState` utilise un système de `velocityStock` pour conserver l'inertie du joueur en sortie d'action.
 * **Système d'Animation Robuste** : Utilisation de `BaseAnimationManager` avec des hashs `StringToHash` pour optimiser les performances.
 

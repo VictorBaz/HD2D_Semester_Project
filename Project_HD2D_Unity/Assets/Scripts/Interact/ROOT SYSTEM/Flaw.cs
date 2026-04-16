@@ -17,6 +17,8 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     [Header("Blocking")]
     [SerializeField] private List<Parasite> blockers;
 
+    [Header("Root Visuals")]
+    [SerializeField] private Transform rootVisual;
     private bool _isCurrentlyTargeted; 
     #endregion
 
@@ -108,4 +110,6 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
 
     public void SetRoot(Root root) => this.root = root;
     #endregion
+    
+    public Vector3 GetPositionRootVisuals() => rootVisual.position;
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 #endif
 using UnityEngine;
+using UnityEngine.Splines;
 
 public class Root : MonoBehaviour, IDataPersistence
 {
@@ -23,6 +24,9 @@ public class Root : MonoBehaviour, IDataPersistence
     [SerializeField] private int maxEnergy = 0;
     
     public int CurrentEnergy => currentEnergy;
+    
+    [Header("Root Visuals")]
+    [SerializeField] private SplineContainer splineRoot;
 
     #endregion
     
@@ -175,4 +179,48 @@ public class Root : MonoBehaviour, IDataPersistence
     }
 
     #endregion
+
+    [ContextMenu("Bake Visuals")]
+    private void BakeVisuals()
+    {
+        if (splineRoot == null) return;
+
+        while (splineRoot.Splines.Count > 0)
+        {
+            splineRoot.RemoveSplineAt(0);
+        }
+    
+        Vector3 localOrigin = splineRoot.transform.InverseTransformPoint(transform.position);
+
+        if (flaws != null)
+        {
+            foreach (Flaw flaw in flaws)
+            {
+                if (flaw == null) continue;
+                CreateSplineConnection(localOrigin, flaw.GetPositionRootVisuals());
+            }
+        }
+
+        if (vatManagers != null)
+        {
+            foreach (VATManager vatManager in vatManagers)
+            {
+                if (vatManager == null) continue;
+                CreateSplineConnection(localOrigin, vatManager.transform.position);
+            }
+        }
+    }
+
+    private void CreateSplineConnection(Vector3 localStart, Vector3 worldEnd)
+    {
+        Vector3 localEnd = splineRoot.transform.InverseTransformPoint(worldEnd);
+
+        Spline newSpline = new Spline();
+
+        newSpline.Add(new BezierKnot(localStart));
+
+        newSpline.Add(new BezierKnot(localEnd));
+
+        splineRoot.AddSpline(newSpline);
+    }
 }

@@ -84,7 +84,7 @@ public void Rebuild()
         return;
     }
 
-    if (splineContainer == null || splineContainer.Spline == null)
+    if (splineContainer == null /*|| splineContainer.Spline == null*/)
     {
         Debug.LogError("ArrayCurveSplineMesh : SplineContainer ou Spline manquant.", this);
         return;

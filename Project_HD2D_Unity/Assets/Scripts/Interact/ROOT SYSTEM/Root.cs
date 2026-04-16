@@ -27,6 +27,7 @@ public class Root : MonoBehaviour, IDataPersistence
     
     [Header("Root Visuals")]
     [SerializeField] private SplineContainer splineRoot;
+    [SerializeField] private ArrayCurveSplineMesh splineScript;
 
     #endregion
     
@@ -181,14 +182,11 @@ public class Root : MonoBehaviour, IDataPersistence
     #endregion
 
     [ContextMenu("Bake Visuals")]
-    private void BakeVisuals()
+    public void BakeVisuals()
     {
         if (splineRoot == null) return;
 
-        while (splineRoot.Splines.Count > 0)
-        {
-            splineRoot.RemoveSplineAt(0);
-        }
+        ClearAllKnots();
     
         Vector3 localOrigin = splineRoot.transform.InverseTransformPoint(transform.position);
 
@@ -209,18 +207,31 @@ public class Root : MonoBehaviour, IDataPersistence
                 CreateSplineConnection(localOrigin, vatManager.transform.position);
             }
         }
+        
+        splineScript.Rebuild();
     }
 
     private void CreateSplineConnection(Vector3 localStart, Vector3 worldEnd)
     {
         Vector3 localEnd = splineRoot.transform.InverseTransformPoint(worldEnd);
 
-        Spline newSpline = new Spline();
-
-        newSpline.Add(new BezierKnot(localStart));
-
-        newSpline.Add(new BezierKnot(localEnd));
+        Spline newSpline = new Spline
+        {
+            new BezierKnot(localStart),
+            new BezierKnot(localEnd)
+        };
 
         splineRoot.AddSpline(newSpline);
+    }
+    
+    [ContextMenu("Clear All Knots")]
+    public void ClearAllKnots()
+    {
+        while (splineRoot.Splines.Count != 0)
+        {
+            splineRoot.RemoveSplineAt(0);
+        }
+        
+        splineScript.Rebuild();
     }
 }

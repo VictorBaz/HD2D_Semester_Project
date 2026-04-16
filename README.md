@@ -49,7 +49,7 @@ Le système est **Data-Driven**. Grâce à `PlayerData.cs`, toutes les variables
 > [Regarder la vidéo sur YouTube](https://www.youtube.com/watch?v=-jCeYHGTouo)
 
 ### VAT Animations (Vertex Animation Texture)
-*Optimisation des animations complexes via le GPU pour conserver la fidélité visuelle HD2D.*
+*Optimisation des animations complexes via le GPU.*
 
 [![Démonstration VAT](https://img.youtube.com/vi/BmPX1ls-Au0/0.jpg)](https://youtu.be/BmPX1ls-Au0)
 > [Regarder la vidéo sur YouTube](https://youtu.be/BmPX1ls-Au0)

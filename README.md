@@ -40,24 +40,14 @@ Le système est **Data-Driven**. Grâce à `PlayerData.cs`, toutes les variables
 ---
 
 ## DIAGRAMME DE STRUCTURE (UML)
-Voici comment les données et la logique s'articulent (à reproduire sur Draw.io) :
+Voici comment les données et la logique s'articulent :
 
-```mermaid
-graph TD
-    subgraph Data
-    SO[PlayerData : ScriptableObject] --> PI[PlayerDataInstance]
-    end
+<img width="1061" height="1101" alt="HD2D_plan drawio" src="https://github.com/user-attachments/assets/5a7651b9-f72e-4a79-8312-1edbb9112b0a" />
 
-    subgraph Logic Center
-    PM[PlayerManager] -- "Updates CurrentState" --> PSC[PlayerStateContext]
-    PI --> PSC
-    PSC --> PC[PlayerController]
-    PSC --> AM[AnimationManager]
-    end
 
-    subgraph States Logic
-    PSC --> CS{Current State}
-    CS -- "Enter / Exit" --> S1[Locomotion]
-    CS -- "Update" --> S2[Combat]
-    CS -- "FixedUpdate" --> S3[Physics_States]
-    end
+
+
+
+
+
+

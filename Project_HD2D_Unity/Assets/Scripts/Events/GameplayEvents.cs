@@ -7,4 +7,6 @@ public static class GameplayEvents
 
     public static void TriggerPuzzleCompleted(string puzzleID) => OnPuzzleCompleted?.Invoke(puzzleID);
     
+    public static event Action<string> OnPuzzleVisited;
+    public static void TriggerPuzzleVisited(string puzzleID) => OnPuzzleVisited?.Invoke(puzzleID);
 }

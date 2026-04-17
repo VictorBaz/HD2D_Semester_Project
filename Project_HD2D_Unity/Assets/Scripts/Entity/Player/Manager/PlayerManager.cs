@@ -528,9 +528,9 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
             playerData.Sap    = data.PlayerData.Sap;
         }
  
-        if (string.IsNullOrEmpty(data.LastCompletedPuzzleId)) return;
+        if (string.IsNullOrEmpty(data.LastVisitedPuzzleId)) return;
  
-        Puzzle lastPuzzle = PuzzleManager.Instance.GetPuzzleById(data.LastCompletedPuzzleId);
+        Puzzle lastPuzzle = PuzzleManager.Instance.GetPuzzleById(data.LastVisitedPuzzleId);
  
         if (lastPuzzle != null)
         {

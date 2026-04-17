@@ -1,9 +1,6 @@
 using UnityEngine;
 using UnityEngine.Splines;
 using System.Collections.Generic;
-using UnityEditor.Splines;
-using Unity.VisualScripting;
-using UnityEngine.ProBuilder.MeshOperations;
 
 [ExecuteAlways]
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(SplineContainer))]

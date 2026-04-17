@@ -88,4 +88,11 @@ public class Puzzle : MonoBehaviour
         visuals.ApplyProgress(1.0f);
     }
     #endregion
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!other.CompareTag(GameConstants.PLAYER_TAG)) return;
+        
+        GameplayEvents.TriggerPuzzleVisited(puzzleID);
+    }
 }

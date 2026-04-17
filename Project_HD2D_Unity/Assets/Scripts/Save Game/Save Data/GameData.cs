@@ -14,4 +14,5 @@ public class GameData
     public List<ParasiteSaveData> parasiteDataList = new();
 
     public string LastCompletedPuzzleId;
+    public string LastVisitedPuzzleId;
 }

@@ -9,13 +9,25 @@ public class PuzzleManager : MonoBehaviour, IDataPersistence
 
     public static PuzzleManager Instance;
 
-    public string LastPuzzleCompleted()
+    private string idLastVisitedPuzzle;
+
+    private string LastPuzzleCompleted()
     {
         if (completedPuzzles.Count == 0)
         {
             return "";
         }
         return completedPuzzles[^1];
+    }
+
+    private string LastVisitedPuzzle()
+    {
+        if (idLastVisitedPuzzle == null)
+        {
+            Debug.LogError("GD YOU SUCK PLACE WELL THE TRIGGER PUZZLE ZONE");
+            return null;
+        }
+        return idLastVisitedPuzzle;
     }
     
     private void Awake()
@@ -33,6 +45,7 @@ public class PuzzleManager : MonoBehaviour, IDataPersistence
     private void OnEnable()
     {
         GameplayEvents.OnPuzzleCompleted += RegisterPuzzleCompletion;
+        GameplayEvents.OnPuzzleVisited += RegisterPuzzleCompletion;
     }
 
     private void OnDisable()
@@ -46,6 +59,11 @@ public class PuzzleManager : MonoBehaviour, IDataPersistence
         {
             completedPuzzles.Add(id);
         }
+    }
+
+    private void RegisterPuzzleVisited(string puzzleID)
+    {
+        idLastVisitedPuzzle = puzzleID;
     }
 
     #region IDataPersistence
@@ -65,6 +83,7 @@ public class PuzzleManager : MonoBehaviour, IDataPersistence
     {
         data.CompletedPuzzles = new List<string>(completedPuzzles);
         data.LastCompletedPuzzleId = LastPuzzleCompleted();
+        data.LastVisitedPuzzleId = LastPuzzleCompleted();
     }
 
     #endregion

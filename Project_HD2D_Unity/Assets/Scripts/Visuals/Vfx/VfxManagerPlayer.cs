@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VfxManager : MonoBehaviour
+public class VfxManagerPlayer : VfxManagerBase
 {
     [Header("Dash Settings")]
     [SerializeField] private TrailRenderer trailRendererDash;
@@ -13,11 +13,11 @@ public class VfxManager : MonoBehaviour
 
     [Header("Shield Settings")]
     [SerializeField] private Renderer rendererShield;
-   
 
     private MaterialPropertyBlock _propBlockShield;
     private Coroutine _shieldCoroutine;
-    private static readonly int ProgressionId = Shader.PropertyToID("_Progression"); 
+    private static readonly int ProgressionId = Shader.PropertyToID("_Progression");
+    
 
     private void Awake()
     {
@@ -61,12 +61,6 @@ public class VfxManager : MonoBehaviour
         }
     }
 
-    private void TriggerParticleSystem(ParticleSystem ps)
-    {
-        if (ps == null) return;
-        ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-        ps.Play();
-    }
 
     private void ClearAllComboFxs()
     {
@@ -79,7 +73,7 @@ public class VfxManager : MonoBehaviour
             foreach (var ps in attackFx.particleSystems)
             {
                 if (ps != null) 
-                    ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                    StopParticleSystem(ps,true);
             }
         }
     }
@@ -139,6 +133,7 @@ public class VfxManager : MonoBehaviour
         _shieldCoroutine = null;
     }
     #endregion
+
 }
 
 [Serializable]

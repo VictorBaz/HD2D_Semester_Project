@@ -17,9 +17,13 @@ public class PlayerLocomotionState : PlayerBaseState
     {
         psc.HasDash = false;
         psc.Controller.SetGravity(true);
+        psc.VfxManagerPlayer.PlayDust(true);
     }
 
-    public override void ExitState(PlayerStateContext psc) { }
+    public override void ExitState(PlayerStateContext psc)
+    {
+        psc.VfxManagerPlayer.PlayDust(false);
+    }
 
     public override void UpdateState(PlayerStateContext psc)
     {

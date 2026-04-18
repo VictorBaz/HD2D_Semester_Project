@@ -28,7 +28,7 @@ public class PlayerParryState : PlayerBaseState
         float totalDuration = data.ParryAnimationClip.length;
         float pivot = data.PerfectParryStartOffset + (data.PerfectParryDuration * 0.5f);
     
-        psc.VfxManager.PlayParryVfx(totalDuration, pivot);
+        psc.VfxManagerPlayer.PlayParryVfx(totalDuration, pivot);
         
         
         if (parryRoutine != null) psc.Controller.StopCoroutine(parryRoutine);
@@ -55,7 +55,7 @@ public class PlayerParryState : PlayerBaseState
         psc.AnimationManager.SetParry(false);
         psc.Controller.SetGravity(true);
         
-        psc.VfxManager.CancelShield();
+        psc.VfxManagerPlayer.CancelShield();
     }
 
     public override void UpdateState(PlayerStateContext psc) { }

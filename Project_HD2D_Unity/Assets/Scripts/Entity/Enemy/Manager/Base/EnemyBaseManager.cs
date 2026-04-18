@@ -31,6 +31,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     [SerializeField] protected EnemyAnimationManager enemyAnimationManager;
     [SerializeField] protected LayerMask enemyLayerMask;
     [SerializeField] protected Transform carryTransform;
+    [SerializeField] protected VfxManagerEnemy VfxManager;
 
     [Header("Triggers")]
     [SerializeField] protected Trigger viewRangeTrigger;
@@ -48,9 +49,9 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     protected EnemyContext context;
     protected bool         isCarried;
     private   bool         isInitialized;
-
-
+    
     public event Action OnTakeDamage;
+    
     #region Unity Lifecycle
 
     protected virtual void Awake()
@@ -66,6 +67,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
             LastKnownPosition = transform.position,
             LayerMaskEnemy = gameObject.layer,
             Data           = enemyData.Init(),
+            VfxManager = VfxManager
         };
 
         InitializeCommonStates();
@@ -347,13 +349,13 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
             if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
             {
-                transform.position = targetPosition;
+                //transform.position = targetPosition;
                 agent.enabled = true;
             }
             else
             {
                 agent.enabled = true;
-                agent.Warp(targetPosition);
+                //agent.Warp(targetPosition);
             }
         }
     }

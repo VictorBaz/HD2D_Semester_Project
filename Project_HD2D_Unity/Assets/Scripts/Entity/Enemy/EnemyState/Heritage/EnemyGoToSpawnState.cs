@@ -14,6 +14,7 @@ public class EnemyGoToSpawnState : EnemyBaseState
         actx.ResumeAgent();
         actx.SetDestination(actx.SpawnPosition);
         actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_WALK);
+        actx.VfxManager.PlayDust(true);
     }
 
     public override void UpdateState(EnemyContext actx)
@@ -28,5 +29,8 @@ public class EnemyGoToSpawnState : EnemyBaseState
             actx.TransitionTo(actx.Manager.PatrolState);
     }
 
-    public override void ExitState(EnemyContext actx) { }
+    public override void ExitState(EnemyContext actx)
+    {
+        actx.VfxManager.PlayDust(false);
+    }
 }

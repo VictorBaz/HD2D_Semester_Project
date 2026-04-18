@@ -14,7 +14,7 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     [SerializeField] private PlayerController playerController;
     [SerializeField] private PlayerAnimationManager animationManager;
     [SerializeField] private LockOnSystem lockOnSystem;
-    [SerializeField] private VfxManager vfxManager;
+    [SerializeField] private VfxManagerPlayer vfxManagerPlayer;
 
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private Transform playerHead;
@@ -78,7 +78,7 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
             PlayerTransform = transform,
             StateMachine = this,
             PlayerData = playerData,
-            VfxManager = vfxManager,
+            VfxManagerPlayer = vfxManagerPlayer,
             ShootDirection = transform.forward,
             PlayerHeadTransform = playerHead,
             TargetDirection = this.TargetDirection,

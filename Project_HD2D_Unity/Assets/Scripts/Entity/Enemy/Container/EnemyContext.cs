@@ -23,6 +23,8 @@ public class EnemyContext
     
     public LayerMask LayerMaskEnemy;
     
+    public VfxManagerEnemy VfxManager;
+    
     public void TransitionTo(EnemyBaseState newBaseState) => Manager.ChangeState(newBaseState);
     
     public bool IsNavReady => Agent != null && Agent.isActiveAndEnabled && Agent.isOnNavMesh;

@@ -1,3 +1,4 @@
+using com.Victor.Utilities.Scripts;
 using UnityEngine;
 using UnityEngine.Audio;
 
@@ -17,6 +18,9 @@ namespace Script.Manager
         
         [Header("Audio Mixer Group")]
         [SerializeField] private AudioMixerGroup _audioMixerGroupMainMusic;
+        
+        [Header("Data Bank")]
+        [SerializeField] private AudioDataBank dataBank;
 
         #endregion
 
@@ -133,7 +137,7 @@ namespace Script.Manager
             }
         }
 
-        public GameObject InitialisationAudioObjectDestroyAtEnd(AudioClip audioClipTarget, bool looping, 
+        public GameObject InitAudioObj(AudioClip audioClipTarget, bool looping, 
             bool playingAwake, float volumeSound, string _name)
         {
             GameObject emptyObject = new GameObject(_name);
@@ -148,12 +152,30 @@ namespace Script.Manager
             
             if (!looping)
             {
-                Destroy(emptyObject, audioClipTarget.length);
+                float duration = audioClipTarget.length / audioSourceGeneral.pitch;
+                Destroy(emptyObject, duration);
             }
             
             return emptyObject;
         }
 
+        public void PlaySFX(SoundType type)
+        {
+            var entry = dataBank.GetSFX(type);
+            if (entry == null || entry.clip == null) return;
+
+            if (entry.useRandomPitch)
+            {
+                audioSource.PlayWithRandomPitch(entry.clip, 
+                    entry.pitch - entry.pitchRandomness, 
+                    entry.pitch + entry.pitchRandomness);
+            }
+            else
+            {
+                audioSource.pitch = entry.pitch;
+                audioSource.PlayOneShot(entry.clip, entry.volume * masterVolume);
+            }
+        }
         #endregion
 
         

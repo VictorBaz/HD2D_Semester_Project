@@ -1,9 +1,7 @@
 using Enum;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-[CanEditMultipleObjects]
 public class CameraTriggerFix : CameraTriggerBase
 {
     [SerializeField] private Transform targetTransform;

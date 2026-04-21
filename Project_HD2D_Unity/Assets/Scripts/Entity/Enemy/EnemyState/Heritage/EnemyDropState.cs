@@ -22,13 +22,23 @@ public class EnemyDropState : EnemyBaseState
     {
         if (isGrounded) return;
 
-        if (!Physics.Raycast(actx.Manager.transform.position, Vector3.down, out RaycastHit hit, 1.2f)) return;
-
-        if (!NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, 0.5f, NavMesh.AllAreas)) return;
-
-        isGrounded = true;
+        if (Physics.Raycast(
+                actx.Manager.transform.position,
+                Vector3.down,
+                out RaycastHit hit,
+                actx.Data.GroundCheckDistance,actx.GroundLayerMask))
+        {
+            if (NavMesh.SamplePosition(
+                    hit.point,
+                    out NavMeshHit navHit,
+                    actx.Data.NavmeshCheckDistance,
+                    NavMesh.AllAreas))
+            {
+                isGrounded = true;
         
-        LandingSequence(actx);
+                LandingSequence(actx);
+            }
+        }
     }
 
     public override void ExitState(EnemyContext actx) 
@@ -38,7 +48,7 @@ public class EnemyDropState : EnemyBaseState
 
     private void LandingSequence(EnemyContext actx)
     {
-        actx.Manager.ApplyMovementMode(false);
+       // actx.Manager.ApplyMovementMode(false);
 
         bool isStillKO = actx.Manager.KoSlider != null && actx.Data.KoTime > 0;
 

@@ -133,7 +133,7 @@ public class GameManager : MonoBehaviour
     {
         switch (action)
         {
-            case ButtonAction.Game:
+            case ButtonAction.LoadGame:
                 ChangeState(GameState.Game);
                 LoadGame();
                 break;
@@ -165,6 +165,14 @@ public class GameManager : MonoBehaviour
                 break;
             case ButtonAction.Settings:
                 ChangeState(GameState.Settings);
+                break;
+            case ButtonAction.SaveGame:
+                DataPersistenceManager.Instance.SaveGame();
+                break;
+            case ButtonAction.NewGame:
+                DataPersistenceManager.Instance.NewGame();
+                ChangeState(GameState.Game);
+                LoadGame();
                 break;
         }
     }

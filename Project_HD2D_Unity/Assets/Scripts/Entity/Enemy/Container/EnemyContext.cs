@@ -22,6 +22,11 @@ public class EnemyContext
     public Vector3 HitDirection;
     
     public LayerMask LayerMaskEnemy;
+    public LayerMask GroundLayerMask;
+    
+    public VfxManagerEnemy VfxManager;
+    
+    public CapsuleCollider CapsuleCollider;
     
     public void TransitionTo(EnemyBaseState newBaseState) => Manager.ChangeState(newBaseState);
     

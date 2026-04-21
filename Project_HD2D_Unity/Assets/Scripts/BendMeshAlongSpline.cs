@@ -23,8 +23,10 @@ public class ArrayCurveSplineMesh : MonoBehaviour
     [SerializeField] private bool autoUpdateEveryFrame = false;
 
     private MeshFilter meshFilter;
-    private SplineContainer splineContainer;
+    [SerializeField] private SplineContainer splineContainer;
+    private List<Mesh> meshesRootsVisual = new List<Mesh>();
     private Mesh generatedMesh;
+
 
     public enum Axis
     {
@@ -63,44 +65,40 @@ public class ArrayCurveSplineMesh : MonoBehaviour
 
         if (splineContainer == null)
             splineContainer = GetComponent<SplineContainer>();
+        meshesRootsVisual.Clear();
     }
 
     [ContextMenu("Rebuild")]
-    public void Rebuild()
+   [ContextMenu("Rebuild")]
+public void Rebuild()
+{
+    Cache();
+    ClearAllGeneratedMeshes();
+
+    if (sourceMesh == null)
     {
-        Cache();
+        Debug.LogError("ArrayCurveSplineMesh : sourceMesh non assigné.", this);
+        return;
+    }
 
-        if (sourceMesh == null)
-        {
-            Debug.LogError("ArrayCurveSplineMesh : sourceMesh non assigné.", this);
-            return;
-        }
+    if (splineContainer == null /*|| splineContainer.Spline == null*/)
+    {
+        Debug.LogError("ArrayCurveSplineMesh : SplineContainer ou Spline manquant.", this);
+        return;
+    }
 
-        if (splineContainer == null || splineContainer.Spline == null)
-        {
-            Debug.LogError("ArrayCurveSplineMesh : SplineContainer ou Spline manquant.", this);
-            return;
-        }
-
-        Spline spline = splineContainer.Spline;
+    for (int i = 0; i < splineContainer.Splines.Count; i++)
+    {
+        Spline spline = splineContainer.Splines[i];
         float splineLength = spline.GetLength();
 
         if (splineLength <= 0.0001f)
-        {
-            Debug.LogError("ArrayCurveSplineMesh : spline trop courte.", this);
-            return;
-        }
+            continue;
 
         Vector3[] srcVerts = sourceMesh.vertices;
         Vector3[] srcNormals = sourceMesh.normals;
         Vector2[] srcUVs = sourceMesh.uv;
         int[] srcTriangles = sourceMesh.triangles;
-
-        if (srcVerts == null || srcVerts.Length == 0)
-        {
-            Debug.LogError("ArrayCurveSplineMesh : mesh source vide.", this);
-            return;
-        }
 
         Bounds bounds = sourceMesh.bounds;
         float minAlong = GetAxis(bounds.min, forwardAxis);
@@ -108,10 +106,7 @@ public class ArrayCurveSplineMesh : MonoBehaviour
         float segmentLength = maxAlong - minAlong;
 
         if (segmentLength <= 0.0001f)
-        {
-            Debug.LogError("ArrayCurveSplineMesh : longueur invalide sur l'axe choisi.", this);
-            return;
-        }
+            continue;
 
         float step = segmentLength + spacing;
         int count = fitToSplineLength
@@ -126,13 +121,12 @@ public class ArrayCurveSplineMesh : MonoBehaviour
         for (int copyIndex = 0; copyIndex < count; copyIndex++)
         {
             float offset = copyIndex * step;
-
             int vertexStart = combinedVerts.Count;
 
-            for (int i = 0; i < srcVerts.Length; i++)
+            for (int j = 0; j < srcVerts.Length; j++)
             {
-                Vector3 v = srcVerts[i];
-                Vector3 n = (srcNormals != null && srcNormals.Length == srcVerts.Length) ? srcNormals[i] : Vector3.up;
+                Vector3 v = srcVerts[j];
+                Vector3 n = (srcNormals != null && srcNormals.Length == srcVerts.Length) ? srcNormals[j] : Vector3.up;
 
                 SetAxis(ref v, forwardAxis, GetAxis(v, forwardAxis) + offset);
                 combinedVerts.Add(v);
@@ -140,35 +134,28 @@ public class ArrayCurveSplineMesh : MonoBehaviour
 
                 if (srcUVs != null && srcUVs.Length == srcVerts.Length)
                 {
-                    Vector2 uv = srcUVs[i];
-
-                    float localAlong = GetAxis(srcVerts[i], forwardAxis) - minAlong;
+                    Vector2 uv = srcUVs[j];
+                    float localAlong = GetAxis(srcVerts[j], forwardAxis) - minAlong;
                     float globalAlong = (copyIndex * segmentLength) + localAlong;
                     float totalLength = count * segmentLength;
-
                     uv.y = globalAlong / totalLength;
-
                     combinedUVs.Add(uv);
                 }
                 else
                 {
-                    float localAlong = GetAxis(srcVerts[i], forwardAxis) - minAlong;
+                    float localAlong = GetAxis(srcVerts[j], forwardAxis) - minAlong;
                     float globalAlong = (copyIndex * segmentLength) + localAlong;
                     float totalLength = count * segmentLength;
-
                     combinedUVs.Add(new Vector2(0f, globalAlong / totalLength));
                 }
             }
 
-            for (int i = 0; i < srcTriangles.Length; i++)
-            {
-                combinedTriangles.Add(vertexStart + srcTriangles[i]);
-            }
+            for (int k = 0; k < srcTriangles.Length; k++)
+                combinedTriangles.Add(vertexStart + srcTriangles[k]);
         }
 
         float combinedMin = minAlong;
         float combinedMax = minAlong + (count * segmentLength) + ((count - 1) * spacing);
-        float combinedLength = combinedMax - combinedMin;
 
         Vector3[] deformedVerts = new Vector3[combinedVerts.Count];
         Vector3[] deformedNormals = new Vector3[combinedNormals.Count];
@@ -176,9 +163,9 @@ public class ArrayCurveSplineMesh : MonoBehaviour
         Transform splineTransform = splineContainer.transform;
         Matrix4x4 worldToLocal = transform.worldToLocalMatrix;
 
-        for (int i = 0; i < combinedVerts.Count; i++)
+        for (int l = 0; l < combinedVerts.Count; l++)
         {
-            Vector3 v = combinedVerts[i];
+            Vector3 v = combinedVerts[l];
 
             float along = GetAxis(v, forwardAxis);
             float alpha = Mathf.InverseLerp(combinedMin, combinedMax, along);
@@ -193,19 +180,14 @@ public class ArrayCurveSplineMesh : MonoBehaviour
 
             Vector3 splinePos = (Vector3)spline.EvaluatePosition(t);
             Vector3 tangent = ((Vector3)spline.EvaluateTangent(t)).normalized;
-
-            if (tangent.sqrMagnitude < 0.000001f)
-                tangent = Vector3.forward;
+            if (tangent.sqrMagnitude < 0.000001f) tangent = Vector3.forward;
 
             Vector3 up = useSplineUp
                 ? ((Vector3)spline.EvaluateUpVector(t)).normalized
                 : Vector3.up;
-
-            if (up.sqrMagnitude < 0.000001f)
-                up = Vector3.up;
+            if (up.sqrMagnitude < 0.000001f) up = Vector3.up;
 
             Vector3 right = Vector3.Cross(tangent, up).normalized;
-
             if (right.sqrMagnitude < 0.000001f)
             {
                 right = Vector3.right;
@@ -217,16 +199,13 @@ public class ArrayCurveSplineMesh : MonoBehaviour
             }
 
             Vector2 cross = GetCrossCoordinates(v, forwardAxis);
-
-            Vector3 localOffset =
-                right * cross.x +
-                up * cross.y;
+            Vector3 localOffset = right * cross.x + up * cross.y;
 
             Vector3 deformedInSplineLocal = splinePos + localOffset;
             Vector3 deformedWorld = splineTransform.TransformPoint(deformedInSplineLocal);
-            deformedVerts[i] = worldToLocal.MultiplyPoint3x4(deformedWorld);
+            deformedVerts[l] = worldToLocal.MultiplyPoint3x4(deformedWorld);
 
-            Vector3 n = combinedNormals[i];
+            Vector3 n = combinedNormals[l];
             float nAlong = GetAxis(n, forwardAxis);
             Vector2 nCross = GetCrossCoordinates(n, forwardAxis);
 
@@ -236,40 +215,60 @@ public class ArrayCurveSplineMesh : MonoBehaviour
                 up * nCross.y;
 
             Vector3 deformedNormalWorld = splineTransform.TransformDirection(deformedNormalInSplineLocal);
-            deformedNormals[i] = worldToLocal.MultiplyVector(deformedNormalWorld).normalized;
+            deformedNormals[l] = worldToLocal.MultiplyVector(deformedNormalWorld).normalized;
         }
 
-        ClearGeneratedMesh();
-
-        generatedMesh = new Mesh();
-        generatedMesh.name = sourceMesh.name + "_ArrayCurve";
-        generatedMesh.indexFormat = deformedVerts.Length > 65535
+        Mesh splineMesh = new Mesh();
+        splineMesh.name = sourceMesh.name + "_ArrayCurve_" + i;
+        splineMesh.indexFormat = deformedVerts.Length > 65535
             ? UnityEngine.Rendering.IndexFormat.UInt32
             : UnityEngine.Rendering.IndexFormat.UInt16;
 
-        generatedMesh.vertices = deformedVerts;
-        generatedMesh.triangles = combinedTriangles.ToArray();
-        generatedMesh.uv = combinedUVs.ToArray();
-        generatedMesh.normals = deformedNormals;
-        generatedMesh.RecalculateBounds();
-        generatedMesh.RecalculateTangents();
+        splineMesh.vertices = deformedVerts;
+        splineMesh.triangles = combinedTriangles.ToArray();
+        splineMesh.uv = combinedUVs.ToArray();
+        splineMesh.normals = deformedNormals;
+        splineMesh.RecalculateBounds();
+        splineMesh.RecalculateTangents();
 
-        //check opti
-        meshFilter.sharedMesh = generatedMesh;
+        meshesRootsVisual.Add(splineMesh);
     }
 
-    private void ClearGeneratedMesh()
+    if (meshesRootsVisual.Count == 0)
     {
-        if (generatedMesh == null)
-            return;
+        meshFilter.sharedMesh = null;
+        return;
+    }
+
+    CombineInstance[] combine = new CombineInstance[meshesRootsVisual.Count];
+
+    for (int i = 0; i < meshesRootsVisual.Count; i++)
+    {
+        combine[i].mesh = meshesRootsVisual[i];
+        combine[i].transform = Matrix4x4.identity;
+    }
+
+    Mesh combinedMesh = new Mesh();
+    combinedMesh.name = sourceMesh.name + "_Combined";
+    combinedMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+    combinedMesh.CombineMeshes(combine, true, false);
+
+    meshFilter.sharedMesh = combinedMesh;
+}
+private void ClearAllGeneratedMeshes()
+{
+    foreach (var mesh in meshesRootsVisual)
+    {
+        if (mesh == null) continue;
 
         if (Application.isPlaying)
-            Destroy(generatedMesh);
+            Destroy(mesh);
         else
-            DestroyImmediate(generatedMesh);
-
-        generatedMesh = null;
+            DestroyImmediate(mesh);
     }
+
+    meshesRootsVisual.Clear();
+}
 
     private float GetAxis(Vector3 v, Axis axis)
     {

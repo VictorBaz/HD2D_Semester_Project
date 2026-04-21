@@ -16,6 +16,9 @@ public class VATManager : MonoBehaviour, IRootLink
     [Header("Blocking")]
     [SerializeField] private List<Parasite> blockers; 
 
+    [Header("Root Visuals")]
+    [SerializeField] private Transform rootVisual;
+    
     protected float currentNormalizedValue = 0f;
     protected MaterialPropertyBlock propBlock;
     protected Root root;
@@ -96,7 +99,8 @@ public class VATManager : MonoBehaviour, IRootLink
     }
 
     protected virtual void OnValueUpdated(float newValue) { }
-    #endregion
     
+    public Vector3 GetPositionRootVisuals() => rootVisual.position;
+    #endregion
     
 }

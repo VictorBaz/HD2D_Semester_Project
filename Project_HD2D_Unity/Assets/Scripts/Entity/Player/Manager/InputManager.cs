@@ -23,8 +23,6 @@ public class InputManager : MonoBehaviour
     public event Action OnDash;
     
     public event Action OnParry;
-
-    public event Action<bool> OnInputShow;
     
     public event Action OnPausePressed;
     

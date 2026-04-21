@@ -88,7 +88,7 @@ namespace Player.State
 
             bufferWindowOpen = true;
 
-            psc.VfxManager.PlayFxCombo(comboIndex);
+            psc.VfxManagerPlayer.PlayFxCombo(comboIndex);
             
             float actionDuration = Mathf.Max(
                 animLength,

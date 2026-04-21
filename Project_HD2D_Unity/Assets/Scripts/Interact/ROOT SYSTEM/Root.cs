@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using UnityEditor;
 #endif
 using UnityEngine;
+using UnityEngine.Splines;
 
-public class Root : MonoBehaviour
+public class Root : MonoBehaviour, IDataPersistence
 {
     #region Variables
 
@@ -15,11 +16,18 @@ public class Root : MonoBehaviour
     [Header("Link Flaws")]
     public List<Flaw> flaws;
     
+    [Header("Identification")]
+    [SerializeField] private EntityID entityID;
+    
     [Header("Current State")]
     [SerializeField] private int currentEnergy = 0;
     [SerializeField] private int maxEnergy = 0;
     
     public int CurrentEnergy => currentEnergy;
+    
+    [Header("Root Visuals")]
+    [SerializeField] private SplineContainer splineRoot;
+    [SerializeField] private ArrayCurveSplineMesh splineScript;
 
     #endregion
     
@@ -84,7 +92,6 @@ public class Root : MonoBehaviour
 
     #endregion
     
-    
     #region Debug Gizmos
     private void OnDrawGizmosSelected()
     {
@@ -142,4 +149,89 @@ public class Root : MonoBehaviour
     }
 #endif
     #endregion
+
+    #region Save
+
+    public void LoadData(GameData data)
+    {
+        RootSaveData myData = data.rootDataList.Find(x => x.id == entityID.ID);
+        
+        if (myData != null)
+        {
+            this.currentEnergy = myData.energy;
+        }
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        int index = data.rootDataList.FindIndex(x => x.id == entityID.ID);
+
+        if (index != -1)
+        {
+            data.rootDataList[index].energy = this.currentEnergy;
+        }
+        else
+        {
+            data.rootDataList.Add(new RootSaveData { 
+                id = entityID.ID, 
+                energy = this.currentEnergy 
+            });
+        }
+    }
+
+    #endregion
+
+    [ContextMenu("Bake Visuals")]
+    public void BakeVisuals()
+    {
+        if (splineRoot == null) return;
+
+        ClearAllKnots();
+    
+        Vector3 localOrigin = splineRoot.transform.InverseTransformPoint(transform.position);
+
+        if (flaws != null)
+        {
+            foreach (Flaw flaw in flaws)
+            {
+                if (flaw == null) continue;
+                CreateSplineConnection(localOrigin, flaw.GetPositionRootVisuals());
+            }
+        }
+
+        if (vatManagers != null)
+        {
+            foreach (VATManager vatManager in vatManagers)
+            {
+                if (vatManager == null) continue;
+                CreateSplineConnection(localOrigin, vatManager.transform.position);
+            }
+        }
+        
+        splineScript.Rebuild();
+    }
+
+    private void CreateSplineConnection(Vector3 localStart, Vector3 worldEnd)
+    {
+        Vector3 localEnd = splineRoot.transform.InverseTransformPoint(worldEnd);
+
+        Spline newSpline = new Spline
+        {
+            new BezierKnot(localStart),
+            new BezierKnot(localEnd)
+        };
+
+        splineRoot.AddSpline(newSpline);
+    }
+    
+    [ContextMenu("Clear All Knots")]
+    public void ClearAllKnots()
+    {
+        while (splineRoot.Splines.Count != 0)
+        {
+            splineRoot.RemoveSplineAt(0);
+        }
+        
+        splineScript.Rebuild();
+    }
 }

@@ -2,19 +2,24 @@ using System;
 using UnityEngine;
 using System.Collections;
 
-
 public class Puzzle : MonoBehaviour
 {
     #region Variables
     [Header("Puzzle Info")]
     [SerializeField] private string puzzleID;
+    public string PuzzleID => puzzleID;
+    
+    [SerializeField] private Transform spawnPoint;
+    public Transform SpawnPoint => spawnPoint;
     
     [Header("Win Condition")]
     [Tooltip("Le parasite 'Boss' qui valide le puzzle à sa mort")]
     [SerializeField] private Parasite bossParasite;
 
-    [Header("Visual Evolution")] public PuzzleVisuals visuals = new PuzzleVisuals();
+    [Header("Visual Evolution")] 
+    public PuzzleVisuals visuals = new();
 
+    private bool _isAlreadyCompleted = false;
     #endregion
 
     #region Unity Lifecycle
@@ -22,7 +27,6 @@ public class Puzzle : MonoBehaviour
     {
         visuals.Initialize();
     }
-    
 
     private void OnEnable()
     {
@@ -42,11 +46,32 @@ public class Puzzle : MonoBehaviour
     #endregion
 
     #region Logic
+    public void SetCompletedState(bool isCompleted)
+    {
+        _isAlreadyCompleted = isCompleted;
+
+        if (isCompleted)
+        {
+            visuals.ApplyProgress(1.0f);
+            
+            if (bossParasite != null)
+            {
+                bossParasite.gameObject.SetActive(false);
+            }
+        }
+    }
+
     private void HandleBossDeath()
     {
+        if (_isAlreadyCompleted) return;
         
-        StartCoroutine(AnimateEnvironment());
+        CompletePuzzle();
+    }
 
+    public void CompletePuzzle()
+    {
+        _isAlreadyCompleted = true;
+        StartCoroutine(AnimateEnvironment());
         GameplayEvents.TriggerPuzzleCompleted(puzzleID);
     }
 
@@ -64,14 +89,10 @@ public class Puzzle : MonoBehaviour
     }
     #endregion
 
-    #region Editor Tools
-#if UNITY_EDITOR
-    [ContextMenu("Scan Zone For Nature Shaders")]
-    private void ScanZone()
+    private void OnTriggerEnter(Collider other)
     {
-        visuals.ScanChildren(transform);
-        UnityEditor.EditorUtility.SetDirty(this);
+        if (!other.CompareTag(GameConstants.PLAYER_TAG)) return;
+        
+        GameplayEvents.TriggerPuzzleVisited(puzzleID);
     }
-#endif
-    #endregion
 }

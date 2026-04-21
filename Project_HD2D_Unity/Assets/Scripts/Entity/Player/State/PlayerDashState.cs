@@ -53,7 +53,7 @@ namespace Player.State
 
             CameraEvents.CameraShake();
             
-            psc.VfxManager.ToggleDashTrail(true);
+            psc.VfxManagerPlayer.ToggleDashTrail(true);
             
             while (elapsed < psc.PlayerData.DashDuration)
             {
@@ -85,7 +85,7 @@ namespace Player.State
             
             DetermineState(psc);
             
-            psc.VfxManager.ToggleDashTrail(false);
+            psc.VfxManagerPlayer.ToggleDashTrail(false);
         }
     }
 }

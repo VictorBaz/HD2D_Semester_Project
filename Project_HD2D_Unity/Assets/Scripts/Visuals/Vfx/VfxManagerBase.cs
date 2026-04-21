@@ -35,7 +35,7 @@ public abstract class VfxManagerBase : MonoBehaviour
         }
         else
         {
-            StopParticleSystem(dustParticles,true);
+            StopParticleSystem(dustParticles,false);
         }
     }
 }

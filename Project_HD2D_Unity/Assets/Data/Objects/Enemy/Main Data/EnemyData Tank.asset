@@ -17,13 +17,13 @@ MonoBehaviour:
     ChaseSpeed: 2.5
     Acceleration: 8
     StoppingDistance: 1.2
-    DetectionRange: 15
-    ViewAngle: 120
     SearchDuration: 10
     SearchRadius: 5
+    RotationSpeed: 10
+    GroundCheckDistance: 2
+    NavmeshCheckDistance: 1
   Attack:
     AttackCooldown: 1
-    AnticipationTime: 0.25
     HitboxActiveDuration: 0.2
     AttackDashSpeed: 7
     AttackDashDuration: 0.2
@@ -33,12 +33,13 @@ MonoBehaviour:
     LandingStunDuration: 0.3
     ShockwaveActiveDuration: 0.3
     AttackRange: 4
+    ChargeAnimationClip: {fileID: 0}
+    AttackAnimationClip: {fileID: 0}
   Status:
     MaxKo: 10
-    KoTime: 25
+    KoTimeMax: 5
     StunDuration: 0.35
     ExposedTime: 3.5
-    DamageToApply: 0
   Visuals:
     SpriteSearch: {fileID: 21300000, guid: c9ec8811a41c4634aa26eed1a1d8145d, type: 3}
     SpriteAttackStart: {fileID: 21300000, guid: fabf2f4058fb498408b6d6518d6c8e98, type: 3}

@@ -25,11 +25,6 @@ public class EnemyAnimationManager : BaseAnimationManager
         ToggleAttackCollider(false);
     }
 
-    private void Update()
-    {
-        Debug.Log(animator.GetBool(IsKOHash));
-    }
-
     public void UpdateMovement(float currentSpeed) => animator.SetFloat(SpeedHash, currentSpeed);
     public void SetExposed(bool isExposed) => animator.SetBool(IsExposedHash, isExposed);
 

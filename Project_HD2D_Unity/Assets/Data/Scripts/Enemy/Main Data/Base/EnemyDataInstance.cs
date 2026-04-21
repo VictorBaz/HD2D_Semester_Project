@@ -10,6 +10,8 @@ public class EnemyDataInstance
     public float SearchDuration;
     public float SearchRadius;
     public float RotationSpeed;
+    public float GroundCheckDistance;
+    public float NavmeshCheckDistance;
 
     public float AttackCooldown;
     public float HitboxActiveDuration;
@@ -53,6 +55,8 @@ public class EnemyDataInstance
         SearchDuration = data.Navigation.SearchDuration;
         SearchRadius = data.Navigation.SearchRadius;
         RotationSpeed = data.Navigation.RotationSpeed;
+        GroundCheckDistance = data.Navigation.GroundCheckDistance;
+        NavmeshCheckDistance = data.Navigation.NavmeshCheckDistance;
 
         AttackCooldown = data.Attack.AttackCooldown;
         HitboxActiveDuration = data.Attack.HitboxActiveDuration;

@@ -36,6 +36,7 @@ public class Sap : MonoBehaviour, ISapLockable, IDataPersistence
 
     public void GiveSap()
     {
+        Debug.Log("SAP GIVE SAP");
         _isEmpty = true;
     }
     #endregion

@@ -1,15 +1,17 @@
 using Player.State;
+using Script.Manager;
 using UnityEngine;
 
 public class PlayerLocomotionState : PlayerBaseState
 {
     private float airTimeBuffer = 0f;
-    
+
     public override string Name    => "Locomotion";
     public override bool CanAttack => true;
     public override bool CanDash   => true;
     public override bool CanCarry  => true;
     public override bool CanParry  => true;
+    private float nextFootstepTime = 0;
 
     public override bool CanJump(PlayerStateContext psc) => !psc.LockOnSystem.IsLocked;
 
@@ -27,6 +29,23 @@ public class PlayerLocomotionState : PlayerBaseState
 
     public override void UpdateState(PlayerStateContext psc)
     {
+        if (TryLeaveGround(psc)) return;
+
+        psc.LockOnSystem.CalculLockRotation();
+        psc.Controller.SetLockMode(psc.LockOnSystem.IsLocked);
+
+        HandleMovement(psc);
+        HandleAnimationLocomotion(psc);
+        PlaySoundStep(psc);
+    }
+
+    public override void FixedUpdateState(PlayerStateContext psc)
+    {
+        HandlePhysics(psc);
+    }
+
+    private bool TryLeaveGround(PlayerStateContext psc)
+    {
         if (!psc.Controller.IsGrounded)
         {
             airTimeBuffer += Time.deltaTime;
@@ -34,7 +53,7 @@ public class PlayerLocomotionState : PlayerBaseState
             if (airTimeBuffer > psc.PlayerData.CoyoteTime)
             {
                 DetermineState(psc);
-                return;
+                return true;
             }
         }
         else
@@ -42,23 +61,39 @@ public class PlayerLocomotionState : PlayerBaseState
             airTimeBuffer = 0f;
         }
 
-        psc.LockOnSystem.CalculLockRotation();
-        psc.Controller.SetLockMode(psc.LockOnSystem.IsLocked);
+        return false;
+    }
 
-        HandleMovement(psc);
-
+    private void HandleAnimationLocomotion(PlayerStateContext psc)
+    {
         float magnitude     = psc.InputManager.MoveInput.magnitude;
-        
-        float animMagnitude = magnitude > psc.PlayerData.RunThreshold ? GameConstants.ANIM_MAGNITUDE_RUN :
-            magnitude > GameConstants.DEAD_STICK ? GameConstants.ANIM_MAGNITUDE_WALK :
-            GameConstants.ANIM_MAGNITUDE_IDLE;
+        float animMagnitude = GetAnimMagnitude(psc, magnitude);
 
         blendInput = GetBlendTreeInput(psc);
         psc.AnimationManager.HandleAnimation(animMagnitude, blendInput, psc.Controller.IsGrounded);
     }
 
-    public override void FixedUpdateState(PlayerStateContext psc)
+    private float GetAnimMagnitude(PlayerStateContext psc, float magnitude)
     {
-        HandlePhysics(psc);
+        if (magnitude > psc.PlayerData.RunThreshold)  return GameConstants.ANIM_MAGNITUDE_RUN;
+        if (magnitude > GameConstants.DEAD_STICK)     return GameConstants.ANIM_MAGNITUDE_WALK;
+        return GameConstants.ANIM_MAGNITUDE_IDLE;
+    }
+
+    private bool isRightFeetSound;
+    private void PlaySoundStep(PlayerStateContext psc)
+    {
+        if (psc.InputManager.MoveInput.magnitude < GameConstants.DEAD_STICK) return;
+
+        if (!(Time.time >= nextFootstepTime)) return;
+        
+        isRightFeetSound = !isRightFeetSound;
+        
+        SoundType step = isRightFeetSound ? SoundType.Footstep_Dirt_1 : SoundType.Footstep_Dirt_2;
+        
+        SoundManager.Instance?.PlaySfx(step);
+        
+        float interval = psc.InputManager.MoveInput.magnitude > psc.PlayerData.RunThreshold ? 0.3f : 0.5f;
+        nextFootstepTime = Time.time + interval;
     }
 }

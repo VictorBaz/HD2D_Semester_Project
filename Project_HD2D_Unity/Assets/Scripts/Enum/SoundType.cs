@@ -1,7 +1,7 @@
 ﻿public enum SoundType
 {
     
-    Footstep_Dirt, Footstep_Stone, Jump_Hop, Jump_Land, Dash,
+    Footstep_Dirt_1,Footstep_Dirt_2, Footstep_Stone, Jump_Hop, Jump_Land, Dash,
     
     Parry_Activate, Parry_Hit, Parry_Perfect,
     Combo_Woosh_1, Combo_Woosh_2, Combo_Woosh_3,

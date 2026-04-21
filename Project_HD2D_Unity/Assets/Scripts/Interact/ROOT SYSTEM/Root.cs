@@ -23,11 +23,18 @@ public class Root : MonoBehaviour, IDataPersistence
     [SerializeField] private int currentEnergy = 0;
     [SerializeField] private int maxEnergy = 0;
     
-    public int CurrentEnergy => currentEnergy;
+    public int CurrentEnergy 
+    { 
+        get => currentEnergy;
+        private set => SetEnergy(value); 
+    }
     
     [Header("Root Visuals")]
     [SerializeField] private SplineContainer splineRoot;
     [SerializeField] private ArrayCurveSplineMesh splineScript;
+    [SerializeField] private Renderer renderer;
+    private MaterialPropertyBlock propBlockRoot;
+    private static readonly int EnergyPropertyID = Shader.PropertyToID("_LineCount");
 
     #endregion
     
@@ -37,6 +44,7 @@ public class Root : MonoBehaviour, IDataPersistence
     {
         InitFlaws();
         InitVatManagers();
+        InitPropBlocks();
     }
 
     #endregion
@@ -53,6 +61,12 @@ public class Root : MonoBehaviour, IDataPersistence
         foreach (VATManager vatManager in vatManagers) vatManager.SetRoot(this);
     }
 
+    private void InitPropBlocks()
+    {
+        propBlockRoot = new MaterialPropertyBlock();
+        SetEnergy(CurrentEnergy);
+    }
+
     #endregion
     
     #region Link Flaws
@@ -60,11 +74,26 @@ public class Root : MonoBehaviour, IDataPersistence
     private void SetEnergy(int energy)
     {
         currentEnergy = Mathf.Clamp(energy, 0, maxEnergy);
+        UpdateVisualEnergy();
+    }
+
+    private void UpdateVisualEnergy()
+    {
+        if (renderer == null) return;
+
+        if (propBlockRoot == null) 
+            propBlockRoot = new MaterialPropertyBlock();
+
+        renderer.GetPropertyBlock(propBlockRoot);
+
+        propBlockRoot.SetFloat(EnergyPropertyID, (float)currentEnergy);
+
+        renderer.SetPropertyBlock(propBlockRoot);
     }
 
     public void AddEnergy()
     {
-        SetEnergy(currentEnergy + 1);
+        CurrentEnergy++; 
         
         foreach (var vatManager in vatManagers)
         {
@@ -74,12 +103,11 @@ public class Root : MonoBehaviour, IDataPersistence
 
     public void RemoveEnergy()
     {
-        SetEnergy(currentEnergy - 1);
+        CurrentEnergy--;
         
         foreach (var vatManager in vatManagers)
         {
             if (!vatManager.IsContainingEnergy()) continue;
-              
         }
     }
 
@@ -158,7 +186,7 @@ public class Root : MonoBehaviour, IDataPersistence
         
         if (myData != null)
         {
-            this.currentEnergy = myData.energy;
+            CurrentEnergy = myData.energy;
         }
     }
 
@@ -168,18 +196,20 @@ public class Root : MonoBehaviour, IDataPersistence
 
         if (index != -1)
         {
-            data.rootDataList[index].energy = this.currentEnergy;
+            data.rootDataList[index].energy = CurrentEnergy;
         }
         else
         {
             data.rootDataList.Add(new RootSaveData { 
                 id = entityID.ID, 
-                energy = this.currentEnergy 
+                energy = CurrentEnergy 
             });
         }
     }
 
     #endregion
+
+    #region Bake Root Visuals
 
     [ContextMenu("Bake Visuals")]
     public void BakeVisuals()
@@ -234,4 +264,8 @@ public class Root : MonoBehaviour, IDataPersistence
         
         splineScript.Rebuild();
     }
+
+    #endregion
+
+    
 }

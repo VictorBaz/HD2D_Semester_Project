@@ -35,8 +35,15 @@ public class PlayerLocomotionState : PlayerBaseState
         psc.Controller.SetLockMode(psc.LockOnSystem.IsLocked);
 
         HandleMovement(psc);
-        HandleAnimationLocomotion(psc);
-        PlaySoundStep(psc);
+
+        float magnitude = psc.InputManager.MoveInput.magnitude;
+        
+        float animMagnitude = magnitude > psc.PlayerData.RunThreshold ? GameConstants.ANIM_MAGNITUDE_RUN :
+            magnitude > GameConstants.DEAD_STICK ? GameConstants.ANIM_MAGNITUDE_WALK :
+            GameConstants.ANIM_MAGNITUDE_IDLE;
+
+        blendInput = GetBlendTreeInput(psc);
+        psc.AnimationManager.HandleAnimation(animMagnitude, blendInput, psc.Controller.IsGrounded);
     }
 
     public override void FixedUpdateState(PlayerStateContext psc)

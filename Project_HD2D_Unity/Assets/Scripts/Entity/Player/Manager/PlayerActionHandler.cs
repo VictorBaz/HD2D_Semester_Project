@@ -196,6 +196,7 @@ public class PlayerActionHandler : MonoBehaviour
         lockOnSystem.TryLock();
         UiEvents.TriggerLockStateChanged(lockOnSystem.IsLocked);
         TryGiveSap();
+        
     }
 
     private void OnLockRelease()

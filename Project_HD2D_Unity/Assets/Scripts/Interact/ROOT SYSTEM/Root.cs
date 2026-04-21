@@ -32,14 +32,15 @@ public class Root : MonoBehaviour, IDataPersistence
     [Header("Root Visuals")]
     [SerializeField] private SplineContainer splineRoot;
     [SerializeField] private ArrayCurveSplineMesh splineScript;
-    [SerializeField] private Renderer renderer;
+    
+    private readonly List<Renderer> childRenderers = new List<Renderer>();
+    
     private MaterialPropertyBlock propBlockRoot;
     private static readonly int EnergyPropertyID = Shader.PropertyToID("_LineCount");
 
     #endregion
-    
-    #region Unity Lifecycle
 
+    #region Unity Lifecycle
     private void Awake()
     {
         InitFlaws();
@@ -51,6 +52,22 @@ public class Root : MonoBehaviour, IDataPersistence
     
     #region Init
 
+    private void InitPropBlocks()
+    {
+        propBlockRoot = new MaterialPropertyBlock();
+        RefreshChildRenderers();
+        SetEnergy(CurrentEnergy);
+    }
+
+    private void RefreshChildRenderers()
+    {
+        childRenderers.Clear();
+        if (splineScript == null) return;
+    
+        Renderer[] rs = splineScript.GetComponentsInChildren<Renderer>();
+        if (rs != null) childRenderers.AddRange(rs);
+    }
+    
     private void InitFlaws()
     {
         foreach (Flaw flaw in flaws) flaw.SetRoot(this);
@@ -59,12 +76,6 @@ public class Root : MonoBehaviour, IDataPersistence
     private void InitVatManagers()
     {
         foreach (VATManager vatManager in vatManagers) vatManager.SetRoot(this);
-    }
-
-    private void InitPropBlocks()
-    {
-        propBlockRoot = new MaterialPropertyBlock();
-        SetEnergy(CurrentEnergy);
     }
 
     #endregion
@@ -79,16 +90,19 @@ public class Root : MonoBehaviour, IDataPersistence
 
     private void UpdateVisualEnergy()
     {
-        if (renderer == null) return;
+        if (childRenderers.Count == 0) RefreshChildRenderers();
 
         if (propBlockRoot == null) 
             propBlockRoot = new MaterialPropertyBlock();
 
-        renderer.GetPropertyBlock(propBlockRoot);
+        foreach (Renderer r in childRenderers)
+        {
+            if (r == null) continue;
 
-        propBlockRoot.SetFloat(EnergyPropertyID, (float)currentEnergy);
-
-        renderer.SetPropertyBlock(propBlockRoot);
+            r.GetPropertyBlock(propBlockRoot);
+            propBlockRoot.SetFloat(EnergyPropertyID, currentEnergy);
+            r.SetPropertyBlock(propBlockRoot);
+        }
     }
 
     public void AddEnergy()
@@ -239,6 +253,8 @@ public class Root : MonoBehaviour, IDataPersistence
         }
         
         splineScript.Rebuild();
+        RefreshChildRenderers();
+        UpdateVisualEnergy(); 
     }
 
     private void CreateSplineConnection(Vector3 localStart, Vector3 worldEnd)

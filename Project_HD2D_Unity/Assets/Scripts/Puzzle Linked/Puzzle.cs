@@ -61,7 +61,7 @@ public class Puzzle : MonoBehaviour
         }
     }
 
-    private void HandleBossDeath()
+    private void HandleBossDeath(Parasite parasite)
     {
         if (_isAlreadyCompleted) return;
         

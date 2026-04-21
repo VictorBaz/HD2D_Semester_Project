@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 #endif
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Splines;
 
 public class Root : MonoBehaviour, IDataPersistence
@@ -37,7 +38,7 @@ public class Root : MonoBehaviour, IDataPersistence
     
     private MaterialPropertyBlock propBlockRoot;
     private static readonly int EnergyPropertyID = Shader.PropertyToID("_LineCount");
-
+    private readonly Dictionary<object, Renderer> branchMap = new Dictionary<object, Renderer>();
     #endregion
 
     #region Unity Lifecycle
@@ -47,6 +48,7 @@ public class Root : MonoBehaviour, IDataPersistence
         InitVatManagers();
         InitPropBlocks();
     }
+    
 
     #endregion
     
@@ -59,13 +61,60 @@ public class Root : MonoBehaviour, IDataPersistence
         SetEnergy(CurrentEnergy);
     }
 
+    
+
     private void RefreshChildRenderers()
     {
         childRenderers.Clear();
+        branchMap.Clear();
         if (splineScript == null) return;
-    
+
         Renderer[] rs = splineScript.GetComponentsInChildren<Renderer>();
-        if (rs != null) childRenderers.AddRange(rs);
+        if (rs == null || rs.Length == 0) return;
+
+        int index = 0;
+        
+        foreach (var flaw in flaws)
+        {
+            if (index < rs.Length) branchMap[flaw] = rs[index++];
+        }
+        
+        foreach (var vat in vatManagers)
+        {
+            if (index < rs.Length) branchMap[vat] = rs[index++];
+        }
+    
+        childRenderers.AddRange(rs);
+    }
+
+    public void UpdateVisualEnergy()
+    {
+        if (branchMap.Count == 0) RefreshChildRenderers();
+        if (propBlockRoot == null) propBlockRoot = new MaterialPropertyBlock();
+
+        foreach (var pair in branchMap)
+        {
+            Renderer r = pair.Value;
+            if (r == null) continue;
+
+            float energyToShow = (float)currentEnergy;
+
+            if (pair.Key is IRootLink link && IsBranchBlocked(link))
+            {
+                energyToShow = 0f;
+            }
+
+            r.GetPropertyBlock(propBlockRoot);
+            propBlockRoot.SetFloat(EnergyPropertyID, energyToShow);
+            r.SetPropertyBlock(propBlockRoot);
+        }
+    }
+
+    private bool IsBranchBlocked(IRootLink target)
+    {
+        if (target is Flaw flaw) return flaw.IsBlocked();
+        if (target is VATManager vat) return vat.IsBlocked();
+        return false;
     }
     
     private void InitFlaws()
@@ -88,22 +137,6 @@ public class Root : MonoBehaviour, IDataPersistence
         UpdateVisualEnergy();
     }
 
-    private void UpdateVisualEnergy()
-    {
-        if (childRenderers.Count == 0) RefreshChildRenderers();
-
-        if (propBlockRoot == null) 
-            propBlockRoot = new MaterialPropertyBlock();
-
-        foreach (Renderer r in childRenderers)
-        {
-            if (r == null) continue;
-
-            r.GetPropertyBlock(propBlockRoot);
-            propBlockRoot.SetFloat(EnergyPropertyID, currentEnergy);
-            r.SetPropertyBlock(propBlockRoot);
-        }
-    }
 
     public void AddEnergy()
     {

@@ -87,7 +87,7 @@ namespace Player.State
             float         elapsed        = 0f;
 
             bufferWindowOpen = true;
-
+            
             psc.VfxManagerPlayer.PlayFxCombo(comboIndex);
             
             float actionDuration = Mathf.Max(

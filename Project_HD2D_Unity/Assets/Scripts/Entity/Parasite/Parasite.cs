@@ -6,7 +6,7 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
 {
     
     #region Events
-    public event Action OnDeath; 
+    public event Action<Parasite> OnDeath; 
     #endregion
 
     #region Variables
@@ -14,10 +14,8 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     [SerializeField] private int life = 3;
     [SerializeField] private int lifeMax = 3;
 
-    [Header("Blocking")]
-    [SerializeField] private List<VATManager> blockedVats;
-
     [SerializeField] private EntityID entityID;
+    
     private PlayerStateContext _playerContext;
     private bool _isDead;
     #endregion
@@ -61,7 +59,7 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     {
         if (_isDead) return;
         _isDead = true;
-        OnDeath?.Invoke();
+        OnDeath?.Invoke(this);
         Destroy(gameObject);
     }
     #endregion

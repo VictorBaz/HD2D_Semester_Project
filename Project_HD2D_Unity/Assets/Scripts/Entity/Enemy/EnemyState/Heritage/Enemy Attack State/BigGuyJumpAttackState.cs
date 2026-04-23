@@ -9,9 +9,10 @@ public class BigGuyJumpAttackState : EnemyAttackState
         base.ExitState(actx);
         actx.AnimManager.ToggleRepulsiveCollider(false);
         actx.AnimManager.ToggleAttackCollider(false);
+        canTakeDamage = true;
     }
-
     
+
 
     protected override IEnumerator AttackSequence(EnemyContext actx)
     {
@@ -19,6 +20,8 @@ public class BigGuyJumpAttackState : EnemyAttackState
         
         //TODO ANTICIPATION TIME
         yield return new WaitForSeconds(0.5f);
+        
+        canTakeDamage = false;
         
         actx.Manager.ApplyMovementMode(true);
         

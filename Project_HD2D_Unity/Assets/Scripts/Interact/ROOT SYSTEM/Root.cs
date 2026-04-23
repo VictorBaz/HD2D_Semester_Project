@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 #endif
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Splines;
 
 public class Root : MonoBehaviour, IDataPersistence
@@ -23,26 +24,99 @@ public class Root : MonoBehaviour, IDataPersistence
     [SerializeField] private int currentEnergy = 0;
     [SerializeField] private int maxEnergy = 0;
     
-    public int CurrentEnergy => currentEnergy;
+    public int CurrentEnergy 
+    { 
+        get => currentEnergy;
+        private set => SetEnergy(value); 
+    }
     
     [Header("Root Visuals")]
     [SerializeField] private SplineContainer splineRoot;
     [SerializeField] private ArrayCurveSplineMesh splineScript;
-
-    #endregion
     
-    #region Unity Lifecycle
+    private readonly List<Renderer> childRenderers = new List<Renderer>();
+    
+    private MaterialPropertyBlock propBlockRoot;
+    private static readonly int EnergyPropertyID = Shader.PropertyToID("_LineCount");
+    private readonly Dictionary<object, Renderer> branchMap = new Dictionary<object, Renderer>();
+    #endregion
 
+    #region Unity Lifecycle
     private void Awake()
     {
         InitFlaws();
         InitVatManagers();
+        InitPropBlocks();
     }
+    
 
     #endregion
     
     #region Init
 
+    private void InitPropBlocks()
+    {
+        propBlockRoot = new MaterialPropertyBlock();
+        RefreshChildRenderers();
+        SetEnergy(CurrentEnergy);
+    }
+
+    
+
+    private void RefreshChildRenderers()
+    {
+        childRenderers.Clear();
+        branchMap.Clear();
+        if (splineScript == null) return;
+
+        Renderer[] rs = splineScript.GetComponentsInChildren<Renderer>();
+        if (rs == null || rs.Length == 0) return;
+
+        int index = 0;
+        
+        foreach (var flaw in flaws)
+        {
+            if (index < rs.Length) branchMap[flaw] = rs[index++];
+        }
+        
+        foreach (var vat in vatManagers)
+        {
+            if (index < rs.Length) branchMap[vat] = rs[index++];
+        }
+    
+        childRenderers.AddRange(rs);
+    }
+
+    public void UpdateVisualEnergy()
+    {
+        if (branchMap.Count == 0) RefreshChildRenderers();
+        if (propBlockRoot == null) propBlockRoot = new MaterialPropertyBlock();
+
+        foreach (var pair in branchMap)
+        {
+            Renderer r = pair.Value;
+            if (r == null) continue;
+
+            float energyToShow = (float)currentEnergy;
+
+            if (pair.Key is IRootLink link && IsBranchBlocked(link))
+            {
+                energyToShow = 0f;
+            }
+
+            r.GetPropertyBlock(propBlockRoot);
+            propBlockRoot.SetFloat(EnergyPropertyID, energyToShow);
+            r.SetPropertyBlock(propBlockRoot);
+        }
+    }
+
+    private bool IsBranchBlocked(IRootLink target)
+    {
+        if (target is Flaw flaw) return flaw.IsBlocked();
+        if (target is VATManager vat) return vat.IsBlocked();
+        return false;
+    }
+    
     private void InitFlaws()
     {
         foreach (Flaw flaw in flaws) flaw.SetRoot(this);
@@ -60,11 +134,13 @@ public class Root : MonoBehaviour, IDataPersistence
     private void SetEnergy(int energy)
     {
         currentEnergy = Mathf.Clamp(energy, 0, maxEnergy);
+        UpdateVisualEnergy();
     }
+
 
     public void AddEnergy()
     {
-        SetEnergy(currentEnergy + 1);
+        CurrentEnergy++; 
         
         foreach (var vatManager in vatManagers)
         {
@@ -74,12 +150,11 @@ public class Root : MonoBehaviour, IDataPersistence
 
     public void RemoveEnergy()
     {
-        SetEnergy(currentEnergy - 1);
+        CurrentEnergy--;
         
         foreach (var vatManager in vatManagers)
         {
             if (!vatManager.IsContainingEnergy()) continue;
-              
         }
     }
 
@@ -158,7 +233,7 @@ public class Root : MonoBehaviour, IDataPersistence
         
         if (myData != null)
         {
-            this.currentEnergy = myData.energy;
+            CurrentEnergy = myData.energy;
         }
     }
 
@@ -168,18 +243,20 @@ public class Root : MonoBehaviour, IDataPersistence
 
         if (index != -1)
         {
-            data.rootDataList[index].energy = this.currentEnergy;
+            data.rootDataList[index].energy = CurrentEnergy;
         }
         else
         {
             data.rootDataList.Add(new RootSaveData { 
                 id = entityID.ID, 
-                energy = this.currentEnergy 
+                energy = CurrentEnergy 
             });
         }
     }
 
     #endregion
+
+    #region Bake Root Visuals
 
     [ContextMenu("Bake Visuals")]
     public void BakeVisuals()
@@ -209,6 +286,8 @@ public class Root : MonoBehaviour, IDataPersistence
         }
         
         splineScript.Rebuild();
+        RefreshChildRenderers();
+        UpdateVisualEnergy(); 
     }
 
     private void CreateSplineConnection(Vector3 localStart, Vector3 worldEnd)
@@ -234,4 +313,8 @@ public class Root : MonoBehaviour, IDataPersistence
         
         splineScript.Rebuild();
     }
+
+    #endregion
+
+    
 }

@@ -31,6 +31,22 @@ public class VATManager : MonoBehaviour, IRootLink
         SetupBounds(); 
         targetRenderer.staticShadowCaster = false; 
     }
+    
+    private void OnEnable()
+    {
+        foreach (var blocker in blockers)
+        {
+            blocker.OnDeath += UpdateRootVisuals;
+        }
+    }
+
+    private void OnDisable()
+    {
+        foreach (var blocker in blockers)
+        {
+            blocker.OnDeath -= UpdateRootVisuals;
+        }
+    }
 
     protected virtual void Update() => UpdateVAT();
     #endregion
@@ -70,13 +86,9 @@ public class VATManager : MonoBehaviour, IRootLink
     #region Logic Checks
     public bool IsBlocked()
     {
-        if (blockers == null || blockers.Count == 0) return false;
-
-        foreach (var parasite in blockers)
-        {
-            if (parasite != null) return true; 
-        }
-        return false;
+        if (blockers == null) return false;
+        blockers.RemoveAll(p => p == null);
+        return blockers.Count > 0;
     }
     #endregion
 
@@ -101,6 +113,12 @@ public class VATManager : MonoBehaviour, IRootLink
     protected virtual void OnValueUpdated(float newValue) { }
     
     public Vector3 GetPositionRootVisuals() => rootVisual.position;
+
+    private void UpdateRootVisuals(Parasite parasite)
+    {
+        blockers.Remove(parasite);
+        root.UpdateVisualEnergy();
+    }
     #endregion
     
 }

@@ -27,9 +27,10 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     [Header("Core Components")]
     [SerializeField] protected Rigidbody             rb;
     [SerializeField] protected NavMeshAgent          agent;
-    [SerializeField] protected Collider              mainCollider;
+    [SerializeField] protected CapsuleCollider              mainCollider;
     [SerializeField] protected EnemyAnimationManager enemyAnimationManager;
     [SerializeField] protected LayerMask enemyLayerMask;
+    [SerializeField] protected LayerMask groundLayerMask;
     [SerializeField] protected Transform carryTransform;
     [SerializeField] protected VfxManagerEnemy VfxManager;
 
@@ -66,8 +67,10 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
             SpawnPosition  = transform.position,
             LastKnownPosition = transform.position,
             LayerMaskEnemy = gameObject.layer,
+            GroundLayerMask = groundLayerMask,
             Data           = enemyData.Init(),
-            VfxManager = VfxManager
+            VfxManager = VfxManager,
+            CapsuleCollider = mainCollider
         };
 
         InitializeCommonStates();

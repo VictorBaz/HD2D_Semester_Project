@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 #if UNITY_EDITOR
@@ -19,7 +20,7 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
 
     [Header("Root Visuals")]
     [SerializeField] private Transform rootVisual;
-    private bool _isCurrentlyTargeted; 
+    private bool _isCurrentlyTargeted;
     #endregion
 
     #region Unity Lifecycle
@@ -32,6 +33,23 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
             
             feedbackCanvasGroup.interactable = false;
             feedbackCanvasGroup.blocksRaycasts = false;
+        }
+
+    }
+
+    private void OnEnable()
+    {
+        foreach (var blocker in blockers)
+        {
+            blocker.OnDeath += UpdateRootVisuals;
+        }
+    }
+
+    private void OnDisable()
+    {
+        foreach (var blocker in blockers)
+        {
+            blocker.OnDeath -= UpdateRootVisuals;
         }
     }
 
@@ -88,9 +106,10 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     public bool IsBlocked()
     {
         if (blockers == null) return false;
-        foreach (var p in blockers) if (p != null) return true;
-        return false;
+        blockers.RemoveAll(p => p == null);
+        return blockers.Count > 0;
     }
+    
     #endregion
 
     #region Gizmos & Init
@@ -112,4 +131,10 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     #endregion
     
     public Vector3 GetPositionRootVisuals() => rootVisual.position;
+
+    private void UpdateRootVisuals(Parasite parasite)
+    {
+        blockers.Remove(parasite);
+        root.UpdateVisualEnergy();
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Script.Manager;
 using UnityEngine;
 
 public class PlayerParryState : PlayerBaseState
@@ -66,6 +67,8 @@ public class PlayerParryState : PlayerBaseState
     {
         var   data          = psc.PlayerData;
         float animDuration  = data.ParryAnimationClip.length;
+        
+        SoundManager.Instance?.PlaySfx(SoundType.Parry_Activate);
 
         perfectParryRoutine = psc.Controller.RunRoutine(PerfectParryRoutine(data,psc));
         

@@ -120,6 +120,7 @@ GameObject:
   - component: {fileID: 5517195392810808536}
   - component: {fileID: 2850999364860100435}
   - component: {fileID: 7639307828989827210}
+  - component: {fileID: 8691987281759648894}
   m_Layer: 9
   m_Name: Player Alpha
   m_TagString: Player
@@ -189,17 +190,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a716c8161fa609441bae5f308b9e85c8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerManager
-  inputManager: {fileID: 7459953298653950144}
   playerController: {fileID: 143367907673488275}
   animationManager: {fileID: 5493685116220184583}
+  inputManager: {fileID: 7459953298653950144}
   lockOnSystem: {fileID: 5517195392810808536}
   vfxManagerPlayer: {fileID: 2850999364860100435}
   cameraTransform: {fileID: 0}
   playerHead: {fileID: 1369301271926253614}
-  stateText: {fileID: 0}
   rb: {fileID: 4806072438962667457}
-  playerDataRaw: {fileID: 11400000, guid: 749d1e472313c2e40802217798818d4b, type: 2}
   playerCollider: {fileID: 2545271687510050259}
+  playerDataRaw: {fileID: 11400000, guid: 749d1e472313c2e40802217798818d4b, type: 2}
 --- !u!114 &143367907673488275
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -288,6 +288,22 @@ MonoBehaviour:
   m_IgnoreFromBuild: 1
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffff
+--- !u!114 &8691987281759648894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3143151671570077153}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98139298b2e6f2143995d5527d64af47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerActionHandler
+  inputManager: {fileID: 7459953298653950144}
+  playerController: {fileID: 143367907673488275}
+  animationManager: {fileID: 5493685116220184583}
+  lockOnSystem: {fileID: 5517195392810808536}
 --- !u!1 &3561949359964513721
 GameObject:
   m_ObjectHideFlags: 0
@@ -1097,6 +1113,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 2000121637177399522}
     m_Modifications:
     - target: {fileID: 1217764135595358033, guid: 384642a2b62d9454cadad829b0800028, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1217764135595358033, guid: 384642a2b62d9454cadad829b0800028, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1217764135595358033, guid: 384642a2b62d9454cadad829b0800028, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1217764135595358033, guid: 384642a2b62d9454cadad829b0800028, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.002
       objectReference: {fileID: 0}
@@ -1136,6 +1164,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1217764135595358033, guid: 384642a2b62d9454cadad829b0800028, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1840514939132107578, guid: 384642a2b62d9454cadad829b0800028, type: 3}
       propertyPath: m_Name
       value: PS_Dust3d
@@ -1143,6 +1175,14 @@ PrefabInstance:
     - target: {fileID: 5588478909396769909, guid: 384642a2b62d9454cadad829b0800028, type: 3}
       propertyPath: playOnAwake
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5588478909396769909, guid: 384642a2b62d9454cadad829b0800028, type: 3}
+      propertyPath: EmissionModule.rateOverDistance.scalar
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5588478909396769909, guid: 384642a2b62d9454cadad829b0800028, type: 3}
+      propertyPath: EmissionModule.rateOverDistance.minScalar
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -9,6 +9,18 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: cd0ba78f3b88d5847ad97dec92263c3e, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cd0ba78f3b88d5847ad97dec92263c3e, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cd0ba78f3b88d5847ad97dec92263c3e, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cd0ba78f3b88d5847ad97dec92263c3e, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.4
       objectReference: {fileID: 0}
@@ -48,6 +60,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: cd0ba78f3b88d5847ad97dec92263c3e, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: -7511558181221131132, guid: cd0ba78f3b88d5847ad97dec92263c3e, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -66,15 +82,15 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: cd0ba78f3b88d5847ad97dec92263c3e, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6563109768131156799}
+      addedObject: {fileID: 3419082423409899178}
   m_SourcePrefab: {fileID: 100100000, guid: cd0ba78f3b88d5847ad97dec92263c3e, type: 3}
 --- !u!1 &836758727851639338 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: cd0ba78f3b88d5847ad97dec92263c3e, type: 3}
   m_PrefabInstance: {fileID: 530767732673822587}
   m_PrefabAsset: {fileID: 0}
---- !u!65 &6563109768131156799
-BoxCollider:
+--- !u!135 &3419082423409899178
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -92,5 +108,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.0351322, y: 1.3325447, z: 1.9982798}
-  m_Center: {x: -0.19531374, y: -0.2871366, z: -0.806763}
+  m_Radius: 0.99913985
+  m_Center: {x: -0.2702983, y: -0.5159145, z: -0.8067716}

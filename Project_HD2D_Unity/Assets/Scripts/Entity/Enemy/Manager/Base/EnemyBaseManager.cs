@@ -33,6 +33,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     [SerializeField] protected LayerMask groundLayerMask;
     [SerializeField] protected Transform carryTransform;
     [SerializeField] protected VfxManagerEnemy VfxManager;
+    [SerializeField] protected SkinnedMeshRenderer mainRenderer;
 
     [Header("Triggers")]
     [SerializeField] protected Trigger viewRangeTrigger;
@@ -57,22 +58,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
     protected virtual void Awake()
     {
-        context = new EnemyContext
-        {
-            Manager        = this,
-            Agent          = agent,
-            Rb             = rb,
-            Movement       = GetComponent<EnemyMovement>(),
-            AnimManager    = enemyAnimationManager,
-            SpawnPosition  = transform.position,
-            LastKnownPosition = transform.position,
-            LayerMaskEnemy = gameObject.layer,
-            GroundLayerMask = groundLayerMask,
-            Data           = enemyData.Init(),
-            VfxManager = VfxManager,
-            CapsuleCollider = mainCollider
-        };
-
+        InitContext();
         InitializeCommonStates();
         isInitialized = true;
         
@@ -114,9 +100,25 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
     #region Initialization
 
-    protected virtual void InitData()
+    protected virtual void InitContext()
     {
-        
+        context = new EnemyContext
+        {
+            Manager        = this,
+            Agent          = agent,
+            Rb             = rb,
+            Movement       = GetComponent<EnemyMovement>(),
+            AnimManager    = enemyAnimationManager,
+            SpawnPosition  = transform.position,
+            LastKnownPosition = transform.position,
+            LayerMaskEnemy = gameObject.layer,
+            GroundLayerMask = groundLayerMask,
+            Data           = enemyData.Init(),
+            VfxManager = VfxManager,
+            CapsuleCollider = mainCollider,
+            MainRenderer = mainRenderer,
+            PropBlock = new MaterialPropertyBlock(),
+        };
     }
 
     protected virtual void InitializeCommonStates()

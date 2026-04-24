@@ -28,6 +28,9 @@ public class EnemyContext
     
     public CapsuleCollider CapsuleCollider;
     
+    public SkinnedMeshRenderer MainRenderer;
+    public MaterialPropertyBlock PropBlock;
+    
     public void TransitionTo(EnemyBaseState newBaseState) => Manager.ChangeState(newBaseState);
     
     public bool IsNavReady => Agent != null && Agent.isActiveAndEnabled && Agent.isOnNavMesh;
@@ -57,5 +60,20 @@ public class EnemyContext
         if (stoppingDistance != -1)  Agent.stoppingDistance = stoppingDistance;
     }
     
+    public void SetVisualParam(string propertyName, float value, int materialIndex = 0)
+    {
+        if (MainRenderer == null) return;
+        MainRenderer.GetPropertyBlock(PropBlock, materialIndex);
+        PropBlock.SetFloat(propertyName, value);
+        MainRenderer.SetPropertyBlock(PropBlock, materialIndex);
+    }
     
+    public float GetVisualParam(string propertyName, int materialIndex = 0)
+    {
+        if (MainRenderer == null) return 0f;
+
+        MainRenderer.GetPropertyBlock(PropBlock, materialIndex);
+
+        return PropBlock.GetFloat(propertyName);
+    }
 }

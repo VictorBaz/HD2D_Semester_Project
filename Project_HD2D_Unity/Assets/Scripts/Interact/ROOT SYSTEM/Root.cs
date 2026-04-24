@@ -108,6 +108,12 @@ public class Root : MonoBehaviour, IDataPersistence
             propBlockRoot.SetFloat(EnergyPropertyID, energyToShow);
             r.SetPropertyBlock(propBlockRoot);
         }
+        
+        // Icon sur les brèches
+        foreach (var flaw in flaws)
+        {
+            flaw.SetIcons(currentEnergy);
+        }
     }
 
     private bool IsBranchBlocked(IRootLink target)

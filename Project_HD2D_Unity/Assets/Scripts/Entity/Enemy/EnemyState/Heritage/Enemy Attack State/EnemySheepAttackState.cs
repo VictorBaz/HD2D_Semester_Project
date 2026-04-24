@@ -19,8 +19,6 @@ public class EnemySheepAttackState : EnemyAttackState
 
     protected override IEnumerator AttackSequence(EnemyContext actx)
     {
-        bool hasTriggeredShaderOff = false;
-        
         canTakeDamage = true;
         
         isAnticipationTime = true;

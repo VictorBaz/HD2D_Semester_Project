@@ -20,4 +20,7 @@ public static class GameConstants
     public const float VELOCITY_TO_SNAP_TO_0 = 0.1f;
 
     public const float CHECK_GROUND_RADIUS = 0.2f;
+    
+    public const string PARAM_SHEEP_SHADER_NAME = "_Pulse";
+    public const float PARAM_SHEEP_SHADER_MAX = 5f;
 }

@@ -225,6 +225,7 @@ public class PlayerActionHandler : MonoBehaviour
 
     private void TryTakeEnergy()
     {
+        if (pm.Context.PlayerData.Energy >= pm.Context.PlayerData.MaxEnergy) return;
         if (!TryGetEnergyTarget(out IEnergyLockable target)) return;
         if (!target.IsContainingEnergy()) return;
 

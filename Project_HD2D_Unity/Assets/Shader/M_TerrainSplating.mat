@@ -25,11 +25,15 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _AC_Diffuse:
-        m_Texture: {fileID: 2800000, guid: a9c4bbd839fe7a6419a9087da2db9bff, type: 3}
+        m_Texture: {fileID: 2800000, guid: b3f7438a2e58e9f4d8d637d3d69f1223, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _AC_Normal:
+        m_Texture: {fileID: 2800000, guid: 3378cc09363336b488462ac1d051cbe2, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _AC_SmoothHeight:
-        m_Texture: {fileID: 2800000, guid: 08068b9d34ecedb4eb24c2670382bf03, type: 3}
+        m_Texture: {fileID: 2800000, guid: 25d9142c0ed074d4bac73be8c47c310d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BC_Diffuse:
@@ -74,10 +78,12 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BC_TillingSize: 12.42
-    - _GC_TillingSize: 10
+    - _AC_TillingSize: 0.1
+    - _BC_TillingSize: 20
+    - _GC_TillingSize: 20
     - _NormalStrengh: 1
-    - _RC_TillingSize: 10
+    - _QueueControl: 0
+    - _RC_TillingSize: 20
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1

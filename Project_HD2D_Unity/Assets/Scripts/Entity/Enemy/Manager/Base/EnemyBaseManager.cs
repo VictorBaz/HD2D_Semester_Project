@@ -42,7 +42,6 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     [Header("Data & UI")]
     [SerializeField] protected EnemyData enemyData;
     [SerializeField] public    Slider    KoSlider;
-    [SerializeField] private Image feedbackRenderer;
 
     [Header("Patrol Settings")]
     public Transform[] patrolPoints; 
@@ -148,10 +147,6 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
         CurrentState?.ExitState(context);
         PreviousBaseState = CurrentState;
         CurrentState      = newState;
-        
-
-        if (feedbackRenderer != null && context.Data != null)
-            feedbackRenderer.sprite = context.Data.GetSpriteByStateName(CurrentState.Name);
         
         CurrentState.EnterState(context);
     }
@@ -409,7 +404,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     }
     
     #endregion
-
+ 
     #region UI need to SRP
 
     private void HandleDamageUI()

@@ -1,161 +1,126 @@
+using com.Victor.Utilities.Scripts;
 using UnityEngine;
 using UnityEngine.Audio;
+using System.Collections;
 
 namespace Script.Manager
 {
     public class SoundManager : MonoBehaviour
     {
         #region Fields
+        [Header("Audio Sources")]
+        [SerializeField] private AudioSource sfxSource;
+        [SerializeField] private AudioSource musicSource;
 
-        public AudioSource audioSource;
-        [SerializeField] private AudioSource musicAudioSource;
-
-        [Range(0,1)] public float masterVolume = 1f;
+        [Header("Settings")]
+        [Range(0, 1)] public float masterVolume = 1f;
         
-        [Header("Music BPM Settings")]
-        [SerializeField] private AudioClip gameMusic;
+        [Header("Audio Mixer")]
+        [SerializeField] private AudioMixerGroup musicMixerGroup;
+        [SerializeField] private AudioMixerGroup sfxMixerGroup;
         
-        [Header("Audio Mixer Group")]
-        [SerializeField] private AudioMixerGroup _audioMixerGroupMainMusic;
+        [Header("Data")]
+        [SerializeField] private AudioDataBank dataBank;
 
+        private Coroutine musicFadeCoroutine;
         #endregion
 
         #region Singleton
-
-        public static SoundManager instance;
+        public static SoundManager Instance;
         
-        #endregion
-
-        #region Unity LifeCycle
-
         private void Awake()
         {
-            if (instance == null)
+            if (Instance == null)
             {
-                instance = this;
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else Destroy(gameObject);
+
+            ConfigureSource(sfxSource, sfxMixerGroup);
+            ConfigureSource(musicSource, musicMixerGroup);
+        }
+        #endregion
+
+        private void ConfigureSource(AudioSource source, AudioMixerGroup group)
+        {
+            if (source == null) return;
+            source.spatialBlend = 0f; 
+            source.outputAudioMixerGroup = group;
+            source.playOnAwake = false;
+        }
+
+        #region Music Logic
+
+        public void PlayMusic(AudioClip newClip, float fadeDuration = 1.5f)
+        {
+            if (musicSource.clip == newClip && musicSource.isPlaying) return;
+
+            if (musicFadeCoroutine != null) StopCoroutine(musicFadeCoroutine);
+            musicFadeCoroutine = StartCoroutine(MusicTransitionCoroutine(newClip, fadeDuration));
+        }
+
+        private IEnumerator MusicTransitionCoroutine(AudioClip newClip, float duration)
+        {
+            if (musicSource.isPlaying)
+            {
+                yield return StartCoroutine(musicSource.FadeVolume(0, duration / 2));
+            }
+
+            musicSource.Stop();
+            musicSource.clip = newClip;
+            musicSource.volume = 0;
+            musicSource.Play();
+
+            yield return StartCoroutine(musicSource.FadeVolume(masterVolume, duration / 2));
+            musicFadeCoroutine = null;
+        }
+        #endregion
+
+        #region SFX Logic
+
+        public void PlaySfx(SoundType type)
+        {
+            var entry = dataBank.GetSFX(type);
+            if (entry == null || entry.clip == null) return;
+
+            AudioSource targetSource = sfxSource;
+
+            if (entry.useRandomPitch)
+            {
+                targetSource.PlayWithRandomPitch(entry.clip, 
+                    entry.pitch - entry.pitchRandomness, 
+                    entry.pitch + entry.pitchRandomness);
             }
             else
             {
-                Destroy(gameObject);
+                targetSource.pitch = entry.pitch;
+                targetSource.PlayOneShot(entry.clip, entry.volume * masterVolume);
             }
         }
-        
-        private void Start()
-        {
-            SetupMusicAudioSource();
-            audioSource.volume = masterVolume; 
-        }
 
+        public GameObject PlayTempAudio(AudioClip clip, string name, float volume = 1f)
+        {
+            GameObject go = new GameObject("TempAudio_" + name);
+            go.transform.SetParent(transform);
+            
+            AudioSource source = go.AddComponent<AudioSource>();
+            ConfigureSource(source, sfxMixerGroup);
+            
+            source.clip = clip;
+            source.volume = volume * masterVolume;
+            source.Play();
+
+            Destroy(go, clip.length / source.pitch);
+            return go;
+        }
         #endregion
 
-        #region Music Setup
-
-        private void SetupMusicAudioSource()
-        {
-            if (musicAudioSource == null)
-            {
-                GameObject musicObject = new GameObject("MusicAudioSource");
-                musicObject.transform.SetParent(transform);
-                musicAudioSource = musicObject.AddComponent<AudioSource>();
-            }
-
-            musicAudioSource.loop = true;
-            musicAudioSource.playOnAwake = false;
-            musicAudioSource.volume = masterVolume;
-            musicAudioSource.outputAudioMixerGroup = _audioMixerGroupMainMusic;
-        }
-
-        public void StartGameMusic()
-        {
-            if (gameMusic != null && musicAudioSource != null)
-            {
-                musicAudioSource.clip = gameMusic;
-                musicAudioSource.Play();
-            }
-        }
-
-        public void StopGameMusic()
-        {
-            if (musicAudioSource != null && musicAudioSource.isPlaying)
-            {
-                musicAudioSource.Stop();
-            }
-        }
-
-        public void PauseGameMusic()
-        {
-            if (musicAudioSource != null && musicAudioSource.isPlaying)
-            {
-                musicAudioSource.Pause();
-            }
-        }
-
-        public void ResumeGameMusic()
-        {
-            if (musicAudioSource != null && !musicAudioSource.isPlaying)
-            {
-                musicAudioSource.UnPause();
-            }
-        }
-        
-        #endregion
-
-        #region Sound Methods
-
-        public void PlaySoundWithAudioSource(AudioSource source, AudioClip clip)
-        {
-            if (clip == null)
-            {
-                Debug.LogError("The audioClip you tried to play is null");
-                return;
-            }
-            source.PlayOneShot(clip);
-        }
-        
-        public void PlayMusicOneShot(AudioClip _audioClip)
-        {
-            if (_audioClip == null)
-            {
-                Debug.LogError("The audioClip you tried to play is null");
-                return;
-            }
-            audioSource.PlayOneShot(_audioClip);
-        }
-        
-        
         public void UpdateMasterVolume(float volume)
         {
             masterVolume = volume;
-            audioSource.volume = masterVolume;
-            if (musicAudioSource != null)
-            {
-                musicAudioSource.volume = masterVolume;
-            }
+            if (musicSource != null) musicSource.volume = masterVolume;
+            if (sfxSource != null) sfxSource.volume = masterVolume;
         }
-
-        public GameObject InitialisationAudioObjectDestroyAtEnd(AudioClip audioClipTarget, bool looping, 
-            bool playingAwake, float volumeSound, string _name)
-        {
-            GameObject emptyObject = new GameObject(_name);
-            emptyObject.transform.SetParent(gameObject.transform);
-
-            AudioSource audioSourceGeneral = emptyObject.AddComponent<AudioSource>();
-            audioSourceGeneral.clip = audioClipTarget;
-            audioSourceGeneral.loop = looping;
-            audioSourceGeneral.playOnAwake = playingAwake;
-            audioSourceGeneral.volume = volumeSound * masterVolume;
-            audioSourceGeneral.Play();
-            
-            if (!looping)
-            {
-                Destroy(emptyObject, audioClipTarget.length);
-            }
-            
-            return emptyObject;
-        }
-
-        #endregion
-
-        
     }
 }

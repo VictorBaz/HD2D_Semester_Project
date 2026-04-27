@@ -14,6 +14,7 @@ public class EnemyChaseState : EnemyBaseState
         actx.ResumeAgent();
         actx.UpdateAgentSpeed(actx.Data.ChaseSpeed, actx.Data.Acceleration, actx.Data.StoppingDistance);
         actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_RUN);
+        actx.VfxManager.PlayDust(true);
     }
 
     public override void UpdateState(EnemyContext actx)
@@ -34,6 +35,9 @@ public class EnemyChaseState : EnemyBaseState
             actx.SetDestination(actx.Target.transform.position);
     }
 
-    public override void ExitState(EnemyContext actx) { }
+    public override void ExitState(EnemyContext actx)
+    {
+        actx.VfxManager.PlayDust(false);
+    }
     
 }

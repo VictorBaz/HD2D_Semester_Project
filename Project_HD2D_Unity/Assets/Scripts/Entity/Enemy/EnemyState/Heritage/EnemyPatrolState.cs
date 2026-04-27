@@ -18,6 +18,8 @@ public class EnemyPatrolState : EnemyBaseState
 
         if (actx.Manager.patrolPoints.Length > 0)
             actx.SetDestination(actx.Manager.patrolPoints[currentPointIndex].position);
+        
+        actx.VfxManager.PlayDust(true);
     }
 
     public override void UpdateState(EnemyContext actx)
@@ -39,7 +41,10 @@ public class EnemyPatrolState : EnemyBaseState
         }
     }
 
-    public override void ExitState(EnemyContext actx) { }
+    public override void ExitState(EnemyContext actx)
+    {
+        actx.VfxManager.PlayDust(false);
+    }
 
     private void UpdateMovementAnimation(EnemyContext actx)
     {

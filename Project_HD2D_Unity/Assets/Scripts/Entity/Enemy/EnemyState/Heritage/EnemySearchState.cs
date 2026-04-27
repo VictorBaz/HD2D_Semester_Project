@@ -21,6 +21,7 @@ public class EnemySearchState : EnemyBaseState
         actx.ResumeAgent();
         MoveToRandomPoint(actx);
         actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_WALK);
+        actx.VfxManager.PlayDust(true);
     }
 
     public override void UpdateState(EnemyContext actx)
@@ -40,7 +41,10 @@ public class EnemySearchState : EnemyBaseState
             actx.TransitionTo(actx.Manager.GoToSpawnState);
     }
 
-    public override void ExitState(EnemyContext actx) { }
+    public override void ExitState(EnemyContext actx)
+    {
+        actx.VfxManager.PlayDust(false);
+    }
 
     private void MoveToRandomPoint(EnemyContext actx)
     {

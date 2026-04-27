@@ -1,20 +1,31 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class EnemySheepAttackState : EnemyAttackState
 {
     private const float MULTIPLY_ANTICIPATION_TIME = 2f;
+    private float chargedTime;
+    private Coroutine shaderRoutine;
 
     public override void EnterState(EnemyContext actx)
     {
         base.EnterState(actx);
+        
         actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_IDLE);
+
+        chargedTime = actx.Data.GetAnimationCLipLengthChargeAttack() / MULTIPLY_ANTICIPATION_TIME;
     }
 
     protected override IEnumerator AttackSequence(EnemyContext actx)
     {
+        canTakeDamage = true;
+        
         isAnticipationTime = true;
         var data = actx.Data;
+        
+        if (shaderRoutine != null) actx.Manager.StopCoroutine(shaderRoutine);
+        shaderRoutine = actx.Manager.StartCoroutine(ShaderSheepOn(actx));
 
         actx.AnimManager.Animator.speed = MULTIPLY_ANTICIPATION_TIME;
         
@@ -27,6 +38,11 @@ public class EnemySheepAttackState : EnemyAttackState
         actx.AnimManager.Animator.speed = 1;
         
         actx.AnimManager.TriggerAttack();
+
+        if (shaderRoutine != null) actx.Manager.StopCoroutine(shaderRoutine);
+        shaderRoutine = actx.Manager.StartCoroutine(ShaderSheepOff(actx));
+        
+        canTakeDamage = false;
 
         CanBeParry = true;
         
@@ -55,7 +71,6 @@ public class EnemySheepAttackState : EnemyAttackState
 
             yield return null;
         }
-
         
         yield return new WaitForFixedUpdate();
         
@@ -63,18 +78,49 @@ public class EnemySheepAttackState : EnemyAttackState
         
         yield return new WaitForFixedUpdate();
         
+        canTakeDamage = true;
+        
         CanBeParry = false;
 
         isCooldown = true;
         yield return new WaitForSeconds(data.AttackCooldown);
+        
         isCooldown = false;
+        
         attackRoutine = null;
     }
 
     public override void ExitState(EnemyContext actx)
     {
         base.ExitState(actx);
+        if (shaderRoutine != null) actx.Manager.StopCoroutine(shaderRoutine);
         actx.AnimManager.ToggleAttackCollider(false);
         actx.AnimManager.Animator.speed = 1;
+        actx.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME,0,1);
+    }
+
+    private IEnumerator ShaderSheepOn(EnemyContext actx) => ShaderSheepUpdateIe
+        (actx,chargedTime,GameConstants.PARAM_SHEEP_SHADER_MAX);
+    
+    private IEnumerator ShaderSheepOff(EnemyContext actx) => ShaderSheepUpdateIe
+        (actx,0.2f,0);
+    
+    private IEnumerator ShaderSheepUpdateIe(EnemyContext actx, float time, float targetValue)
+    {
+        float elapsed = 0f;
+    
+        float startValue = actx.GetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME, 1); 
+
+        while (elapsed < time)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / time;
+        
+            float v = Mathf.Lerp(startValue, targetValue, t);
+            actx.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME, v, 1);
+            yield return null;
+        }
+    
+        actx.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME, targetValue, 1);
     }
 }

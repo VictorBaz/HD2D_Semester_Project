@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic; 
 using UnityEngine;
 
-public class Parasite : MonoBehaviour, IDamageable
+public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
 {
     
     #region Events
-    public event Action OnDeath; 
+    public event Action<Parasite> OnDeath; 
     #endregion
 
     #region Variables
@@ -14,9 +14,8 @@ public class Parasite : MonoBehaviour, IDamageable
     [SerializeField] private int life = 3;
     [SerializeField] private int lifeMax = 3;
 
-    [Header("Blocking")]
-    [SerializeField] private List<VATManager> blockedVats;
-
+    [SerializeField] private EntityID entityID;
+    
     private PlayerStateContext _playerContext;
     private bool _isDead;
     #endregion
@@ -51,6 +50,7 @@ public class Parasite : MonoBehaviour, IDamageable
     private void ApplyDamage()
     {
         _playerContext.PlayerData.RemoveSap();
+        UiEvents.TriggerSapChanged(_playerContext.PlayerData.Sap);
         life--;
         if (life <= 0) Die();
     }
@@ -59,8 +59,45 @@ public class Parasite : MonoBehaviour, IDamageable
     {
         if (_isDead) return;
         _isDead = true;
-        OnDeath?.Invoke();
+        OnDeath?.Invoke(this);
         Destroy(gameObject);
     }
+    #endregion
+
+    #region Save
+
+    public void LoadData(GameData data)
+    {
+        ParasiteSaveData myData = data.parasiteDataList.Find(x => x.id == entityID.ID);
+        if (myData != null)
+        {
+            this.life = myData.currentLife;
+            this._isDead = myData.isDead;
+
+            if (_isDead)
+            {
+                gameObject.SetActive(false); 
+            }
+        }
+    }
+
+    public void SaveData(ref GameData data)
+    {
+        int index = data.parasiteDataList.FindIndex(x => x.id == entityID.ID);
+        if (index != -1)
+        {
+            data.parasiteDataList[index].currentLife = this.life;
+            data.parasiteDataList[index].isDead = this._isDead;
+        }
+        else
+        {
+            data.parasiteDataList.Add(new ParasiteSaveData { 
+                id = entityID.ID, 
+                currentLife = this.life, 
+                isDead = this._isDead 
+            });
+        }
+    }
+
     #endregion
 }

@@ -16,6 +16,9 @@ public class VATManager : MonoBehaviour, IRootLink
     [Header("Blocking")]
     [SerializeField] private List<Parasite> blockers; 
 
+    [Header("Root Visuals")]
+    [SerializeField] private Transform rootVisual;
+    
     protected float currentNormalizedValue = 0f;
     protected MaterialPropertyBlock propBlock;
     protected Root root;
@@ -27,6 +30,22 @@ public class VATManager : MonoBehaviour, IRootLink
         propBlock = new MaterialPropertyBlock();
         SetupBounds(); 
         targetRenderer.staticShadowCaster = false; 
+    }
+    
+    private void OnEnable()
+    {
+        foreach (var blocker in blockers)
+        {
+            blocker.OnDeath += UpdateRootVisuals;
+        }
+    }
+
+    private void OnDisable()
+    {
+        foreach (var blocker in blockers)
+        {
+            blocker.OnDeath -= UpdateRootVisuals;
+        }
     }
 
     protected virtual void Update() => UpdateVAT();
@@ -67,13 +86,9 @@ public class VATManager : MonoBehaviour, IRootLink
     #region Logic Checks
     public bool IsBlocked()
     {
-        if (blockers == null || blockers.Count == 0) return false;
-
-        foreach (var parasite in blockers)
-        {
-            if (parasite != null) return true; 
-        }
-        return false;
+        if (blockers == null) return false;
+        blockers.RemoveAll(p => p == null);
+        return blockers.Count > 0;
     }
     #endregion
 
@@ -96,7 +111,14 @@ public class VATManager : MonoBehaviour, IRootLink
     }
 
     protected virtual void OnValueUpdated(float newValue) { }
-    #endregion
     
+    public Vector3 GetPositionRootVisuals() => rootVisual.position;
+
+    private void UpdateRootVisuals(Parasite parasite)
+    {
+        blockers.Remove(parasite);
+        root.UpdateVisualEnergy();
+    }
+    #endregion
     
 }

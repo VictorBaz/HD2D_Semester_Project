@@ -22,6 +22,7 @@ public class EnemyHitState : EnemyBaseState
         }
 
         timer = actx.Data.StunDuration;
+        actx.VfxManager.PlayHitVfx();
     }
 
     public override void UpdateState(EnemyContext actx)

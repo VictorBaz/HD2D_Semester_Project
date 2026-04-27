@@ -23,6 +23,9 @@ public class SpriteBillboard : MonoBehaviour
 
     private void Awake()
     {
+        if (!cameraTransform)
+            if (Camera.main != null)
+                cameraTransform = Camera.main.transform;
         originalRotation = cameraTransform.rotation.eulerAngles;
     }
     

@@ -8,5 +8,11 @@ public class EnemySheepManager : EnemyBaseManager
     {
         AttackState = new EnemySheepAttackState();
     }
-    
+
+    protected override void Start()
+    {
+        base.Start();
+        
+        context.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME,0,1);
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Script.Manager;
 using UnityEngine;
 
 namespace Player.State
@@ -52,8 +53,9 @@ namespace Player.State
             Vector3 dashDirection = psc.PlayerTransform.forward;
 
             CameraEvents.CameraShake();
+            SoundManager.Instance?.PlaySfx(SoundType.Dash);
             
-            psc.VfxManager.ToggleDashTrail(true);
+            psc.VfxManagerPlayer.ToggleDashTrail(true);
             
             while (elapsed < psc.PlayerData.DashDuration)
             {
@@ -85,7 +87,7 @@ namespace Player.State
             
             DetermineState(psc);
             
-            psc.VfxManager.ToggleDashTrail(false);
+            psc.VfxManagerPlayer.ToggleDashTrail(false);
         }
     }
 }

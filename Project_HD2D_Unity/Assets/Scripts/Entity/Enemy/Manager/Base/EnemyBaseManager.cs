@@ -27,10 +27,13 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     [Header("Core Components")]
     [SerializeField] protected Rigidbody             rb;
     [SerializeField] protected NavMeshAgent          agent;
-    [SerializeField] protected Collider              mainCollider;
+    [SerializeField] protected CapsuleCollider              mainCollider;
     [SerializeField] protected EnemyAnimationManager enemyAnimationManager;
     [SerializeField] protected LayerMask enemyLayerMask;
+    [SerializeField] protected LayerMask groundLayerMask;
     [SerializeField] protected Transform carryTransform;
+    [SerializeField] protected VfxManagerEnemy VfxManager;
+    [SerializeField] protected SkinnedMeshRenderer mainRenderer;
 
     [Header("Triggers")]
     [SerializeField] protected Trigger viewRangeTrigger;
@@ -48,26 +51,14 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     protected EnemyContext context;
     protected bool         isCarried;
     private   bool         isInitialized;
-
-
+    
     public event Action OnTakeDamage;
+    
     #region Unity Lifecycle
 
     protected virtual void Awake()
     {
-        context = new EnemyContext
-        {
-            Manager        = this,
-            Agent          = agent,
-            Rb             = rb,
-            Movement       = GetComponent<EnemyMovement>(),
-            AnimManager    = enemyAnimationManager,
-            SpawnPosition  = transform.position,
-            LastKnownPosition = transform.position,
-            LayerMaskEnemy = gameObject.layer,
-            Data           = enemyData.Init(),
-        };
-
+        InitContext();
         InitializeCommonStates();
         isInitialized = true;
         
@@ -109,9 +100,25 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
     #region Initialization
 
-    protected virtual void InitData()
+    protected virtual void InitContext()
     {
-        
+        context = new EnemyContext
+        {
+            Manager        = this,
+            Agent          = agent,
+            Rb             = rb,
+            Movement       = GetComponent<EnemyMovement>(),
+            AnimManager    = enemyAnimationManager,
+            SpawnPosition  = transform.position,
+            LastKnownPosition = transform.position,
+            LayerMaskEnemy = gameObject.layer,
+            GroundLayerMask = groundLayerMask,
+            Data           = enemyData.Init(),
+            VfxManager = VfxManager,
+            CapsuleCollider = mainCollider,
+            MainRenderer = mainRenderer,
+            PropBlock = new MaterialPropertyBlock(),
+        };
     }
 
     protected virtual void InitializeCommonStates()
@@ -347,13 +354,13 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
             if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
             {
-                transform.position = targetPosition;
+                //transform.position = targetPosition;
                 agent.enabled = true;
             }
             else
             {
                 agent.enabled = true;
-                agent.Warp(targetPosition);
+                //agent.Warp(targetPosition);
             }
         }
     }

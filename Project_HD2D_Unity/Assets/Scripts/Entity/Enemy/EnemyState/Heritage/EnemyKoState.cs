@@ -39,7 +39,7 @@ public class EnemyKoState : EnemyBaseState
         {
             var stateInfo = actx.AnimManager.GetCurrentState(0);
 
-            if (stateInfo.normalizedTime >= 0.8f && !actx.AnimManager.Animator.IsInTransition(0))
+            if (stateInfo.normalizedTime >= 0.7f && !actx.AnimManager.Animator.IsInTransition(0))
             {
                 actx.AnimManager.HandleKo(true, true);
                 hasTransitionedToLoop = true;
@@ -66,10 +66,7 @@ public class EnemyKoState : EnemyBaseState
             return;
         }
 
-        Vector3 rayOrigin  = actx.Manager.transform.position + Vector3.up * 0.5f;
-        bool    isOnGround = Physics.Raycast(rayOrigin, Vector3.down, 0.7f, actx.LayerMaskEnemy);
-
-        if (!isOnGround)
+        if (!actx.Manager.IsGrounded())
             actx.TransitionTo(actx.Manager.DropState);
         else
             actx.TransitionTo(actx.Manager.GoToSpawnState);

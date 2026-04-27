@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Script.Manager;
 using UnityEngine;
 
 public class PlayerParryState : PlayerBaseState
@@ -28,7 +29,7 @@ public class PlayerParryState : PlayerBaseState
         float totalDuration = data.ParryAnimationClip.length;
         float pivot = data.PerfectParryStartOffset + (data.PerfectParryDuration * 0.5f);
     
-        psc.VfxManager.PlayParryVfx(totalDuration, pivot);
+        psc.VfxManagerPlayer.PlayParryVfx(totalDuration, pivot);
         
         
         if (parryRoutine != null) psc.Controller.StopCoroutine(parryRoutine);
@@ -55,7 +56,7 @@ public class PlayerParryState : PlayerBaseState
         psc.AnimationManager.SetParry(false);
         psc.Controller.SetGravity(true);
         
-        psc.VfxManager.CancelShield();
+        psc.VfxManagerPlayer.CancelShield();
     }
 
     public override void UpdateState(PlayerStateContext psc) { }
@@ -66,6 +67,8 @@ public class PlayerParryState : PlayerBaseState
     {
         var   data          = psc.PlayerData;
         float animDuration  = data.ParryAnimationClip.length;
+        
+        SoundManager.Instance?.PlaySfx(SoundType.Parry_Activate);
 
         perfectParryRoutine = psc.Controller.RunRoutine(PerfectParryRoutine(data,psc));
         

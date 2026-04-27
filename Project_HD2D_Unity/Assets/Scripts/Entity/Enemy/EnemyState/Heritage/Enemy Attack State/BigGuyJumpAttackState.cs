@@ -3,30 +3,35 @@ using UnityEngine;
 
 public class BigGuyJumpAttackState : EnemyAttackState
 {
-    private bool canTakeDamage;
-
     public override void EnterState(EnemyContext actx)
     {
-        canTakeDamage = false;
         base.EnterState(actx);
+        actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_IDLE);
     }
 
     public override void ExitState(EnemyContext actx)
     {
         base.ExitState(actx);
-        canTakeDamage = true;
         actx.AnimManager.ToggleRepulsiveCollider(false);
         actx.AnimManager.ToggleAttackCollider(false);
+        
+        actx.Rb.constraints &= ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ);
+        actx.AnimManager.Animator.speed = 1f;
+        
+        canTakeDamage = true;
     }
+    
 
-    public override bool CanTakeDamage => canTakeDamage;
 
     protected override IEnumerator AttackSequence(EnemyContext actx)
     {
         var data = actx.Data;
         
-        //TODO ANTICIPATION TIME
-        yield return new WaitForSeconds(0.5f);
+        actx.AnimManager.TriggerCharge();
+        
+        yield return new WaitForSeconds(data.GetAnimationCLipLengthChargeAttack());
+        
+        canTakeDamage = false;
         
         actx.Manager.ApplyMovementMode(true);
         
@@ -35,6 +40,8 @@ public class BigGuyJumpAttackState : EnemyAttackState
         CanBeParry = false;
 
         actx.AnimManager.ToggleRepulsiveCollider(true);
+        
+        actx.AnimManager.TriggerAttack();
         
         Vector3 jumpDirection = Vector3.up * data.AttackJumpForce;
         
@@ -77,6 +84,7 @@ public class BigGuyJumpAttackState : EnemyAttackState
         CameraEvents.CameraShake();
         actx.AnimManager.ToggleAttackCollider(true); 
         actx.Manager.StartCoroutine(DisableHitboxLate(actx, actx.Data.ShockwaveActiveDuration));
+        actx.VfxManager.TriggerAttackVfx();
     }
 
     private IEnumerator DisableHitboxLate(EnemyContext actx, float delay)

@@ -8,6 +8,7 @@ public class LockOnSystem : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private Transform playerTransform;
+    [SerializeField] private LineRenderer lockLink;
 
     private PlayerDataInstance playerData;
     
@@ -19,6 +20,20 @@ public class LockOnSystem : MonoBehaviour
     private Quaternion targetRotation;
 
     #endregion
+
+    private void Update()
+    {
+        if (CurrentTarget != null)
+        {
+            lockLink.enabled = true;
+            lockLink.SetPosition(0, playerTransform.position);
+            lockLink.SetPosition(1, CurrentTarget.GetLockTransform().position);
+        }
+        else
+        {
+            lockLink.enabled = false;
+        }
+    }
 
     public void ToggleLock()
     {

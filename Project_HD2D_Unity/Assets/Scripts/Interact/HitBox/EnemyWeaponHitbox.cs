@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Script.Manager;
 using UnityEngine;
 
 public class EnemyWeaponHitbox : BaseHitbox
@@ -23,10 +24,12 @@ public class EnemyWeaponHitbox : BaseHitbox
 
         if (target.IsInParryWindowPerfect())
         {
+            SoundManager.Instance?.PlaySfx(SoundType.Parry_Perfect);
             manager.HandlePerfectParry();
         }
         else if (target.IsInParryWindow())
         {
+            SoundManager.Instance?.PlaySfx(SoundType.Parry_Hit);
             manager.TakeDamage(damage, -transform.forward);
             alreadyHitTargets.Add(target);
         }

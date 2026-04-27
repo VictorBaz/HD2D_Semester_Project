@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using Script.Manager;
 
 public class LockOnSystem : MonoBehaviour
 {
@@ -75,18 +76,20 @@ public class LockOnSystem : MonoBehaviour
         if (lockableTargets.Count == 0) return;
         CurrentTarget = GetBestLockableTarget(lockableTargets);
         vfxManagerPlayer.LinkVfx(true,CurrentTarget.GetLockTransform());
+        SoundManager.Instance?.PlaySfx(SoundType.Energy_activation);
+        SoundManager.Instance?.PlayLoopingSfx(SoundType.Fissure_Lock);
     }
 
     public void Unlock()
     {
         CurrentTarget = null;
         vfxManagerPlayer.LinkVfx(false);
+        SoundManager.Instance?.PlaySfx(SoundType.Energy_desactivation);
+        SoundManager.Instance?.StopLoopingSfx(SoundType.Fissure_Lock);
     }
 
     #endregion
-
     
-
     #region Lock algorithm
 
     private List<ILockable> FindLockableTargets()
@@ -97,7 +100,6 @@ public class LockOnSystem : MonoBehaviour
 
         foreach (Collider collider in colliders)
         {
-            print(collider.name);
             ILockable lockable = collider.GetComponent<ILockable>();
 
             if (lockable != null && lockable.IsLockable())
@@ -172,8 +174,5 @@ public class LockOnSystem : MonoBehaviour
     }
 
     #endregion
-
-    
-
     
 }

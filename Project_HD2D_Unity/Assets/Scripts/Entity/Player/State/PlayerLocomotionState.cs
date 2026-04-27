@@ -12,6 +12,7 @@ public class PlayerLocomotionState : PlayerBaseState
     public override bool CanCarry  => true;
     public override bool CanParry  => true;
     private float nextFootstepTime = 0;
+    private bool isRightFeetSound;
 
     public override bool CanJump(PlayerStateContext psc) => !psc.LockOnSystem.IsLocked;
 
@@ -44,6 +45,7 @@ public class PlayerLocomotionState : PlayerBaseState
 
         blendInput = GetBlendTreeInput(psc);
         psc.AnimationManager.HandleAnimation(animMagnitude, blendInput, psc.Controller.IsGrounded);
+        PlaySoundStep(psc);
     }
 
     public override void FixedUpdateState(PlayerStateContext psc)
@@ -87,7 +89,7 @@ public class PlayerLocomotionState : PlayerBaseState
         return GameConstants.ANIM_MAGNITUDE_IDLE;
     }
 
-    private bool isRightFeetSound;
+    
     private void PlaySoundStep(PlayerStateContext psc)
     {
         if (psc.InputManager.MoveInput.magnitude < GameConstants.DEAD_STICK) return;

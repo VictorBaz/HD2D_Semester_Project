@@ -18,8 +18,12 @@ public class LockOnSystem : MonoBehaviour
     private List<ILockable> lockableTargets = new List<ILockable>();
 
     private Quaternion targetRotation;
+    
+    private VfxManagerPlayer vfxManagerPlayer;
 
     #endregion
+
+    #region Unity LifeCycle
 
     private void Update()
     {
@@ -35,31 +39,23 @@ public class LockOnSystem : MonoBehaviour
         }
     }
 
-    public void ToggleLock()
-    {
+    #endregion
 
-        if (IsLocked)
-        {
-            Unlock();
-        }
-        else
-        {
-            TryLock();
-        }
+    #region Init
+
+    public void InitData(PlayerDataInstance data)
+    {
+        playerData = data;
     }
 
-    /*public void HandleRotationLock(Rigidbody rb)
+    public void InitManager(PlayerStateContext psc)
     {
-        if (!IsLocked) return;
-        
-        if (!IsTargetValid(CurrentTarget))
-        {
-            Unlock();
-            return;
-        }
-        
-        rb.MoveRotation(targetRotation);
-    }*/
+        vfxManagerPlayer = psc.VfxManagerPlayer;
+    }
+
+    #endregion
+
+    #region Lock Behaviour
 
     public void CalculLockRotation()
     {
@@ -87,17 +83,29 @@ public class LockOnSystem : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Lock Gates
+
     public void TryLock()
     {
         lockableTargets = FindLockableTargets();
         if (lockableTargets.Count == 0) return;
         CurrentTarget = GetBestLockableTarget(lockableTargets);
+        vfxManagerPlayer.LinkVfx(true,CurrentTarget.GetLockTransform());
     }
 
     public void Unlock()
     {
         CurrentTarget = null;
+        vfxManagerPlayer.LinkVfx(false);
     }
+
+    #endregion
+
+    
+
+    #region Lock algorithm
 
     private List<ILockable> FindLockableTargets()
     {
@@ -107,6 +115,7 @@ public class LockOnSystem : MonoBehaviour
 
         foreach (Collider collider in colliders)
         {
+            print(collider.name);
             ILockable lockable = collider.GetComponent<ILockable>();
 
             if (lockable != null && lockable.IsLockable())
@@ -180,8 +189,9 @@ public class LockOnSystem : MonoBehaviour
         return true; 
     }
 
-    public void InitData(PlayerDataInstance data)
-    {
-        playerData = data;
-    }
+    #endregion
+
+    
+
+    
 }

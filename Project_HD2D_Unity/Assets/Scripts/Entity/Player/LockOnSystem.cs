@@ -23,24 +23,6 @@ public class LockOnSystem : MonoBehaviour
 
     #endregion
 
-    #region Unity LifeCycle
-
-    private void Update()
-    {
-        if (CurrentTarget != null)
-        {
-            lockLink.enabled = true;
-            lockLink.SetPosition(0, playerTransform.position);
-            lockLink.SetPosition(1, CurrentTarget.GetLockTransform().position);
-        }
-        else
-        {
-            lockLink.enabled = false;
-        }
-    }
-
-    #endregion
-
     #region Init
 
     public void InitData(PlayerDataInstance data)

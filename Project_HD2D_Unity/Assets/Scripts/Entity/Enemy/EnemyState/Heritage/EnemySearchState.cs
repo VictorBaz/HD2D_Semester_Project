@@ -22,6 +22,7 @@ public class EnemySearchState : EnemyBaseState
         MoveToRandomPoint(actx);
         actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_WALK);
         actx.VfxManager.PlayDust(true);
+        actx.AnimManager.ToggleRepulsiveCollider(true);
     }
 
     public override void UpdateState(EnemyContext actx)

@@ -1,12 +1,12 @@
 ﻿using System;
 using UnityEngine;
 
-public class Sap : MonoBehaviour, IDataPersistence
+public class Sap : MonoBehaviour, ISapLockable, IDataPersistence
 {
-    [SerializeField] private ParticleSystem particleFeedback;
-    [SerializeField] private SpriteRenderer prayerIcon;
     [SerializeField] private EntityID entityID;
+    [SerializeField] private GameObject vfxSapPresent;
     private bool _isEmpty;
+    
 
     #region Save
 
@@ -17,6 +17,8 @@ public class Sap : MonoBehaviour, IDataPersistence
         if (myData != null)
         {
             this._isEmpty = myData.isEmpty;
+
+            vfxSapPresent.SetActive(!myData.isEmpty);
         }
     }
 
@@ -28,29 +30,19 @@ public class Sap : MonoBehaviour, IDataPersistence
     }
 
     #endregion
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (!_isEmpty) GiveSap();
-    }
-
+    
+    
     #region ISapLockable
-    //public Transform GetLockTransform() => transform;
+    public Transform GetLockTransform() => transform;
 
-    //public bool IsLockable() => !_isEmpty;
+    public bool IsLockable() => !_isEmpty;
 
-    //public float GetLockPriority() => 1f;
+    public float GetLockPriority() => 1f;
 
     public void GiveSap()
     {
-        Debug.Log("SAP GIVE SAP");
-        particleFeedback.Stop();
-        prayerIcon.gameObject.SetActive(false);
         _isEmpty = true;
-        
-        var player = FindFirstObjectByType<PlayerManager>();
-        player.Context.PlayerData.AddSap();
-        UiEvents.TriggerSapChanged(player.Context.PlayerData.Sap);
+        vfxSapPresent.SetActive(false);
     }
     #endregion
 }

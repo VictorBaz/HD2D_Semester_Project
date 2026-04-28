@@ -26,6 +26,8 @@ public class EnemyKoState : EnemyBaseState
             actx.AnimManager.HandleKo(true, true);
             hasTransitionedToLoop = true;
         }
+        
+        
     }
 
     public override void UpdateState(EnemyContext actx)

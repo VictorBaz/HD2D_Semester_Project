@@ -22,10 +22,11 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     [SerializeField] private Transform rootVisual;
     private bool _isCurrentlyTargeted;
     
+    /*
     [Header("Energy Visuals")]
     public SpriteRenderer[] energyIcons;
     public Sprite fullEnergyIcon;
-    public Sprite depletedEnergyIcon;
+    public Sprite depletedEnergyIcon;*/
     #endregion
 
     #region Unity Lifecycle
@@ -143,12 +144,11 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
         root.UpdateVisualEnergy();
     }
 
-    public void SetIcons(int energy)
+    /*public void SetIcons(int energy)
     {
         for (int i = 0; i < energyIcons.Length; i++)
         {
-            if (energy >= i + 1) energyIcons[i].sprite = fullEnergyIcon;
-            else energyIcons[i].sprite = depletedEnergyIcon;
+            energyIcons[i].sprite = energy >= i + 1 ? fullEnergyIcon : depletedEnergyIcon;
         }
-    }
+    }*/
 }

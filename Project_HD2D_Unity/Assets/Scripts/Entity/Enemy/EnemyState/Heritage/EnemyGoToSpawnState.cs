@@ -15,6 +15,7 @@ public class EnemyGoToSpawnState : EnemyBaseState
         actx.SetDestination(actx.SpawnPosition);
         actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_WALK);
         actx.VfxManager.PlayDust(true);
+        actx.AnimManager.ToggleRepulsiveCollider(true);
     }
 
     public override void UpdateState(EnemyContext actx)

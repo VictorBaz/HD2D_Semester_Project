@@ -12,6 +12,7 @@ public class EnemyStaticState : EnemyBaseState
     {
         actx.Manager.ApplyMovementMode(false);
         actx.StopAgent();
+        actx.AnimManager.ToggleRepulsiveCollider(true);
     }
 
     public override void UpdateState(EnemyContext actx)

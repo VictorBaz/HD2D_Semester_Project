@@ -15,6 +15,8 @@ public class EnemySheepAttackState : EnemyAttackState
         actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_IDLE);
 
         chargedTime = actx.Data.GetAnimationCLipLengthChargeAttack() / MULTIPLY_ANTICIPATION_TIME;
+        
+        actx.AnimManager.ToggleRepulsiveCollider(true);
     }
 
     protected override IEnumerator AttackSequence(EnemyContext actx)

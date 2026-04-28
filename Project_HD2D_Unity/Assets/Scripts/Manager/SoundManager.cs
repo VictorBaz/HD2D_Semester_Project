@@ -2,6 +2,7 @@ using com.Victor.Utilities.Scripts;
 using UnityEngine;
 using UnityEngine.Audio;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Script.Manager
 {
@@ -22,6 +23,7 @@ namespace Script.Manager
         [Header("Data")]
         [SerializeField] private AudioDataBank dataBank;
 
+        private readonly Dictionary<SoundType, AudioSource> loopingSources = new Dictionary<SoundType, AudioSource>();
         private Coroutine musicFadeCoroutine;
         #endregion
 
@@ -78,6 +80,59 @@ namespace Script.Manager
         #endregion
 
         #region SFX Logic
+        
+        public void PlayLoopingSfx(SoundType type)
+        {
+            if (loopingSources.ContainsKey(type)) return;
+
+            var entry = dataBank.GetSFX(type);
+            if (entry == null || entry.clip == null) return;
+
+            GameObject go = new GameObject("LoopingSFX_" + type.ToString());
+            go.transform.SetParent(transform);
+    
+            AudioSource source = go.AddComponent<AudioSource>();
+            ConfigureSource(source, sfxMixerGroup);
+    
+            source.clip = entry.clip;
+            source.loop = true;
+            source.volume = entry.volume * masterVolume;
+            source.pitch = entry.pitch;
+    
+            source.Play();
+
+            loopingSources.Add(type, source);
+        }
+        
+        public void StopLoopingSfx(SoundType type, float fadeOutDuration = 0f)
+        {
+            if (!loopingSources.TryGetValue(type, out AudioSource source)) return;
+            
+            if (fadeOutDuration > 0)
+            {
+                StartCoroutine(StopWithFade(type, source, fadeOutDuration));
+            }
+            else
+            {
+                ImmediateStop(type, source);
+            }
+        }
+
+        private void ImmediateStop(SoundType type, AudioSource source)
+        {
+            if (source != null)
+            {
+                source.Stop();
+                Destroy(source.gameObject);
+            }
+            loopingSources.Remove(type);
+        }
+
+        private IEnumerator StopWithFade(SoundType type, AudioSource source, float duration)
+        {
+            yield return StartCoroutine(source.FadeVolume(0, duration));
+            ImmediateStop(type, source);
+        }
 
         public void PlaySfx(SoundType type)
         {

@@ -20,6 +20,7 @@ public class EnemyPatrolState : EnemyBaseState
             actx.SetDestination(actx.Manager.patrolPoints[currentPointIndex].position);
         
         actx.VfxManager.PlayDust(true);
+        actx.AnimManager.ToggleRepulsiveCollider(true);
     }
 
     public override void UpdateState(EnemyContext actx)

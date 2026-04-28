@@ -298,6 +298,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
         isCarried = true;
         
         context.AnimManager.SetCarry(true);
+        enemyAnimationManager.ToggleRepulsiveCollider(false);
     }
 
     public void Eject(bool isEscaping = false)
@@ -312,6 +313,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
         isCarried = false;
         ChangeState(DropState);
+        enemyAnimationManager.ToggleRepulsiveCollider(true);
     }
 
     public bool IsCarry() => isCarried;

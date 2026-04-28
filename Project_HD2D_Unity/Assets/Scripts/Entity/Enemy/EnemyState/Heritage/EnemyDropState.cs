@@ -49,15 +49,22 @@ public class EnemyDropState : EnemyBaseState
 
     private void LandingSequence(EnemyContext actx)
     {
-       // actx.Manager.ApplyMovementMode(false);
 
         bool isStillKO = actx.Manager.KoSlider != null && actx.Data.KoTime > 0;
 
         if (isStillKO)
+        {
             actx.TransitionTo(actx.Manager.KoState);
+        }
         else if (actx.Target != null)
+        {
             actx.TransitionTo(actx.Manager.ChaseState);
+            actx.VfxManager.StopKoVfx();
+        }
         else
+        {
             actx.TransitionTo(actx.Manager.PatrolState);
+            actx.VfxManager.StopKoVfx();
+        }
     }
 }

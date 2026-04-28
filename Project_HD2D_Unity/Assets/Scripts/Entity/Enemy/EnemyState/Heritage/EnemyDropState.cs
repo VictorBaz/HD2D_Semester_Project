@@ -16,6 +16,7 @@ public class EnemyDropState : EnemyBaseState
         isGrounded = false;
         actx.Manager.ApplyMovementMode(true);
         actx.AnimManager.SetFalling(true);
+        actx.AnimManager.ToggleRepulsiveCollider(true);
     }
 
     public override void UpdateState(EnemyContext actx)

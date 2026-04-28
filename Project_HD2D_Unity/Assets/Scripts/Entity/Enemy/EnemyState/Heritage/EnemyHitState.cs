@@ -23,6 +23,7 @@ public class EnemyHitState : EnemyBaseState
 
         timer = actx.Data.StunDuration;
         actx.VfxManager.PlayHitVfx();
+        actx.AnimManager.ToggleRepulsiveCollider(true);
     }
 
     public override void UpdateState(EnemyContext actx)

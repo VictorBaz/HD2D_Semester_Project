@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7287530322289316053}
   - component: {fileID: 7973809473452030674}
   - component: {fileID: 2746944605535562111}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Repulse Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -72,7 +72,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   originTransform: {fileID: 6755224339389807167}
-  repulsionForce: 15
+  repulsionForce: 5
   targetTag: Player
 --- !u!1001 &297971895544285052
 PrefabInstance:
@@ -333,6 +333,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -166.65172
       objectReference: {fileID: 0}
+    - target: {fileID: 2195284802064085526, guid: 94fd95189ab6c6d448345a4c14f8b0da, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 82ab0f35e550b514ab6ec480e3127ed6, type: 2}
+    - target: {fileID: 2195284802064085526, guid: 94fd95189ab6c6d448345a4c14f8b0da, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: bea94d4351c102d4e8a93769f577dddc, type: 2}
     - target: {fileID: 2203516852278840441, guid: 94fd95189ab6c6d448345a4c14f8b0da, type: 3}
       propertyPath: colliderRepulse
       value: 

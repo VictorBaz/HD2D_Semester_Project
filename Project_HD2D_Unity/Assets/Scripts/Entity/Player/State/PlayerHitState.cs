@@ -44,7 +44,8 @@ namespace Player.State
 
         private void Hit(PlayerStateContext psc)
         {
-            psc.Rb.AddForce(psc.HitDirection * psc.PlayerData.HitForceTaken, ForceMode.Impulse);
+            Vector3 horizontal = psc.HitDirection.normalized * psc.PlayerData.HitForceTaken;
+            psc.Rb.linearVelocity = new Vector3(horizontal.x, psc.Rb.linearVelocity.y, horizontal.z);
         }
 
         public override bool CanMove { get; } = false;

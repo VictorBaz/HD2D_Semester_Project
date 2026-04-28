@@ -226,7 +226,7 @@ Shader "Custom/HLSL_Grass"
                 for (int v = 0; v < 3; v++)
                 {
                     float2 grassUV = TRANSFORM_TEX(input[v].uv, _GrassMap);
-                    float grassVisibility = SAMPLE_TEXTURE2D_LOD(_GrassMap, sampler_GrassMap, grassUV, 0).r;
+                    float grassVisibility = SAMPLE_TEXTURE2D_LOD(_GrassMap, sampler_GrassMap, grassUV, 0).g;
 
                     if (grassVisibility < _GrassThreshold)
                         continue;

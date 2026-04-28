@@ -15,6 +15,7 @@ public class EnemyChaseState : EnemyBaseState
         actx.UpdateAgentSpeed(actx.Data.ChaseSpeed, actx.Data.Acceleration, actx.Data.StoppingDistance);
         actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_RUN);
         actx.VfxManager.PlayDust(true);
+        actx.AnimManager.ToggleRepulsiveCollider(true);
     }
 
     public override void UpdateState(EnemyContext actx)

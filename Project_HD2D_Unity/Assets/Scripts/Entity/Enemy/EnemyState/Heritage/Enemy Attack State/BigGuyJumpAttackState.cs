@@ -7,12 +7,12 @@ public class BigGuyJumpAttackState : EnemyAttackState
     {
         base.EnterState(actx);
         actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_IDLE);
+        actx.AnimManager.ToggleRepulsiveCollider(true);
     }
 
     public override void ExitState(EnemyContext actx)
     {
         base.ExitState(actx);
-        actx.AnimManager.ToggleRepulsiveCollider(false);
         actx.AnimManager.ToggleAttackCollider(false);
         
         actx.Rb.constraints &= ~(RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ);
@@ -38,8 +38,6 @@ public class BigGuyJumpAttackState : EnemyAttackState
         actx.Rb.constraints |= RigidbodyConstraints.FreezePositionX | RigidbodyConstraints.FreezePositionZ;
         
         CanBeParry = false;
-
-        actx.AnimManager.ToggleRepulsiveCollider(true);
         
         actx.AnimManager.TriggerAttack();
         
@@ -54,7 +52,6 @@ public class BigGuyJumpAttackState : EnemyAttackState
             yield return null;
         }
         
-        actx.AnimManager.ToggleRepulsiveCollider(false);
 
         yield return new WaitForEndOfFrame();
         

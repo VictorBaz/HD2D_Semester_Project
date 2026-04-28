@@ -7,5 +7,10 @@ public class BigGuyManager : EnemyBaseManager
     {
         AttackState = new BigGuyJumpAttackState();
     }
-    
+
+    protected override void Start()
+    {
+        base.Start();
+        context.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME,0,1);
+    }
 }

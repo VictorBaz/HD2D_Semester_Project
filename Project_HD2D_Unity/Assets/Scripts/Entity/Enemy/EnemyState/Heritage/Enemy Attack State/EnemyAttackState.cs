@@ -9,6 +9,9 @@ public abstract class EnemyAttackState : EnemyBaseState
     
     protected bool canTakeDamage;
     
+    protected float chargedTime;
+    protected Coroutine shaderRoutine;
+    
     public override bool CanTakeDamage => canTakeDamage;
     
     public override string Name => "Attacking";
@@ -70,5 +73,30 @@ public abstract class EnemyAttackState : EnemyBaseState
     {
         if (attackRoutine != null) actx.Manager.StopCoroutine(attackRoutine);
         canTakeDamage = true;
+    }
+    
+    protected IEnumerator ShaderPulseOn(EnemyContext actx) => ShaderSheepUpdateIe
+        (actx,chargedTime,GameConstants.PARAM_SHEEP_SHADER_MAX);
+    
+    protected IEnumerator ShaderPulseOff(EnemyContext actx) => ShaderSheepUpdateIe
+        (actx,0.2f,0);
+    
+    protected IEnumerator ShaderSheepUpdateIe(EnemyContext actx, float time, float targetValue)
+    {
+        float elapsed = 0f;
+    
+        float startValue = actx.GetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME, 1); 
+
+        while (elapsed < time)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / time;
+        
+            float v = Mathf.Lerp(startValue, targetValue, t);
+            actx.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME, v, 1);
+            yield return null;
+        }
+    
+        actx.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME, targetValue, 1);
     }
 }

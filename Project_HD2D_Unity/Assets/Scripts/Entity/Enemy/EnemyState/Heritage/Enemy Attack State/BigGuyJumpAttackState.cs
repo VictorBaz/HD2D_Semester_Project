@@ -3,11 +3,15 @@ using UnityEngine;
 
 public class BigGuyJumpAttackState : EnemyAttackState
 {
+    private float chargedTime;
+    
     public override void EnterState(EnemyContext actx)
     {
         base.EnterState(actx);
         actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_IDLE);
         actx.AnimManager.ToggleRepulsiveCollider(true);
+
+        chargedTime = actx.Data.GetAnimationCLipLengthChargeAttack();
     }
 
     public override void ExitState(EnemyContext actx)
@@ -19,6 +23,9 @@ public class BigGuyJumpAttackState : EnemyAttackState
         actx.AnimManager.Animator.speed = 1f;
         
         canTakeDamage = true;
+        
+        if (shaderRoutine != null) actx.Manager.StopCoroutine(shaderRoutine);
+        actx.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME,0,1);
     }
     
 
@@ -29,7 +36,10 @@ public class BigGuyJumpAttackState : EnemyAttackState
         
         actx.AnimManager.TriggerCharge();
         
-        yield return new WaitForSeconds(data.GetAnimationCLipLengthChargeAttack());
+        if (shaderRoutine != null) actx.Manager.StopCoroutine(shaderRoutine);
+        shaderRoutine = actx.Manager.StartCoroutine(ShaderPulseOn(actx));
+        
+        yield return new WaitForSeconds(chargedTime);
         
         canTakeDamage = false;
         
@@ -40,6 +50,9 @@ public class BigGuyJumpAttackState : EnemyAttackState
         CanBeParry = false;
         
         actx.AnimManager.TriggerAttack();
+        
+        if (shaderRoutine != null) actx.Manager.StopCoroutine(shaderRoutine);
+        shaderRoutine = actx.Manager.StartCoroutine(ShaderPulseOff(actx));
         
         Vector3 jumpDirection = Vector3.up * data.AttackJumpForce;
         

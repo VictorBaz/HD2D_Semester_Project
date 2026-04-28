@@ -16,5 +16,7 @@
     
     Collect_Prayer, Damage_Taken, Health_Regen,
     Damage_Effective, Damage_Ineffective, Death_Groan,
-    Damage_Effective_Giant, Damage_Ineffective_Giant, Death_Groan_Giant
+    Damage_Effective_Giant, Damage_Ineffective_Giant, Death_Groan_Giant,
+    
+    Energy_activation, Energy_desactivation,
 }

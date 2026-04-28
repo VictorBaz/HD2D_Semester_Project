@@ -64,6 +64,7 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         TransitionTo(LocomotionState);
 
         lockOnSystem.InitData(playerData);
+        lockOnSystem.InitManager(Context);
         playerController.InitData(playerData);
 
         PlayerEvents.OnRequestPlayerTransform = GetTransform;

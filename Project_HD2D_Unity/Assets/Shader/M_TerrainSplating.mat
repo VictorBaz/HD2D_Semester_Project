@@ -1,0 +1,102 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: M_TerrainSplating
+  m_Shader: {fileID: -6465566751694194690, guid: 532d5c034fa4d614d9156a2d130aca91, type: 3}
+  m_Parent: {fileID: -876546973899608171, guid: 532d5c034fa4d614d9156a2d130aca91, type: 3}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses:
+  - MOTIONVECTORS
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AC_Diffuse:
+        m_Texture: {fileID: 2800000, guid: b3f7438a2e58e9f4d8d637d3d69f1223, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _AC_Normal:
+        m_Texture: {fileID: 2800000, guid: 3378cc09363336b488462ac1d051cbe2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _AC_SmoothHeight:
+        m_Texture: {fileID: 2800000, guid: 25d9142c0ed074d4bac73be8c47c310d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BC_Diffuse:
+        m_Texture: {fileID: 2800000, guid: b390e4b186a2e234586d1078a341ed5f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BC_Normal:
+        m_Texture: {fileID: 2800000, guid: fbc294aaa9afa91418449d758771f3ea, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BC_SmoothHeight:
+        m_Texture: {fileID: 2800000, guid: b358bd4bb7f2779499643471cb9798b2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GC_Diffuse:
+        m_Texture: {fileID: 2800000, guid: 743fafa0449e0994a8ba706bd26f1a62, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GC_Normal:
+        m_Texture: {fileID: 2800000, guid: 2c5c63ecf71df744eb1079a90c9000fc, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GC_SmoothHeight:
+        m_Texture: {fileID: 2800000, guid: c2eee3b64dba9e344813cdb97f210c66, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RC_Diffuse:
+        m_Texture: {fileID: 2800000, guid: 61d6da4bba31b1043a9d862ba93fae95, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RC_Normal:
+        m_Texture: {fileID: 2800000, guid: 9b7c9ff08c0240c47b0832af8b467276, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RC_SmoothHeight:
+        m_Texture: {fileID: 2800000, guid: e79a860e47dce934ab5ba3f498d08cc4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SplatingMap:
+        m_Texture: {fileID: 2800000, guid: da0e534cf53e2d44b961b1189bc8ca18, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AC_TillingSize: 0.1
+    - _BC_TillingSize: 20
+    - _GC_TillingSize: 20
+    - _NormalStrengh: 1
+    - _QueueControl: 0
+    - _RC_TillingSize: 20
+    m_Colors: []
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
+--- !u!114 &3060190259028785514
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Editor::UnityEditor.Rendering.Universal.AssetVersion
+  version: 10

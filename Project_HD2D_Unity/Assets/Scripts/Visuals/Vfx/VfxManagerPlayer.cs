@@ -13,6 +13,9 @@ public class VfxManagerPlayer : VfxManagerBase
 
     [Header("Shield Settings")]
     [SerializeField] private Renderer rendererShield;
+    
+    [Header("Energy Settings")]
+    [SerializeField] private EnergyTrace energyLink;
 
     private MaterialPropertyBlock _propBlockShield;
     private Coroutine _shieldCoroutine;
@@ -31,6 +34,8 @@ public class VfxManagerPlayer : VfxManagerBase
             _propBlockShield.SetFloat(ProgressionId, 1f);
             rendererShield.SetPropertyBlock(_propBlockShield);
         }
+        
+        LinkVfx(false);
     }
 
     #region Dash
@@ -132,6 +137,26 @@ public class VfxManagerPlayer : VfxManagerBase
         rendererShield.SetPropertyBlock(_propBlockShield);
         _shieldCoroutine = null;
     }
+    #endregion
+
+    #region Link Vfx
+
+    public void LinkVfx(bool isOn, Transform target = null)
+    {
+        if (energyLink == null ) return;
+
+        if (target == null)
+        {
+            energyLink.gameObject.SetActive(false);
+            return;
+        }
+        
+        energyLink.gameObject.SetActive(isOn);
+
+        energyLink.startPoint = isOn ? energyLink.transform : null;
+        energyLink.endPoint = isOn ? target : null;
+    }
+
     #endregion
 
 }

@@ -1,5 +1,6 @@
 using Interface;
 using Player.State;
+using Script.Manager;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerManager))]
@@ -221,6 +222,7 @@ public class PlayerActionHandler : MonoBehaviour
         target.AddEnergy();
         Data.RemoveEnergy();
         UiEvents.TriggerEnergyChanged(Data.Energy, Data.MaxEnergy);
+        SoundManager.Instance?.PlaySfx(SoundType.Fissure_Energy_In);
     }
 
     private void TryTakeEnergy()
@@ -232,6 +234,7 @@ public class PlayerActionHandler : MonoBehaviour
         target.RemoveEnergy();
         Data.AddEnergy();
         UiEvents.TriggerEnergyChanged(Data.Energy, Data.MaxEnergy);
+        SoundManager.Instance?.PlaySfx(SoundType.Fissure_Energy_Out);
     }
 
     private bool TryGetEnergyTarget(out IEnergyLockable target)

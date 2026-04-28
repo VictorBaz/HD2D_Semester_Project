@@ -20,6 +20,7 @@ public class EnemyKoState : EnemyBaseState
         {
             actx.Data.KoTime = actx.Data.KoTimeMax;
             actx.AnimManager.HandleKo(true, false);
+            actx.VfxManager.SetKoVfx();
         }
         else
         {
@@ -52,6 +53,7 @@ public class EnemyKoState : EnemyBaseState
         {
             actx.Data.ResetKo();
             DetermineNextState(actx);
+            actx.VfxManager.StopKoVfx();
         }
     }
 

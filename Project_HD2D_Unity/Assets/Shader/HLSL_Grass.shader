@@ -14,10 +14,14 @@ Shader "Custom/HLSL_Grass"
         _BladeHeightMin("Blade Height (Min)", Range(0, 2)) = 0.1
         _BladeHeightMax("Blade Height (Max)", Range(0, 2)) = 0.2
 
-        _BladeSegments("Blade Segments", Range(1, 10)) = 3
         _BladeBendDistance("Blade Forward Amount", Float) = 0.38
         _BladeBendCurve("Blade Curvature Amount", Range(1, 4)) = 2
         _BendDelta("Bend Variation", Range(0, 1)) = 0.2
+
+        _ColorVariation("Color Variation", Range(0, 1)) = 0.15
+        _HeightVariation("Height Variation", Range(0, 1)) = 0.25
+        _WidthVariation("Width Variation", Range(0, 1)) = 0.2
+        _BendVariation("Bend Noise Variation", Range(0, 1)) = 0.25
 
         _TessellationGrassDistance("Tessellation Grass Distance", Range(0.01, 2)) = 0.1
 
@@ -32,7 +36,6 @@ Shader "Custom/HLSL_Grass"
         _PositionCount("Interactor Count", Range(0, 100)) = 0
         _Radius("Interactor Radius", Range(0, 5)) = 1
         _MaxWidth("Max Displacement Width", Range(0, 2)) = 0.1
-
     }
 
     SubShader
@@ -43,10 +46,12 @@ Shader "Custom/HLSL_Grass"
             "Queue" = "Geometry"
             "RenderPipeline" = "UniversalPipeline"
         }
+
         LOD 100
         Cull Off
 
         HLSLINCLUDE
+
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Shadows.hlsl"
@@ -56,9 +61,9 @@ Shader "Custom/HLSL_Grass"
             #define BLADE_SEGMENTS 4
             #define MAX_POSITIONS 100
 
-            TEXTURE2D(_BladeTexture);  SAMPLER(sampler_BladeTexture);
-            TEXTURE2D(_GrassMap);      SAMPLER(sampler_GrassMap);
-            TEXTURE2D(_WindMap);       SAMPLER(sampler_WindMap);
+            TEXTURE2D(_BladeTexture); SAMPLER(sampler_BladeTexture);
+            TEXTURE2D(_GrassMap);     SAMPLER(sampler_GrassMap);
+            TEXTURE2D(_WindMap);      SAMPLER(sampler_WindMap);
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _BaseColor;
@@ -74,25 +79,28 @@ Shader "Custom/HLSL_Grass"
 
                 float _BladeBendDistance;
                 float _BladeBendCurve;
-
                 float _BendDelta;
+
+                float _ColorVariation;
+                float _HeightVariation;
+                float _WidthVariation;
+                float _BendVariation;
 
                 float _TessellationGrassDistance;
 
                 float4 _GrassMap_ST;
-                float  _GrassThreshold;
-                float  _GrassFalloff;
+                float _GrassThreshold;
+                float _GrassFalloff;
 
                 float4 _WindMap_ST;
                 float4 _WindVelocity;
-                float  _WindFrequency;
+                float _WindFrequency;
 
                 float _PositionCount;
                 float _Radius;
                 float _MaxWidth;
             CBUFFER_END
 
-            
             float4 _Positions[MAX_POSITIONS];
 
             struct VertexInput
@@ -119,10 +127,13 @@ Shader "Custom/HLSL_Grass"
 
             struct GeomData
             {
-                float4 pos      : SV_POSITION;
-                float2 uv       : TEXCOORD0;
-                float3 worldPos : TEXCOORD1;
-                float  circle   : TEXCOORD2; 
+                float4 pos       : SV_POSITION;
+                float2 uv        : TEXCOORD0;
+                float3 worldPos  : TEXCOORD1;
+                float circle     : TEXCOORD2;
+                float fogFactor  : TEXCOORD3;
+                float3 normalWS  : TEXCOORD4;
+                float noise      : TEXCOORD5;
             };
 
             float rand(float3 co)
@@ -151,18 +162,16 @@ Shader "Custom/HLSL_Grass"
             VertexOutput tessVert(VertexInput v)
             {
                 VertexOutput o;
-                o.vertex  = v.vertex;   
-                o.normal  = v.normal;
+                o.vertex = v.vertex;
+                o.normal = v.normal;
                 o.tangent = v.tangent;
-                o.uv      = v.uv;
+                o.uv = v.uv;
                 return o;
             }
 
             float tessellationEdgeFactor(VertexInput vert0, VertexInput vert1)
             {
-                float3 v0 = vert0.vertex.xyz;
-                float3 v1 = vert1.vertex.xyz;
-                float edgeLength = distance(v0, v1);
+                float edgeLength = distance(vert0.vertex.xyz, vert1.vertex.xyz);
                 return edgeLength / _TessellationGrassDistance;
             }
 
@@ -172,7 +181,7 @@ Shader "Custom/HLSL_Grass"
                 f.edge[0] = tessellationEdgeFactor(patch[1], patch[2]);
                 f.edge[1] = tessellationEdgeFactor(patch[2], patch[0]);
                 f.edge[2] = tessellationEdgeFactor(patch[0], patch[1]);
-                f.inside  = (f.edge[0] + f.edge[1] + f.edge[2]) / 3.0f;
+                f.inside = (f.edge[0] + f.edge[1] + f.edge[2]) / 3.0f;
                 return f;
             }
 
@@ -204,17 +213,30 @@ Shader "Custom/HLSL_Grass"
                 return tessVert(i);
             }
 
-            GeomData TransformGeomToClip(float3 posOS, float3 offsetOS, float3x3 m, float2 uv, float circleVal)
+            GeomData TransformGeomToClip(
+                float3 posOS,
+                float3 offsetOS,
+                float3x3 m,
+                float2 uv,
+                float circleVal,
+                float3 normalOS,
+                float noise
+            )
             {
                 GeomData o;
 
                 float3 pOS = posOS + mul(m, offsetOS);
                 float3 pWS = TransformObjectToWorld(pOS);
 
-                o.pos      = TransformWorldToHClip(pWS);
+                float4 clipPos = TransformWorldToHClip(pWS);
+
+                o.pos = clipPos;
                 o.worldPos = pWS;
-                o.uv       = uv;
-                o.circle   = circleVal;
+                o.uv = uv;
+                o.circle = circleVal;
+                o.fogFactor = ComputeFogFactor(clipPos.z);
+                o.normalWS = normalize(TransformObjectToWorldNormal(normalOS));
+                o.noise = noise;
 
                 return o;
             }
@@ -231,8 +253,8 @@ Shader "Custom/HLSL_Grass"
                     if (grassVisibility < _GrassThreshold)
                         continue;
 
-                    float3 posOS    = input[v].vertex.xyz;
-                    float3 normalOS = input[v].normal;
+                    float3 posOS = input[v].vertex.xyz;
+                    float3 normalOS = normalize(input[v].normal);
                     float4 tangentOS = input[v].tangent;
                     float3 bitangentOS = cross(normalOS, tangentOS.xyz) * tangentOS.w;
 
@@ -243,7 +265,9 @@ Shader "Custom/HLSL_Grass"
                         tangentOS.z, bitangentOS.z, normalOS.z
                     );
 
-                    float3x3 randRotMatrix  = angleAxis3x3(rand(posOS) * UNITY_TWO_PI, float3(0, 0, 1.0f));
+                    float bladeNoise = rand(posOS * 3.17);
+
+                    float3x3 randRotMatrix = angleAxis3x3(rand(posOS) * UNITY_TWO_PI, float3(0, 0, 1.0f));
                     float3x3 randBendMatrix = angleAxis3x3(rand(posOS.zzx) * _BendDelta * UNITY_PI * 0.5f, float3(-1.0f, 0, 0));
 
                     float2 windUV = posOS.xz * _WindMap_ST.xy + _WindMap_ST.zw
@@ -268,7 +292,7 @@ Shader "Custom/HLSL_Grass"
                         float circle = 1.0 - saturate(dist / max(_Radius, 1e-4));
                         maxCircle = max(maxCircle, circle);
 
-                        float3 sphereDisp = (posWS - p) * circle;                
+                        float3 sphereDisp = (posWS - p) * circle;
                         float2 dispXZ = clamp(sphereDisp.xz, -_MaxWidth.xx, _MaxWidth.xx);
                         totalDisp += dispXZ;
                     }
@@ -280,13 +304,24 @@ Shader "Custom/HLSL_Grass"
                     float3x3 bendMatrix = angleAxis3x3(UNITY_PI * bendAmt, bendAxis);
 
                     float3x3 baseM = mul(tangentToLocal, randRotMatrix);
-                    float3x3 tipM  = mul(mul(mul(tangentToLocal, bendMatrix), randBendMatrix), randRotMatrix);
+                    float3x3 tipM = mul(mul(mul(tangentToLocal, bendMatrix), randBendMatrix), randRotMatrix);
 
                     float falloff = smoothstep(_GrassThreshold, _GrassThreshold + _GrassFalloff, grassVisibility);
 
-                    float width   = lerp(_BladeWidthMin,  _BladeWidthMax,  rand(posOS.xzy) * falloff);
-                    float height  = lerp(_BladeHeightMin, _BladeHeightMax, rand(posOS.zyx) * falloff);
-                    float forward = rand(posOS.yyz) * _BladeBendDistance;
+                    float noiseWidth = rand(posOS.xzy);
+                    float noiseHeight = rand(posOS.zyx);
+                    float noiseBend = rand(posOS.yyz);
+
+                    float widthBase = lerp(_BladeWidthMin, _BladeWidthMax, noiseWidth);
+                    float heightBase = lerp(_BladeHeightMin, _BladeHeightMax, noiseHeight);
+
+                    float widthVariation = lerp(1.0 - _WidthVariation, 1.0 + _WidthVariation, rand(posOS.xyz));
+                    float heightVariation = lerp(1.0 - _HeightVariation, 1.0 + _HeightVariation, rand(posOS.zxy));
+                    float bendVariation = lerp(1.0 - _BendVariation, 1.0 + _BendVariation, noiseBend);
+
+                    float width = widthBase * widthVariation * falloff;
+                    float height = heightBase * heightVariation * falloff;
+                    float forward = rand(posOS.yyz) * _BladeBendDistance * bendVariation;
 
                     for (int s = 0; s < BLADE_SEGMENTS; ++s)
                     {
@@ -295,14 +330,15 @@ Shader "Custom/HLSL_Grass"
 
                         float3x3 m = (s == 0) ? baseM : tipM;
 
-                        triStream.Append(TransformGeomToClip(posOS, float3( offset.x, offset.y, offset.z), m, float2(0, t), maxCircle));
-                        triStream.Append(TransformGeomToClip(posOS, float3(-offset.x, offset.y, offset.z), m, float2(1, t), maxCircle));
+                        triStream.Append(TransformGeomToClip(posOS, float3( offset.x, offset.y, offset.z), m, float2(0, t), maxCircle, normalOS, bladeNoise));
+                        triStream.Append(TransformGeomToClip(posOS, float3(-offset.x, offset.y, offset.z), m, float2(1, t), maxCircle, normalOS, bladeNoise));
                     }
 
-                    triStream.Append(TransformGeomToClip(posOS, float3(0, forward, height), tipM, float2(0.5, 1), maxCircle));
+                    triStream.Append(TransformGeomToClip(posOS, float3(0, forward, height), tipM, float2(0.5, 1), maxCircle, normalOS, bladeNoise));
                     triStream.RestartStrip();
                 }
             }
+
         ENDHLSL
 
         Pass
@@ -311,6 +347,7 @@ Shader "Custom/HLSL_Grass"
             Tags { "LightMode" = "UniversalForward" }
 
             HLSLPROGRAM
+
             #pragma require geometry
             #pragma require tessellation tessHW
 
@@ -320,28 +357,47 @@ Shader "Custom/HLSL_Grass"
             #pragma geometry geom
             #pragma fragment frag
 
+            #pragma multi_compile_fog
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile _ _SHADOWS_SOFT
 
             float4 frag(GeomData i) : SV_Target
             {
                 float4 albedo = SAMPLE_TEXTURE2D(_BladeTexture, sampler_BladeTexture, i.uv);
-                // here make a lerp from _baseTexture to _tipcolor instead of base color
-				float4 normalTint    = lerp(_BaseColor, _TipColor, i.uv.y);
+
+                float4 normalTint = lerp(_BaseColor, _TipColor, i.uv.y);
                 float4 corruptedTint = lerp(_BaseColorCorrupted, _TipColorCorrupted, i.uv.y);
-                float4 tint          = lerp(normalTint, corruptedTint, _Corrupt);
+                float4 tint = lerp(normalTint, corruptedTint, _Corrupt);
+
+                float colorNoise = lerp(1.0 - _ColorVariation, 1.0 + _ColorVariation, i.noise);
+                tint.rgb *= colorNoise;
 
                 float4 color = albedo * tint;
 
+                Light mainLight;
+
                 #if defined(_MAIN_LIGHT_SHADOWS) || defined(_MAIN_LIGHT_SHADOWS_CASCADE) || defined(_MAIN_LIGHT_SHADOWS_SCREEN)
                     float4 shadowCoord = TransformWorldToShadowCoord(i.worldPos);
-                    Light mainLight = GetMainLight(shadowCoord);
-                    half shadowAtten = saturate(mainLight.shadowAttenuation + 0.25h);
-                    color.rgb *= shadowAtten;
+                    mainLight = GetMainLight(shadowCoord);
+                #else
+                    mainLight = GetMainLight();
                 #endif
+
+                float3 normalWS = normalize(i.normalWS);
+
+                float NdotL = saturate(dot(normalWS, mainLight.direction));
+                float diffuse = lerp(0.35, 1.0, NdotL);
+
+                float3 ambient = SampleSH(normalWS);
+
+                color.rgb *= mainLight.color * diffuse * mainLight.shadowAttenuation;
+                color.rgb += ambient * albedo.rgb * tint.rgb * 0.35;
+
+                color.rgb = MixFog(color.rgb, i.fogFactor);
 
                 return color;
             }
+
             ENDHLSL
         }
     }

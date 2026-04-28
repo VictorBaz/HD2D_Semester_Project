@@ -33,6 +33,8 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     public PlayerStateContext Context    { get; private set; }
 
     private PlayerDataInstance playerData;
+    
+    private PositionSaver  positionSaver;
 
     #endregion
 
@@ -43,6 +45,8 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         InitStates();
 
         playerData = playerDataRaw.Init();
+
+        positionSaver = new PositionSaver(30);
 
         Context = new PlayerStateContext
         {
@@ -80,6 +84,7 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     private void Update()
     {
         CurrentPlayerState.UpdateState(Context);
+        positionSaver.Save(transform.position,playerController.IsGrounded);
     }
 
     private void FixedUpdate()

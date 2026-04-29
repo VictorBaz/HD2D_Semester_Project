@@ -19,4 +19,6 @@
     Damage_Effective_Giant, Damage_Ineffective_Giant, Death_Groan_Giant,
     
     Energy_activation, Energy_desactivation,
+    
+    Pop_Up
 }

@@ -18,4 +18,8 @@ public static class UiEvents
 
     public static event Action<bool> OnLockStateChanged;
     public static void TriggerLockStateChanged(bool isLocked) => OnLockStateChanged?.Invoke(isLocked);
+    
+    public static Action OnShowPopup;
+    public static void TriggerShowPopup() 
+        => OnShowPopup?.Invoke();
 }

@@ -689,6 +689,7 @@ MonoBehaviour:
   loadingIcon: {fileID: 708651982404050841}
   rotationSpeed: 200
   blackScreenGroup: {fileID: 4140952667397222668}
+  popupGroup: {fileID: 1630655934571746555}
 --- !u!1 &4779996907850750741
 GameObject:
   m_ObjectHideFlags: 0
@@ -1057,6 +1058,94 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &5491587993330238116
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6394563092455305315}
+  - component: {fileID: 5729761032171938555}
+  - component: {fileID: 3604912672997448434}
+  - component: {fileID: 1630655934571746555}
+  m_Layer: 0
+  m_Name: Pop Up
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6394563092455305315
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5491587993330238116}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1014175723958460723}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: -99}
+  m_SizeDelta: {x: 512, y: 256}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5729761032171938555
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5491587993330238116}
+  m_CullTransparentMesh: 1
+--- !u!114 &3604912672997448434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5491587993330238116}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 24dbb76ce7f3cba4c9c39928c2f06abd, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!225 &1630655934571746555
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5491587993330238116}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &5784333745152970477
 GameObject:
   m_ObjectHideFlags: 0
@@ -2262,6 +2351,9 @@ PrefabInstance:
     - {fileID: 2883238241421388543, guid: 9c9a49f9231771a4cbd76374d4d5c5a1, type: 3}
     - {fileID: 6724569665408137014, guid: 9c9a49f9231771a4cbd76374d4d5c5a1, type: 3}
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 7814776044373447666, guid: 9c9a49f9231771a4cbd76374d4d5c5a1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6394563092455305315}
     - targetCorrespondingSourceObject: {fileID: 8022272131831703369, guid: 9c9a49f9231771a4cbd76374d4d5c5a1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7052876472829977673}
@@ -2287,6 +2379,11 @@ MonoBehaviour:
 --- !u!224 &951504284486915464 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8022272131831703369, guid: 9c9a49f9231771a4cbd76374d4d5c5a1, type: 3}
+  m_PrefabInstance: {fileID: 7088870438511768257}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1014175723958460723 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7814776044373447666, guid: 9c9a49f9231771a4cbd76374d4d5c5a1, type: 3}
   m_PrefabInstance: {fileID: 7088870438511768257}
   m_PrefabAsset: {fileID: 0}
 --- !u!114 &1108560210293031809 stripped

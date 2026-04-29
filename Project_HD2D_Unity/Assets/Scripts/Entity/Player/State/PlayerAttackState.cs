@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using Script.Manager;
 using UnityEngine;
 
 namespace Player.State
@@ -68,6 +69,8 @@ namespace Player.State
 
             psc.AnimationManager.SetAttackState(true, comboIndex);
             currentAttackRoutine = psc.Controller.RunRoutine(AttackMeleeIe(psc));
+            
+            SoundManager.Instance?.PlaySfx(GetSoundAttack(comboIndex));
         }
 
         private void RotateTowardsInput(PlayerStateContext psc)
@@ -156,6 +159,17 @@ namespace Player.State
             {
                 DetermineState(psc);
             }
+        }
+
+        private SoundType GetSoundAttack(int comboIndex)
+        {
+            return comboIndex switch
+            {
+                0 => SoundType.Combo_Woosh_1,
+                1 => SoundType.Combo_Woosh_2,
+                2 => SoundType.Combo_Woosh_3,
+                _ => SoundType.Combo_Woosh_1
+            };
         }
     }
 }

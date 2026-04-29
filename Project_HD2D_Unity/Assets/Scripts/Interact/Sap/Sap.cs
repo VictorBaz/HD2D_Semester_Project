@@ -43,6 +43,7 @@ public class Sap : MonoBehaviour, ISapLockable, IDataPersistence
     {
         _isEmpty = true;
         vfxSapPresent.SetActive(false);
+        UiEvents.TriggerShowPopup();
     }
     #endregion
 }

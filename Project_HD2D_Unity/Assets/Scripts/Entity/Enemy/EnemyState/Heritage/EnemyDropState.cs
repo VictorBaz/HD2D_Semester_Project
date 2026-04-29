@@ -11,16 +11,22 @@ public class EnemyDropState : EnemyBaseState
     public override bool CanMove       => false;
     public override bool CanTakeDamage => false;
 
+    private float timerReset = 0f;
+    private float timerResetMax = 5f;
+
     public override void EnterState(EnemyContext actx)
     {
         isGrounded = false;
         actx.Manager.ApplyMovementMode(true);
         actx.AnimManager.SetFalling(true);
         actx.AnimManager.ToggleRepulsiveCollider(true);
+        timerReset = 0f;
     }
 
     public override void UpdateState(EnemyContext actx)
     {
+        TimerResetEnemy(actx);
+        
         if (isGrounded) return;
 
         if (Physics.Raycast(
@@ -65,6 +71,19 @@ public class EnemyDropState : EnemyBaseState
         {
             actx.TransitionTo(actx.Manager.PatrolState);
             actx.VfxManager.StopKoVfx();
+        }
+    }
+
+    private void TimerResetEnemy(EnemyContext actx)
+    {
+        if (timerReset >= timerResetMax)
+        {
+            actx.Manager.ResetEnemy();
+            timerReset = 0f;
+        }
+        else
+        {
+            timerReset += Time.deltaTime;
         }
     }
 }

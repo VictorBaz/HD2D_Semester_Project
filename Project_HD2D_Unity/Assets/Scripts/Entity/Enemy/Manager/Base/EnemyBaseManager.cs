@@ -49,7 +49,10 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
     protected EnemyContext context;
     protected bool         isCarried;
+    
     private   bool         isInitialized;
+    
+    private Vector3 originalPosition;
     
     public event Action OnTakeDamage;
     
@@ -60,7 +63,8 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
         InitContext();
         InitializeCommonStates();
         isInitialized = true;
-        
+
+        originalPosition = transform.position;
     }
 
     protected virtual void Start()
@@ -415,4 +419,13 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     }
 
     #endregion
+    
+    public void ResetEnemy()
+    {
+        transform.position = originalPosition;
+        VfxManager.StopKoVfx();
+        context.Data.ResetKo();
+        HandleDamageUI();
+        ChangeState(PatrolState);
+    }
 }

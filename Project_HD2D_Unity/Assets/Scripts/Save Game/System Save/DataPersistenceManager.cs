@@ -131,5 +131,10 @@ public class DataPersistenceManager : MonoBehaviour
     }
 
     #endregion
+
+    public bool CanTPPlayerToLastPos() => 
+        gameData.LastVisitedPuzzleId != null && string.IsNullOrEmpty(gameData.LastVisitedPuzzleId);
+    
+    public string GetLastVisitedPuzzleId() => gameData.LastVisitedPuzzleId;
 }
 

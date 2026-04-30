@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections;
 using Interface;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
+public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarryable
 {
     #region State Properties
     public EnemyPatrolState    PatrolState    { get; protected set; }
@@ -49,7 +50,13 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
     protected EnemyContext context;
     protected bool         isCarried;
+    
     private   bool         isInitialized;
+    
+    private Vector3 originalPosition;
+
+    private bool isInRecover;
+    private Coroutine recoverCoroutine;
     
     public event Action OnTakeDamage;
     
@@ -60,12 +67,13 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
         InitContext();
         InitializeCommonStates();
         isInitialized = true;
-        
+
+        originalPosition = transform.position;
     }
 
     protected virtual void Start()
     {
-        InitializeAttackState();
+        InitializeState();
         SubscribeEvents();
         
         if (KoSlider != null)
@@ -134,7 +142,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
         StaticState    = new EnemyStaticState();
     }
 
-    protected abstract void InitializeAttackState();
+    protected abstract void InitializeState();
 
     #endregion
 
@@ -145,7 +153,9 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
         if (newState == null || newState == CurrentState) return;
 
         CurrentState?.ExitState(context);
+        
         PreviousBaseState = CurrentState;
+        
         CurrentState      = newState;
         
         CurrentState.EnterState(context);
@@ -241,19 +251,36 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
     #region IDamageable
 
-    public virtual void TakeDamage(int damage, Vector3 hitDirection)
+    public virtual void TakeDamage(int damage, Vector3 hitDirection, int index)
     {
+        if(isInRecover) return;
         if (CurrentState is { CanTakeDamage: false }) return;
 
         context.HitDirection  = hitDirection;
         context.Data.CurrentKo += damage;
         OnTakeDamage ?.Invoke();
+
+        if (context.Data.IsKoFull())
+        {
+            ChangeState(HitState);
+            return;
+        }
+        
+        if (index != 2) return;
+        
         ChangeState(HitState);
+    }
+
+    public void TakeDamage(int value, Vector3 hitDirection)
+    {
+        // for the moment empty no idea how to do differently
     }
 
     public Transform GetTransform()          => transform;
     public bool      IsInParryWindow()        => CurrentState != null && CurrentState.CanBeParry;
     public bool      IsInParryWindowPerfect() => false;
+
+    
 
     #endregion
 
@@ -366,13 +393,9 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     {
         Vector3 rayOrigin = transform.position;
         float totalDist = detectionDistance;
-
         
-        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, totalDist, ~context.LayerMaskEnemy))
-        {
-            return NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, navMeshMargin, NavMesh.AllAreas);
-        }
-        return false;
+        return Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, totalDist, ~context.LayerMaskEnemy) &&
+               NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, navMeshMargin, NavMesh.AllAreas);
     }
     
     public bool IsGroundedDebug(float detectionDistance = 0.1f, float navMeshMargin = 0.1f)
@@ -415,4 +438,26 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     }
 
     #endregion
+    
+    public void ResetEnemy()
+    {
+        transform.position = originalPosition;
+        VfxManager.StopKoVfx();
+        context.Data.ResetKo();
+        HandleDamageUI();
+        ChangeState(PatrolState);
+    }
+
+    public void RecoverPhase()
+    {
+        if(recoverCoroutine != null) StopCoroutine(recoverCoroutine);
+        recoverCoroutine = StartCoroutine(RecoverPhaseIe());
+    }
+    
+    private IEnumerator RecoverPhaseIe()
+    {
+        isInRecover = true;
+        yield return new WaitForSeconds(2);
+        isInRecover = false;
+    }
 }

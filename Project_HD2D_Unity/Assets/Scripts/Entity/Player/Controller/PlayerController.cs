@@ -17,7 +17,9 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LockOnSystem lockOnSystem;
 
     [SerializeField] private GameObject colliderAttack;
+    [SerializeField] private Camera cam;
 
+    private Vector3 attackColliderLocalOffset;
     private RaycastHit slopeHit;
     private bool isInLockMode;
     private Quaternion targetRotation;
@@ -27,7 +29,6 @@ public class PlayerController : MonoBehaviour
     
     private bool isJumping;
     
-    [SerializeField] private Camera cam;
     #endregion
 
     #region Unity Lifecycle
@@ -37,9 +38,12 @@ public class PlayerController : MonoBehaviour
         if (rb != null) rb.useGravity = false; 
     }
     
-    private void Start() 
+    private void Start()
     {
         targetRotation = transform.rotation;
+        attackColliderLocalOffset = colliderAttack.transform.localPosition;
+        colliderAttack.transform.SetParent(null);
+        colliderAttack.SetActive(false);
     }
 
     #endregion
@@ -242,8 +246,13 @@ public class PlayerController : MonoBehaviour
         if (collider != null)
             collider.SetActive(active);
     }
-    
-    public void AttackOn() => ToggleCollider(colliderAttack,true);
+
+    public void AttackOn()
+    {
+        colliderAttack.transform.position = transform.TransformPoint(attackColliderLocalOffset);
+        colliderAttack.transform.rotation = transform.rotation;
+        ToggleCollider(colliderAttack, true);
+    }
     public void AttackOff() => ToggleCollider(colliderAttack,false);
     
 

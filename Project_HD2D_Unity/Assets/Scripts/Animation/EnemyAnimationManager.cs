@@ -17,6 +17,7 @@ public class EnemyAnimationManager : BaseAnimationManager
     private static readonly int IsChargingHash = Animator.StringToHash("IsCharging");
 
     [SerializeField] private GameObject colliderAttack;
+    [SerializeField] private GameObject colliderAttackEnemy;
     [SerializeField] private GameObject colliderRepulse;
 
     private void Awake()
@@ -33,14 +34,14 @@ public class EnemyAnimationManager : BaseAnimationManager
     
     public void SetCarry(bool isCarry) => animator.SetBool(IsCarryHash,isCarry);
 
-    public void ToggleAttackCollider(bool toggle)
-    {
-        if (colliderAttack != null) colliderAttack.SetActive(toggle);
-    }
+    public void ToggleAttackCollider(bool toggle) => ToggleCollider(toggle, colliderAttack);
     
-    public void ToggleRepulsiveCollider(bool active)
+    public void ToggleRepulsiveCollider(bool active) => ToggleCollider(active, colliderRepulse);
+    public void ToggleAttackColliderEnemy(bool active) => ToggleCollider(active, colliderAttackEnemy);
+
+    private void ToggleCollider(bool active, GameObject collider)
     {
-        if(colliderRepulse != null) colliderRepulse.SetActive(active);
+        if(collider) collider.SetActive(active);
     }
 
     public void HandleKo(bool isKO,bool wasKo)

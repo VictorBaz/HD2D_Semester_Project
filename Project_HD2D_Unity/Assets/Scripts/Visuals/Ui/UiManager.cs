@@ -4,13 +4,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DG.Tweening;
+using Script.Manager;
 using TMPro;
 
 public class UiManager : MonoBehaviour
 {
     #region Variables
 
-    private static UiManager Instance;
+    public static UiManager Instance;
 
     [Header("State Panels")]
     [SerializeField] private CanvasGroup pauseMenuPanel;
@@ -47,6 +48,11 @@ public class UiManager : MonoBehaviour
     [SerializeField] private CanvasGroup loadingPanel;
     [SerializeField] private RectTransform loadingIcon;
     [SerializeField] private float rotationSpeed = 200f;
+    [SerializeField] private CanvasGroup blackScreenGroup;
+    
+    [Header("Pop Up")]
+    [SerializeField] private CanvasGroup popupGroup;
+    private Sequence popupSequence;
 
     private float openLeftPanelX;
     private float openRightPanelX;
@@ -103,6 +109,7 @@ public class UiManager : MonoBehaviour
         UiEvents.OnEnergySetup += SetupEnergy;
         EventManager.OnLoadingStarted += HandleLoadingStarted;
         EventManager.OnLoadingFinished += HandleLoadingFinished;
+        UiEvents.OnShowPopup += ShowPopup;
     }
 
     private void OnDisable()
@@ -115,6 +122,7 @@ public class UiManager : MonoBehaviour
         UiEvents.OnEnergySetup -= SetupEnergy;
         EventManager.OnLoadingStarted -= HandleLoadingStarted;
         EventManager.OnLoadingFinished -= HandleLoadingFinished;
+        UiEvents.OnShowPopup -= ShowPopup;
     }
 
     private void OnDestroy()
@@ -330,5 +338,42 @@ public class UiManager : MonoBehaviour
         group.DOFade(show ? targetAlpha : 0f, duration).SetUpdate(true);
     }
 
+    #endregion
+
+    #region GamePlay Related
+
+    public IEnumerator FadeBlackScreen(float targetAlpha, float duration)
+    {
+        float startAlpha = blackScreenGroup.alpha;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            blackScreenGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, elapsed / duration);
+            yield return null;
+        }
+
+        blackScreenGroup.alpha = targetAlpha;
+    }
+
+    private void ShowPopup()
+    {
+        float duration = 1.5f;
+        
+        popupSequence?.Kill();
+        
+        popupGroup.alpha  = 0f;
+        popupGroup.gameObject.SetActive(true);
+
+        popupSequence = DOTween.Sequence()
+            .Append(popupGroup.DOFade(1f, 0.4f))
+            .AppendInterval(duration)
+            .Append(popupGroup.DOFade(0f, 0.4f))
+            .OnComplete(() => popupGroup.gameObject.SetActive(false));
+        
+        SoundManager.Instance?.PlaySfx(SoundType.Pop_Up);
+    }
+    
     #endregion
 }

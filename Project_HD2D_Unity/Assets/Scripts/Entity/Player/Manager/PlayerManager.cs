@@ -1,3 +1,4 @@
+using System.Collections;
 using Interface;
 using Player.State;
 using UnityEngine;
@@ -33,6 +34,14 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     public PlayerStateContext Context    { get; private set; }
 
     private PlayerDataInstance playerData;
+    
+    private PositionSaver  positionSaver;
+
+    private Vector3 originPos;
+    
+    private Coroutine respawnRoutine;
+    
+    private float saveTimer;
 
     #endregion
 
@@ -43,6 +52,8 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         InitStates();
 
         playerData = playerDataRaw.Init();
+
+        positionSaver = new PositionSaver(30);
 
         Context = new PlayerStateContext
         {
@@ -69,6 +80,8 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 
         PlayerEvents.OnRequestPlayerTransform = GetTransform;
         PlayerEvents.OnRequestPlayerContext   = GetContext;
+
+        originPos = transform.position;
     }
 
     private void Start()
@@ -80,6 +93,7 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     private void Update()
     {
         CurrentPlayerState.UpdateState(Context);
+        SavePlayerPos();
     }
 
     private void FixedUpdate()
@@ -125,10 +139,19 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 
     public void TakeDamage(int value, Vector3 hitDirection)
     {
-        if (!CurrentPlayerState.CanTakeDamage)    return;
+        if (!CurrentPlayerState.CanTakeDamage)     return;
         if (CurrentPlayerState.IsParryWindowActive) return;
 
         Context.HitDirection = hitDirection;
+
+        playerData.Life -= value;
+
+        if (playerData.Life <= 0)
+        {
+            TriggerRespawn(true);
+            return;
+        }
+
         TransitionTo(HitState);
     }
 
@@ -167,6 +190,16 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     public void SaveData(ref GameData data)
     {
         data.PlayerData = new PlayerSaveData(playerData);
+    }
+
+    private void SavePlayerPos()
+    {
+        saveTimer += Time.deltaTime;
+
+        if (!(saveTimer >= 1f)) return;
+        
+        positionSaver.Save(transform.position, playerController.IsGrounded);
+        saveTimer = 0f;
     }
 
     #endregion
@@ -221,4 +254,61 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     #endregion
 
     private PlayerStateContext GetContext() => Context;
+
+    private IEnumerator PlayerRespawn(bool isDead)
+    {
+        playerController.enabled = false;
+        yield return StartCoroutine(UiManager.Instance.FadeBlackScreen(1f, 0.5f));
+        
+        if (isDead)
+        {
+            playerData = playerDataRaw.Init();
+            Context.PlayerData = playerData;
+
+            var managerData = DataPersistenceManager.Instance;
+        
+            if (managerData && managerData.HasGameData() && managerData.CanTPPlayerToLastPos())
+            {
+                var lastPuzzle = PuzzleManager.Instance.GetPuzzleById(managerData.GetLastVisitedPuzzleId());
+
+                if (lastPuzzle && lastPuzzle.SpawnPoint) 
+                {
+                    transform.position = lastPuzzle.SpawnPoint.position;
+                }
+                else 
+                {
+                    transform.position = originPos; 
+                }
+            }
+            else
+            {
+                transform.position = originPos;
+            }
+        }
+        else
+        {
+            if (positionSaver is { Count: > 0 })
+            {
+                transform.position = positionSaver.GetRespawnPosition();
+            }
+            
+            positionSaver.Clear();
+        }
+
+        Physics.SyncTransforms();
+        
+        yield return new WaitForSeconds(0.2f);
+        
+        yield return StartCoroutine(UiManager.Instance.FadeBlackScreen(0f, 0.5f));
+        playerController.enabled = true;
+    }
+    
+    public void TriggerRespawn(bool isDead)
+    {
+        if (respawnRoutine != null)
+            StopCoroutine(respawnRoutine);
+        
+
+        respawnRoutine = StartCoroutine(PlayerRespawn(isDead));
+    }
 }

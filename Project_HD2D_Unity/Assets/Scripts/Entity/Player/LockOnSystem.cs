@@ -82,9 +82,13 @@ public class LockOnSystem : MonoBehaviour
 
     public void Unlock()
     {
+        if (CurrentTarget != null)
+        {
+            SoundManager.Instance?.PlaySfx(SoundType.Energy_desactivation);
+        }
+        
         CurrentTarget = null;
         vfxManagerPlayer.LinkVfx(false);
-        SoundManager.Instance?.PlaySfx(SoundType.Energy_desactivation);
         SoundManager.Instance?.StopLoopingSfx(SoundType.Fissure_Lock);
     }
 

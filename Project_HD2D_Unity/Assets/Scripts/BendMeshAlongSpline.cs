@@ -34,12 +34,16 @@ public class ArrayCurveSplineMesh : MonoBehaviour
 
     private void OnValidate()
     {
+#if UNITY_EDITOR
+        if (UnityEditor.BuildPipeline.isBuildingPlayer) return;
+#endif
+
         if (!rebuildInEditor || !gameObject.activeInHierarchy)
             return;
 
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.delayCall -= Rebuild;
-        UnityEditor.EditorApplication.delayCall += Rebuild;
+        UnityEditor.EditorApplication.delayCall -= SafeRebuild;
+        UnityEditor.EditorApplication.delayCall += SafeRebuild;
 #endif
     }
 
@@ -51,8 +55,17 @@ public class ArrayCurveSplineMesh : MonoBehaviour
 
     private void Cache()
     {
+        if (this == null) return; // for build
+
         if (splineContainer == null)
             splineContainer = GetComponent<SplineContainer>();
+    }
+    
+    
+    private void SafeRebuild()
+    {
+        if (this == null) return;
+        Rebuild();
     }
     
     [ContextMenu("Rebuild")]
@@ -60,9 +73,18 @@ public class ArrayCurveSplineMesh : MonoBehaviour
     {
         if (Application.isPlaying) return;
         
+#if UNITY_EDITOR
+        if (UnityEditor.EditorApplication.isCompiling || UnityEditor.BuildPipeline.isBuildingPlayer) 
+            return;
+#endif
+        
         Cache();
         
+        if (this == null) return;
+        
         Transform visualContainer = GetOrCreateContainer();
+        
+        if (visualContainer == null) return;
         
         ClearGeneratedObjects(visualContainer);
 
@@ -217,6 +239,7 @@ public class ArrayCurveSplineMesh : MonoBehaviour
     private Transform GetOrCreateContainer()
     {
         Transform container = transform.Find(subContainerName);
+        
         if (container == null)
         {
             GameObject go = new GameObject(subContainerName);
@@ -266,29 +289,37 @@ public class ArrayCurveSplineMesh : MonoBehaviour
     {
         if (meshesRootsVisual != null)
         {
-            foreach (var m in meshesRootsVisual)
+            for (int i = meshesRootsVisual.Count - 1; i >= 0; i--)
             {
+                Mesh m = meshesRootsVisual[i];
                 if (m == null) continue;
-                if (Application.isPlaying) Destroy(m);
-                else DestroyImmediate(m);
+
+                if (Application.isPlaying) 
+                {
+                    Destroy(m);
+                }
+                else 
+                {
+                    DestroyImmediate(m, true); 
+                }
             }
             meshesRootsVisual.Clear();
         }
 
-        if (container == null) return;
+        if (container == null || this == null) return;
 
-        List<GameObject> toDestroy = new List<GameObject>();
-        foreach (Transform child in container) toDestroy.Add(child.gameObject);
-
-        foreach (GameObject child in toDestroy)
+        for (int i = container.childCount - 1; i >= 0; i--)
         {
-            if (Application.isPlaying) 
+            Transform child = container.GetChild(i);
+            if (child == null) continue;
+
+            if (Application.isPlaying)
             {
-                Destroy(child);
+                Destroy(child.gameObject);
             }
-            else 
+            else
             {
-                DestroyImmediate(child);
+                DestroyImmediate(child.gameObject);
             }
         }
     }

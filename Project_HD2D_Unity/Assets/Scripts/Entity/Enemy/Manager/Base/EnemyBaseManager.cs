@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using Interface;
 using UnityEngine;
 using UnityEngine.AI;
@@ -53,6 +54,9 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     private   bool         isInitialized;
     
     private Vector3 originalPosition;
+
+    private bool isInRecover;
+    private Coroutine recoverCoroutine;
     
     public event Action OnTakeDamage;
     
@@ -149,7 +153,9 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
         if (newState == null || newState == CurrentState) return;
 
         CurrentState?.ExitState(context);
+        
         PreviousBaseState = CurrentState;
+        
         CurrentState      = newState;
         
         CurrentState.EnterState(context);
@@ -247,6 +253,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
     public virtual void TakeDamage(int damage, Vector3 hitDirection)
     {
+        if(isInRecover) return;
         if (CurrentState is { CanTakeDamage: false }) return;
 
         context.HitDirection  = hitDirection;
@@ -423,5 +430,18 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
         context.Data.ResetKo();
         HandleDamageUI();
         ChangeState(PatrolState);
+    }
+
+    public void RecoverPhase()
+    {
+        if(recoverCoroutine != null) StopCoroutine(recoverCoroutine);
+        recoverCoroutine = StartCoroutine(RecoverPhaseIe());
+    }
+    
+    private IEnumerator RecoverPhaseIe()
+    {
+        isInRecover = true;
+        yield return new WaitForSeconds(2);
+        isInRecover = false;
     }
 }

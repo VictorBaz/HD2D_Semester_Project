@@ -66,11 +66,13 @@ public class EnemyDropState : EnemyBaseState
         {
             actx.TransitionTo(actx.Manager.ChaseState);
             actx.VfxManager.StopKoVfx();
+            actx.Manager.RecoverPhase();
         }
         else
         {
             actx.TransitionTo(actx.Manager.PatrolState);
             actx.VfxManager.StopKoVfx();
+            actx.Manager.RecoverPhase();
         }
     }
 

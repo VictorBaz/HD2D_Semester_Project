@@ -73,6 +73,9 @@ public class EnemyKoState : EnemyBaseState
         if (!actx.Manager.IsGrounded(actx.Data.GroundDetectionDistance,actx.Data.NavMeshSampleMargin))
             actx.TransitionTo(actx.Manager.DropState);
         else
+        {
+            actx.Manager.RecoverPhase();
             actx.TransitionTo(actx.Manager.GoToSpawnState);
+        }
     }
 }

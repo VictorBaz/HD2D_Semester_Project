@@ -251,29 +251,33 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
 
     #region IDamageable
 
-    public virtual void TakeDamage(int damage, Vector3 hitDirection, int index)
+    public virtual void TakeDamage(int damage, Vector3 hitDirection, int attackType)
     {
-        if(isInRecover) return;
-        if (CurrentState is { CanTakeDamage: false }) return;
+        if (isInRecover || (CurrentState != null && !CurrentState.CanTakeDamage)) 
+            return;
 
-        context.HitDirection  = hitDirection;
+        context.HitDirection = hitDirection;
         context.Data.CurrentKo += damage;
-        OnTakeDamage ?.Invoke();
+    
+        OnTakeDamage?.Invoke();
 
-        if (context.Data.IsKoFull())
+        bool isHeavyAttack = (attackType == 2); 
+
+        if (isHeavyAttack || context.Data.IsKoFull())
         {
             ChangeState(HitState);
             return;
         }
-        
-        if (index != 2) return;
-        
-        ChangeState(HitState);
+
+        VfxManager.PlayHitVfx();
     }
 
     public void TakeDamage(int value, Vector3 hitDirection)
     {
-        // for the moment empty no idea how to do differently
+        context.HitDirection = hitDirection;
+        context.Data.CurrentKo += value;
+        OnTakeDamage?.Invoke();
+        ChangeState(HitState);
     }
 
     public Transform GetTransform()          => transform;

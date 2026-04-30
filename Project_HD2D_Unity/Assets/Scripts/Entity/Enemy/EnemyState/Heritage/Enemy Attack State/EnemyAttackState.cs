@@ -85,7 +85,7 @@ public abstract class EnemyAttackState : EnemyBaseState
     {
         float elapsed = 0f;
     
-        float startValue = actx.GetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME, 1); 
+        float startValue = actx.GetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME, GameConstants.INDEX_MATERIAL_PULSE); 
 
         while (elapsed < time)
         {
@@ -93,10 +93,10 @@ public abstract class EnemyAttackState : EnemyBaseState
             float t = elapsed / time;
         
             float v = Mathf.Lerp(startValue, targetValue, t);
-            actx.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME, v, 1);
+            actx.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME, v, GameConstants.INDEX_MATERIAL_PULSE);
             yield return null;
         }
     
-        actx.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME, targetValue, 1);
+        actx.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME, targetValue, GameConstants.INDEX_MATERIAL_PULSE);
     }
 }

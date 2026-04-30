@@ -450,6 +450,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
         context.Data.ResetKo();
         HandleDamageUI();
         ChangeState(PatrolState);
+        VfxManager.TriggerSpawnVfx();
     }
 
     public void RecoverPhase()

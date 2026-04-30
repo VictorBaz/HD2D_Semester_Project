@@ -5,6 +5,7 @@ public class VfxManagerEnemy : VfxManagerBase
     [SerializeField] private ParticleSystem hitVfx;
     [SerializeField] private ParticleSystem attackVfx;
     [SerializeField] private ParticleSystem koVfx;
+    [SerializeField] private ParticleSystem spawnVfx;
 
     public void PlayHitVfx()
     {
@@ -24,5 +25,10 @@ public class VfxManagerEnemy : VfxManagerBase
     public void StopKoVfx()
     {
         StopParticleSystem(koVfx, true);
+    }
+    
+    public void TriggerSpawnVfx()
+    {
+        TriggerParticleSystem(spawnVfx);
     }
 }

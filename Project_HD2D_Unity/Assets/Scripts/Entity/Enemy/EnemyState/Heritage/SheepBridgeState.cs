@@ -13,6 +13,8 @@ public class SheepBridgeState : EnemyBaseState
 
     public override void EnterState(EnemyContext context)
     {
+        context.VfxManager.StopKoVfx();
+        
         if (!sheepManager) sheepManager = context.Manager as EnemySheepManager;
         if (!sheepAnimationManager) sheepAnimationManager = context.AnimManager as SheepAnimationManager;
         

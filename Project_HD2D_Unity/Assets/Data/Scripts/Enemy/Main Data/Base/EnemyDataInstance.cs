@@ -75,6 +75,7 @@ public class EnemyDataInstance
     public bool IsKoFull() => CurrentKo >= MaxKo;
     public bool IsKoTimerEmpty() => KoTime <= 0;
     public void ResetKo() => CurrentKo = 0;
+    public void ResetKoTimer() => KoTime = 0;
     
     
     public float GetAnimationCLipLengthChargeAttack() => ChargeAnimationClip.length;

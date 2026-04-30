@@ -25,7 +25,7 @@ public class BigGuyJumpAttackState : EnemyAttackState
         canTakeDamage = true;
         
         if (shaderRoutine != null) actx.Manager.StopCoroutine(shaderRoutine);
-        actx.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME,0,1);
+        actx.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME,0,GameConstants.INDEX_MATERIAL_PULSE);
     }
     
 

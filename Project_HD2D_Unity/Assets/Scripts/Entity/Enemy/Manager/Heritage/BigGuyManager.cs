@@ -12,6 +12,6 @@ public class BigGuyManager : EnemyBaseManager
     protected override void Start()
     {
         base.Start();
-        context.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME,0,1);
+        context.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME,0,GameConstants.INDEX_MATERIAL_PULSE);
     }
 }

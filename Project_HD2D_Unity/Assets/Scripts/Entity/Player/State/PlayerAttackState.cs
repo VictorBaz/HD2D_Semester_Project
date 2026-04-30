@@ -171,5 +171,7 @@ namespace Player.State
                 _ => SoundType.Combo_Woosh_1
             };
         }
+        
+        public int ComboIndex => comboIndex;
     }
 }

@@ -6,6 +6,7 @@ public class PlayerWeaponHitbox : BaseHitbox
     [Header("Weapon Specific")]
     [SerializeField] private int    damage    = 10;
     [SerializeField] private string targetTag = "Enemy";
+    [SerializeField] private PlayerManager playerManager;
 
     private List<IDamageable> alreadyHitTargets = new();
 
@@ -15,12 +16,12 @@ public class PlayerWeaponHitbox : BaseHitbox
     {
         if (!IsTarget(other)) return;
         
-        var target = other.GetComponent<IDamageable>();
+        var target = other.GetComponent<IDamageableEnemy>();
         if (target == null || alreadyHitTargets.Contains(target)) return;
 
         if (!HasClearLineTo(other)) return;
 
-        target.TakeDamage(damage, transform.forward);
+        target.TakeDamage(damage, transform.forward,playerManager.AttackState.ComboIndex);
         alreadyHitTargets.Add(target);
     }
 

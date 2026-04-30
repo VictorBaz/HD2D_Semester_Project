@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
+public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarryable
 {
     #region State Properties
     public EnemyPatrolState    PatrolState    { get; protected set; }
@@ -251,7 +251,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
     #region IDamageable
 
-    public virtual void TakeDamage(int damage, Vector3 hitDirection)
+    public virtual void TakeDamage(int damage, Vector3 hitDirection, int index)
     {
         if(isInRecover) return;
         if (CurrentState is { CanTakeDamage: false }) return;
@@ -259,12 +259,28 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
         context.HitDirection  = hitDirection;
         context.Data.CurrentKo += damage;
         OnTakeDamage ?.Invoke();
+
+        if (context.Data.IsKoFull())
+        {
+            ChangeState(HitState);
+            return;
+        }
+        
+        if (index != 2) return;
+        
         ChangeState(HitState);
+    }
+
+    public void TakeDamage(int value, Vector3 hitDirection)
+    {
+        // for the moment empty no idea how to do differently
     }
 
     public Transform GetTransform()          => transform;
     public bool      IsInParryWindow()        => CurrentState != null && CurrentState.CanBeParry;
     public bool      IsInParryWindowPerfect() => false;
+
+    
 
     #endregion
 

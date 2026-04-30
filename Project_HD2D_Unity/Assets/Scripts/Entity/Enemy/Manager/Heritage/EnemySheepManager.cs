@@ -32,9 +32,6 @@ public class EnemySheepManager : EnemyBaseManager
                 ResetEnemy();
                 break;
         }
-
-
-        Debug.Log(CurrentState);
     }
 
     public void ActivateBridge() => ToggleBridge(true);

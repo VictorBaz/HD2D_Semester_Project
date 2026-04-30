@@ -448,6 +448,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
         transform.position = originalPosition;
         VfxManager.StopKoVfx();
         context.Data.ResetKo();
+        context.Data.ResetKoTimer();
         HandleDamageUI();
         ChangeState(PatrolState);
         VfxManager.TriggerSpawnVfx();

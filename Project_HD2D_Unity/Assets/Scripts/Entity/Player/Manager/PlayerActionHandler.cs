@@ -251,7 +251,7 @@ public class PlayerActionHandler : MonoBehaviour
     #region Sap
 
     private void TryGiveSap()
-    {
+    {/*
         var targets = DetectionHelper.FindVisibleTargets<ISapLockable>(
             transform, Data.LockRange, Data.LockAngle, Data.SapLayerMask);
 
@@ -263,7 +263,7 @@ public class PlayerActionHandler : MonoBehaviour
 
         sap.GiveSap();
         Data.AddSap();
-        UiEvents.TriggerSapChanged(Data.Sap);
+        UiEvents.TriggerSapChanged(Data.Sap);*/
     }
 
     #endregion

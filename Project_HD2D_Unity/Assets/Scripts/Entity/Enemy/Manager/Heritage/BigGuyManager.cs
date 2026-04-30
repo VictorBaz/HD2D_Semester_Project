@@ -2,10 +2,11 @@
 
 public class BigGuyManager : EnemyBaseManager
 {
-
-    protected override void InitializeAttackState()
+    
+    protected override void InitializeState()
     {
         AttackState = new BigGuyJumpAttackState();
+        DropState = new BigGuyDropState();
     }
 
     protected override void Start()

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EnemySheepManager : EnemyBaseManager
 {
-    protected override void InitializeAttackState()
+    protected override void InitializeState()
     {
         AttackState = new EnemySheepAttackState();
     }

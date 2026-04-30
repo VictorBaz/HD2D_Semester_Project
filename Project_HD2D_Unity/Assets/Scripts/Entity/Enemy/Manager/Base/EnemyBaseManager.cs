@@ -69,7 +69,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
     protected virtual void Start()
     {
-        InitializeAttackState();
+        InitializeState();
         SubscribeEvents();
         
         if (KoSlider != null)
@@ -138,7 +138,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
         StaticState    = new EnemyStaticState();
     }
 
-    protected abstract void InitializeAttackState();
+    protected abstract void InitializeState();
 
     #endregion
 
@@ -370,13 +370,9 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     {
         Vector3 rayOrigin = transform.position;
         float totalDist = detectionDistance;
-
         
-        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, totalDist, ~context.LayerMaskEnemy))
-        {
-            return NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, navMeshMargin, NavMesh.AllAreas);
-        }
-        return false;
+        return Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, totalDist, ~context.LayerMaskEnemy) &&
+               NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, navMeshMargin, NavMesh.AllAreas);
     }
     
     public bool IsGroundedDebug(float detectionDistance = 0.1f, float navMeshMargin = 0.1f)

@@ -53,7 +53,7 @@ public class EnemyDropState : EnemyBaseState
         actx.AnimManager.SetFalling(false);
     }
 
-    private void LandingSequence(EnemyContext actx)
+    protected virtual void LandingSequence(EnemyContext actx)
     {
 
         bool isStillKO = actx.Manager.KoSlider != null && actx.Data.KoTime > 0;

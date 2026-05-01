@@ -37,7 +37,7 @@ public class Root : MonoBehaviour, IDataPersistence
     private readonly List<Renderer> childRenderers = new List<Renderer>();
     
     private MaterialPropertyBlock propBlockRoot;
-    private static readonly int EnergyPropertyID = Shader.PropertyToID("_LineCount");
+    private static readonly int EnergyPropertyID = Shader.PropertyToID("_LineOffCount");
     private readonly Dictionary<object, Renderer> branchMap = new Dictionary<object, Renderer>();
     #endregion
 

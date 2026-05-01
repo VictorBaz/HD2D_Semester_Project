@@ -21,6 +21,8 @@ public class DataPersistenceManager : MonoBehaviour
     private FileDataHandler dataHandler;
 
     public static DataPersistenceManager Instance { get; private set; }
+    
+    [SerializeField] private PlayerData playerData;
 
     #endregion
 
@@ -75,7 +77,16 @@ public class DataPersistenceManager : MonoBehaviour
 
     public void NewGame()
     {
-        gameData = new GameData();
+        gameData = new GameData
+        {
+            PlayerData =
+            {
+                Life = playerData.Resources.StartingLife,
+                Energy = playerData.Resources.StartingEnergy,
+                Sap = playerData.Resources.StartingSap
+            }
+        };
+
         SaveGame();
     }
 

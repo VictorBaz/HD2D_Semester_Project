@@ -5,7 +5,7 @@ public class GameData
 {
     public long LastUpdated;
 
-    public PlayerSaveData PlayerData;
+    public PlayerSaveData PlayerData = new PlayerSaveData();
 
     public List<string> CompletedPuzzles = new();
     

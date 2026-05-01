@@ -11,4 +11,9 @@ public class PlayerSaveData
         Energy = data.Energy;
         Sap = data.Sap;
     }
+
+    public PlayerSaveData()
+    {
+        
+    }
 }

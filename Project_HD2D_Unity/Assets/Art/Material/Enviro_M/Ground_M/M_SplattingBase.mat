@@ -25,11 +25,11 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _AC_Diffuse:
-        m_Texture: {fileID: 2800000, guid: 743fafa0449e0994a8ba706bd26f1a62, type: 3}
+        m_Texture: {fileID: 2800000, guid: e2cce7aa68dfee14ea3199f5c1bedd75, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _AC_Normal:
-        m_Texture: {fileID: 2800000, guid: 2c5c63ecf71df744eb1079a90c9000fc, type: 3}
+        m_Texture: {fileID: 2800000, guid: b338798973cee0e438368ea0f6224f1d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _AC_SmoothHeight:
@@ -37,11 +37,11 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BC_Diffuse:
-        m_Texture: {fileID: 2800000, guid: 446775328590d80438f7a9e7d4ca2579, type: 3}
+        m_Texture: {fileID: 2800000, guid: 3f0bd6ec9b1a4f246a312d22709f1564, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BC_Normal:
-        m_Texture: {fileID: 2800000, guid: fbc294aaa9afa91418449d758771f3ea, type: 3}
+        m_Texture: {fileID: 2800000, guid: 826feab7091ab7b47a26c900a4d0a65f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BC_SmoothHeight:
@@ -49,11 +49,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _GC_Diffuse:
-        m_Texture: {fileID: 2800000, guid: 743fafa0449e0994a8ba706bd26f1a62, type: 3}
+        m_Texture: {fileID: 2800000, guid: 81715f0d3ddad55468afe2cda9cdf771, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _GC_Diffuse_Corrupt:
+        m_Texture: {fileID: 2800000, guid: 81715f0d3ddad55468afe2cda9cdf771, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _GC_Normal:
-        m_Texture: {fileID: 2800000, guid: 2c5c63ecf71df744eb1079a90c9000fc, type: 3}
+        m_Texture: {fileID: 2800000, guid: 0a4a893a963c8f84593aa3fd8d8d5579, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _GC_SmoothHeight:
@@ -61,25 +65,34 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RC_Diffuse:
-        m_Texture: {fileID: 2800000, guid: 61d6da4bba31b1043a9d862ba93fae95, type: 3}
+        m_Texture: {fileID: 2800000, guid: 645bb0cf2e5b60a4e87b81f41710bf91, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _RC_Diffuse_Corrupt:
+        m_Texture: {fileID: 2800000, guid: 36f757b34ce07c2429ba408cc6193fea, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RC_Normal:
-        m_Texture: {fileID: 2800000, guid: 9b7c9ff08c0240c47b0832af8b467276, type: 3}
+        m_Texture: {fileID: 2800000, guid: a8f1849520f53c340aeb79e68f166a51, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RC_SmoothHeight:
         m_Texture: {fileID: 2800000, guid: e79a860e47dce934ab5ba3f498d08cc4, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SplatingMap:
+        m_Texture: {fileID: 2800000, guid: 31591207800326f43a64a244b01cccf2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AC_TillingSize: 5
-    - _BC_TillingSize: 5
-    - _GC_TillingSize: 5
-    - _NormalStrengh: 1.5
+    - _AC_TillingSize: 0.3
+    - _BC_TillingSize: 32.26
+    - _Corupt: -1.95
+    - _GC_TillingSize: 30
+    - _NormalStrengh: 1
     - _QueueControl: 0
-    - _RC_TillingSize: 5
+    - _RC_TillingSize: 15
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1

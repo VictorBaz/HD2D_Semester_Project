@@ -88,6 +88,8 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     {
         UiEvents.TriggerEnergySetup(Context.PlayerData.MaxEnergy, Context.PlayerData.Energy);
         UiEvents.TriggerSapChanged(Context.PlayerData.Sap);
+        if (UiManager.Instance)
+            UiManager.Instance?.SetupLifeUi(Context.PlayerData.MaxLife, Context.PlayerData.MaxLife);
     }
 
     private void Update()
@@ -144,9 +146,12 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 
         Context.HitDirection = hitDirection;
 
-        playerData.Life -= value;
+        Context.PlayerData.Life -= value;
+        
+        if (UiManager.Instance)
+            UiManager.Instance.UpdateLifeUi(Context.PlayerData.Life);
 
-        if (playerData.Life <= 0)
+        if (Context.PlayerData.Life <= 0) 
         {
             TriggerRespawn(true);
             return;

@@ -13,6 +13,9 @@ public class UiManager : MonoBehaviour
 
     public static UiManager Instance;
 
+    [Header("UI Elements")] 
+    [SerializeField] private Slider lifeSlider;
+    
     [Header("State Panels")]
     [SerializeField] private CanvasGroup pauseMenuPanel;
     [SerializeField] private CanvasGroup mainMenuPanel;
@@ -376,4 +379,11 @@ public class UiManager : MonoBehaviour
     }
     
     #endregion
+
+    public void SetupLifeUi(float maxLife, float currentLife)
+    {
+        lifeSlider.maxValue = maxLife;
+        lifeSlider.value = currentLife;
+    }
+    public void UpdateLifeUi(float value) => this.UpdateSlider(lifeSlider,value,0.5f);
 }

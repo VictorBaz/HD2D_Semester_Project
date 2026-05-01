@@ -32,79 +32,6 @@ Transform:
   - {fileID: 4238628147604044835}
   m_Father: {fileID: 2000121637177399522}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2709290558494304992
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2352891575391876190}
-  - component: {fileID: 2152946453185014866}
-  - component: {fileID: 7713056577435524652}
-  m_Layer: 12
-  m_Name: AttackCollider
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!4 &2352891575391876190
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2709290558494304992}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1.27}
-  m_LocalScale: {x: 2.41, y: 2.41, z: 2.41}
-  m_ConstrainProportionsScale: 1
-  m_Children: []
-  m_Father: {fileID: 7193486704870444495}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &2152946453185014866
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2709290558494304992}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7713056577435524652
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2709290558494304992}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f539ba329fd24dddbeda59f7c7d5625b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerWeaponHitbox
-  obstacleLayer:
-    serializedVersion: 2
-    m_Bits: 1033
-  originTransform: {fileID: 7193486704870444495}
-  damage: 5
-  targetTag: Enemy
-  playerManager: {fileID: 2994586790206306842}
 --- !u!1 &3143151671570077153
 GameObject:
   m_ObjectHideFlags: 0
@@ -146,7 +73,6 @@ Transform:
   - {fileID: 6360761880435932053}
   - {fileID: 1369301271926253614}
   - {fileID: 6312195323713614967}
-  - {fileID: 2352891575391876190}
   - {fileID: 2000121637177399522}
   - {fileID: 5161599153679383581}
   - {fileID: 4646889295425096588}
@@ -216,8 +142,9 @@ MonoBehaviour:
   rb: {fileID: 4806072438962667457}
   animator: {fileID: 6085650217092667145}
   lockOnSystem: {fileID: 5517195392810808536}
-  colliderAttack: {fileID: 2709290558494304992}
   cam: {fileID: 0}
+  attackRadius: 2
+  attackColliderLocalOffset: {x: 0, y: 0.06, z: 1.82}
 --- !u!114 &7459953298653950144
 MonoBehaviour:
   m_ObjectHideFlags: 0

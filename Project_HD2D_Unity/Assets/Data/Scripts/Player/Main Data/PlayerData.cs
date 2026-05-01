@@ -48,6 +48,7 @@ public class MovementSettings
 public class CombatSettings
 {
     [Header("Melee Combo")]
+    public LayerMask LayerEnemy;
     public float ComboWindow = 0.5f;
     public CombatHitData[] ComboHits;
 
@@ -160,6 +161,7 @@ public class PlayerDataInstance
     public float MaxSlopeAngle;
     public float CoyoteTime;
     
+    public LayerMask LayerEnemy;
     public CombatHitData[] ComboHits;
     public AnimationClip ParryAnimationClip;
     public float ParryHitboxStartOffset;
@@ -212,6 +214,7 @@ public class PlayerDataInstance
         PlayerHeight = data.Movement.PlayerHeight;
         MaxSlopeAngle = data.Movement.MaxSlopeAngle;
 
+        LayerEnemy = data.Combat.LayerEnemy;
         ComboHits = data.Combat.ComboHits;
         ParryAnimationClip = data.Combat.ParryAnimationClip;
         ParryHitboxStartOffset = data.Combat.ParryHitboxStartOffset;

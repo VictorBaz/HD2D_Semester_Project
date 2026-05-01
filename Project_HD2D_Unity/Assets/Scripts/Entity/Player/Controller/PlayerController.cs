@@ -16,10 +16,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private LockOnSystem lockOnSystem;
 
-    [SerializeField] private GameObject colliderAttack;
     [SerializeField] private Camera cam;
-
-    private Vector3 attackColliderLocalOffset;
     private RaycastHit slopeHit;
     private bool isInLockMode;
     private Quaternion targetRotation;
@@ -28,6 +25,10 @@ public class PlayerController : MonoBehaviour
     private float currentSpeed = 0f;
     
     private bool isJumping;
+    
+    [SerializeField] private float attackRadius = 0.5f;
+    private static readonly Collider[] _hitBuffer = new Collider[10];
+    [SerializeField] private Vector3 attackColliderLocalOffset = new Vector3(0f, 0.5f, 0.8f);
     
     #endregion
 
@@ -41,9 +42,6 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         targetRotation = transform.rotation;
-        attackColliderLocalOffset = colliderAttack.transform.localPosition;
-        colliderAttack.transform.SetParent(null);
-        colliderAttack.SetActive(false);
     }
 
     #endregion
@@ -240,21 +238,23 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region Collider
-
-    private void ToggleCollider(GameObject collider,bool active)
-    {
-        if (collider != null)
-            collider.SetActive(active);
-    }
-
-    public void AttackOn()
-    {
-        colliderAttack.transform.position = transform.TransformPoint(attackColliderLocalOffset);
-        colliderAttack.transform.rotation = transform.rotation;
-        ToggleCollider(colliderAttack, true);
-    }
-    public void AttackOff() => ToggleCollider(colliderAttack,false);
     
+    public int OverlapAttack(LayerMask layer)
+    {
+        Vector3 pos = transform.TransformPoint(attackColliderLocalOffset);
+        return Physics.OverlapSphereNonAlloc(pos, attackRadius, _hitBuffer, layer);
+    }
 
+    public Collider[] HitBuffer => _hitBuffer;
     #endregion
+    
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.4f);
+        Vector3 attackPos = transform.TransformPoint(attackColliderLocalOffset);
+        Gizmos.DrawSphere(attackPos, attackRadius);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(attackPos, attackRadius);
+    }
 }

@@ -16,12 +16,20 @@ public class PlayerWeaponHitbox : BaseHitbox
     {
         if (!IsTarget(other)) return;
         
-        var target = other.GetComponent<IDamageableEnemy>();
+        var target = other.GetComponent<IDamageable>();
         if (target == null || alreadyHitTargets.Contains(target)) return;
-
+        
         if (!HasClearLineTo(other)) return;
 
-        target.TakeDamage(damage, transform.forward,playerManager.AttackState.ComboIndex);
+        if (target is IDamageableEnemy t)
+        {
+            t.TakeDamage(damage, transform.forward,playerManager.AttackState.ComboIndex);
+        }
+        else
+        {
+            target.TakeDamage(damage,transform.forward);
+        }
+        
         alreadyHitTargets.Add(target);
     }
 

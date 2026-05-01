@@ -126,6 +126,7 @@ GameObject:
   - component: {fileID: 7192318916807630357}
   - component: {fileID: 8433371137161494958}
   - component: {fileID: 4640899058790480834}
+  - component: {fileID: 4027141078073716968}
   m_Layer: 6
   m_Name: Parasite
   m_TagString: Enemy
@@ -242,7 +243,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Parasite
   life: 1
   lifeMax: 1
-  blockedVats: []
   entityID: {fileID: 4640899058790480834}
 --- !u!114 &4640899058790480834
 MonoBehaviour:
@@ -257,6 +257,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityID
   id: f0e96d9a-d28d-4ee3-8549-eff8353b745d
+--- !u!54 &4027141078073716968
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5966296267706330570}
+  serializedVersion: 5
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 126
+  m_CollisionDetection: 0
 --- !u!1 &7309146653123268892
 GameObject:
   m_ObjectHideFlags: 0

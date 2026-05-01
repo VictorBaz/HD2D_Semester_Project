@@ -12,13 +12,13 @@ public abstract class PlayerInAirBase : PlayerBaseState
     {
         HandleMovement(psc);
         HandleAnimation(psc);
-        CheckSnapToPlatformEdge(psc);
+        //CheckSnapToPlatformEdge(psc);
     }
 
     protected void AirControl(PlayerStateContext psc)
     {
         HandlePhysics(psc);
-        ApplySnapToPlatformEdge(psc);
+        //ApplySnapToPlatformEdge(psc);
     }
 
 

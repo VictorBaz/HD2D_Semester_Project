@@ -18,12 +18,9 @@ public class PlayerJumpState : PlayerInAirBase
         float t = psc.PlayerData.JumpDuration;
         requiredJumpGravity = (2f * h) / (t * t);
 
-        if (psc.Rb.linearVelocity.y < 0.1f)
-        {
-            float jumpVelocity = requiredJumpGravity * t;
-            psc.Rb.linearVelocity = new Vector3(psc.Rb.linearVelocity.x, jumpVelocity, psc.Rb.linearVelocity.z);
-        }
-            
+        float jumpVelocity = requiredJumpGravity * t;
+        psc.Rb.linearVelocity = new Vector3(psc.Rb.linearVelocity.x, jumpVelocity, psc.Rb.linearVelocity.z);
+
         psc.AnimationManager.TriggerJump();
         psc.AnimationManager.SetFalling(false);
     }

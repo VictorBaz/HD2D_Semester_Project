@@ -11,6 +11,16 @@ public class PuzzleManager : MonoBehaviour, IDataPersistence
 
     private string idLastVisitedPuzzle;
 
+    private void Start()
+    {
+        foreach (Puzzle puzzle in puzzles)
+        {
+            if (puzzle == null) continue;
+
+            puzzle.visuals.ApplyProgress(1f);
+        }
+    }
+
     private string LastPuzzleCompleted()
     {
         if (completedPuzzles.Count == 0)

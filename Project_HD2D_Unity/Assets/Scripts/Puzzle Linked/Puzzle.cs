@@ -52,7 +52,7 @@ public class Puzzle : MonoBehaviour
 
         if (isCompleted)
         {
-            visuals.ApplyProgress(1.0f);
+            visuals.ApplyProgress(0f);
             
             if (bossParasite != null)
             {
@@ -82,10 +82,10 @@ public class Puzzle : MonoBehaviour
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            visuals.ApplyProgress(elapsed / duration);
+            visuals.ApplyProgress(1 - elapsed / duration);
             yield return null;
         }
-        visuals.ApplyProgress(1.0f);
+        visuals.ApplyProgress(0f);
     }
     #endregion
 

@@ -28,26 +28,29 @@ MonoBehaviour:
     PlayerHeight: 1.85
     MaxSlopeAngle: 45
   Combat:
+    LayerEnemy:
+      serializedVersion: 2
+      m_Bits: 64
     ComboWindow: 0.8
     ComboHits:
     - Clip: {fileID: 7400000, guid: 19cc531548bd44a4aa0772f6e537b0b4, type: 2}
       DashSpeed: 15
       DashStartOffset: 0.33
       DashDuration: 0.1
-      HitboxStartOffset: 0.21
-      HitboxActiveDuration: 0.21
+      HitboxStartOffset: 0
+      HitboxActiveDuration: 0.5
     - Clip: {fileID: 7400000, guid: 991272b8305d90c42aee133d6b23b3a7, type: 2}
       DashSpeed: 15
       DashStartOffset: 0.17
       DashDuration: 0.1
-      HitboxStartOffset: 0.36
-      HitboxActiveDuration: 0.15
+      HitboxStartOffset: 0
+      HitboxActiveDuration: 0.5
     - Clip: {fileID: 7400000, guid: fadeed0445619d3488daf51efc08a6bd, type: 2}
       DashSpeed: 15
       DashStartOffset: 0.15
       DashDuration: 0.1
-      HitboxStartOffset: 0.25
-      HitboxActiveDuration: 0.15
+      HitboxStartOffset: 0
+      HitboxActiveDuration: 0.5
     ParryAnimationClip: {fileID: 7400000, guid: 1f7babac7bb2e4a42b2dd3e3dfb6af77, type: 2}
     ParryHitboxStartOffset: 0
     ParryActiveDuration: 0.5
@@ -81,7 +84,7 @@ MonoBehaviour:
       m_Bits: 64
   Resources:
     MaxLife: 5
-    MaxEnergy: 4
+    MaxEnergy: 2
     StartingLife: 5
     StartingEnergy: 2
     StartingSap: 0

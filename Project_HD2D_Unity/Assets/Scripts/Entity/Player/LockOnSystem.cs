@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using Script.Manager;
 
 public class LockOnSystem : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class LockOnSystem : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private Transform playerTransform;
+    [SerializeField] private LineRenderer lockLink;
 
     private PlayerDataInstance playerData;
     
@@ -17,34 +19,26 @@ public class LockOnSystem : MonoBehaviour
     private List<ILockable> lockableTargets = new List<ILockable>();
 
     private Quaternion targetRotation;
+    
+    private VfxManagerPlayer vfxManagerPlayer;
 
     #endregion
 
-    public void ToggleLock()
-    {
+    #region Init
 
-        if (IsLocked)
-        {
-            Unlock();
-        }
-        else
-        {
-            TryLock();
-        }
+    public void InitData(PlayerDataInstance data)
+    {
+        playerData = data;
     }
 
-    /*public void HandleRotationLock(Rigidbody rb)
+    public void InitManager(PlayerStateContext psc)
     {
-        if (!IsLocked) return;
-        
-        if (!IsTargetValid(CurrentTarget))
-        {
-            Unlock();
-            return;
-        }
-        
-        rb.MoveRotation(targetRotation);
-    }*/
+        vfxManagerPlayer = psc.VfxManagerPlayer;
+    }
+
+    #endregion
+
+    #region Lock Behaviour
 
     public void CalculLockRotation()
     {
@@ -72,17 +66,35 @@ public class LockOnSystem : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Lock Gates
+
     public void TryLock()
     {
         lockableTargets = FindLockableTargets();
         if (lockableTargets.Count == 0) return;
         CurrentTarget = GetBestLockableTarget(lockableTargets);
+        vfxManagerPlayer.LinkVfx(true,CurrentTarget.GetLockTransform());
+        SoundManager.Instance?.PlaySfx(SoundType.Energy_activation);
+        SoundManager.Instance?.PlayLoopingSfx(SoundType.Fissure_Lock);
     }
 
     public void Unlock()
     {
+        if (CurrentTarget != null)
+        {
+            SoundManager.Instance?.PlaySfx(SoundType.Energy_desactivation);
+        }
+        
         CurrentTarget = null;
+        vfxManagerPlayer.LinkVfx(false);
+        SoundManager.Instance?.StopLoopingSfx(SoundType.Fissure_Lock);
     }
+
+    #endregion
+    
+    #region Lock algorithm
 
     private List<ILockable> FindLockableTargets()
     {
@@ -165,8 +177,6 @@ public class LockOnSystem : MonoBehaviour
         return true; 
     }
 
-    public void InitData(PlayerDataInstance data)
-    {
-        playerData = data;
-    }
+    #endregion
+    
 }

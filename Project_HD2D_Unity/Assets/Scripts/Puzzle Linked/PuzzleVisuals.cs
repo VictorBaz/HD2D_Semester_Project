@@ -33,14 +33,20 @@ public class PuzzleVisuals
     {
         affectedRenderers.Clear();
         Renderer[] all = root.GetComponentsInChildren<Renderer>(true);
-        
+    
         foreach (var r in all)
         {
-            if (r.sharedMaterial != null && r.sharedMaterial.HasProperty(shaderProperty))
+            bool hasProperty = false;
+            foreach (var mat in r.sharedMaterials)
             {
-                affectedRenderers.Add(r);
+                if (mat != null && mat.HasProperty(shaderProperty))
+                {
+                    hasProperty = true;
+                    break; 
+                }
             }
+
+            if (hasProperty) affectedRenderers.Add(r);
         }
-        Debug.Log($"<color=green>[PuzzleVisuals]</color> {affectedRenderers.Count} renderers trouvés.");
     }
 }

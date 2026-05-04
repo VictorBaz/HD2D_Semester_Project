@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using Script.Manager;
 using UnityEngine;
 
 namespace Player.State
@@ -14,13 +16,14 @@ namespace Player.State
         private bool      bufferWindowOpen;
         private int       comboIndex;
         private Coroutine currentAttackRoutine;
-
+        private readonly HashSet<IDamageable> _hitThisCombo = new();
         #endregion
 
         #region Base State Methods
 
         public override void EnterState(PlayerStateContext psc)
         {
+            _hitThisCombo.Clear();
             comboIndex       = 0;
             bufferNextAttack = false;
 
@@ -36,7 +39,6 @@ namespace Player.State
             bufferWindowOpen = false;
             bufferNextAttack = false;
 
-            psc.Controller.AttackOff();
             psc.Controller.SetGravity(true);
             psc.AnimationManager.ExitAttack();
         }
@@ -63,11 +65,15 @@ namespace Player.State
 
         private void StartAttackSequence(PlayerStateContext psc)
         {
+            _hitThisCombo.Clear();
+            
             if (currentAttackRoutine != null)
                 psc.Controller.StopCoroutine(currentAttackRoutine);
 
             psc.AnimationManager.SetAttackState(true, comboIndex);
             currentAttackRoutine = psc.Controller.RunRoutine(AttackMeleeIe(psc));
+            
+            SoundManager.Instance?.PlaySfx(GetSoundAttack(comboIndex));
         }
 
         private void RotateTowardsInput(PlayerStateContext psc)
@@ -87,8 +93,8 @@ namespace Player.State
             float         elapsed        = 0f;
 
             bufferWindowOpen = true;
-
-            psc.VfxManager.PlayFxCombo(comboIndex);
+            
+            psc.VfxManagerPlayer.PlayFxCombo(comboIndex);
             
             float actionDuration = Mathf.Max(
                 animLength,
@@ -100,13 +106,11 @@ namespace Player.State
                 elapsed += Time.deltaTime;
 
                 UpdateDashVelocity(psc, hit, dashDir, elapsed);
-                UpdateHitbox(psc, hit, elapsed, ref hitboxIsActive);
-
+                UpdateHitbox(psc, hit, elapsed);
                 yield return null;
             }
 
             psc.Rb.linearVelocity = Vector3.zero;
-            psc.Controller.AttackOff();
 
             yield return new WaitForSeconds(0.1f);
             bufferWindowOpen = false;
@@ -128,19 +132,26 @@ namespace Player.State
             }
         }
 
-        private void UpdateHitbox(PlayerStateContext psc, CombatHitData hit, float elapsed, ref bool hitboxIsActive)
+        private void UpdateHitbox(PlayerStateContext psc, CombatHitData hit, float elapsed)
         {
-            bool shouldBeActive = elapsed >= hit.HitboxStartOffset && elapsed <= hit.HitboxStartOffset + hit.HitboxActiveDuration;
+            bool shouldBeActive = elapsed >= hit.HitboxStartOffset &&
+                                  elapsed <= hit.HitboxStartOffset + hit.HitboxActiveDuration;
 
-            if (shouldBeActive && !hitboxIsActive)
+            if (!shouldBeActive) return;
+
+            int count = psc.Controller.OverlapAttack(psc.PlayerData.LayerEnemy);
+
+            for (int i = 0; i < count; i++)
             {
-                psc.Controller.AttackOn();
-                hitboxIsActive = true;
-            }
-            else if (!shouldBeActive && hitboxIsActive)
-            {
-                psc.Controller.AttackOff();
-                hitboxIsActive = false;
+                var damageable = psc.Controller.HitBuffer[i].GetComponent<IDamageable>();
+                if (damageable == null || _hitThisCombo.Contains(damageable)) continue;
+
+                if (damageable is IDamageableEnemy enemy)
+                    enemy.TakeDamage(2, psc.PlayerTransform.forward, comboIndex);
+                else
+                    damageable.TakeDamage(2, psc.PlayerTransform.forward);
+
+                _hitThisCombo.Add(damageable);
             }
         }
 
@@ -157,5 +168,18 @@ namespace Player.State
                 DetermineState(psc);
             }
         }
+
+        private SoundType GetSoundAttack(int comboIndex)
+        {
+            return comboIndex switch
+            {
+                0 => SoundType.Combo_Woosh_1,
+                1 => SoundType.Combo_Woosh_2,
+                2 => SoundType.Combo_Woosh_3,
+                _ => SoundType.Combo_Woosh_1
+            };
+        }
+        
+        public int ComboIndex => comboIndex;
     }
 }

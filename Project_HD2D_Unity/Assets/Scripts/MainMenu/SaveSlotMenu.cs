@@ -1,3 +1,4 @@
+/*
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -93,3 +94,4 @@ public class SaveSlotMenu : MenuButton
         backButton.interactable = false;
     }
 }
+*/

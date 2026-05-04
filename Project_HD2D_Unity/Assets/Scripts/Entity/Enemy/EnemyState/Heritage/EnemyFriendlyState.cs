@@ -20,6 +20,7 @@ public class EnemyFriendlyState : EnemyBaseState
         searchCenter = actx.Manager.transform.position;
         waitTimer    = 0f;
         MoveToRandomPoint(actx);
+        actx.AnimManager.ToggleRepulsiveCollider(true);
     }
 
     public override void UpdateState(EnemyContext actx)

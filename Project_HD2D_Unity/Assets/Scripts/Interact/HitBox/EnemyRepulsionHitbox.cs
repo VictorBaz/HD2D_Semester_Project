@@ -48,7 +48,6 @@ public class EnemyRepulsionHitbox : BaseHitbox
 
     private bool IsTarget(Collider other)
     {
-        return other.CompareTag(targetTag) || 
-               (other.transform.parent != null && other.transform.parent.CompareTag(targetTag));
+        return other.CompareTag(targetTag);
     }
 }

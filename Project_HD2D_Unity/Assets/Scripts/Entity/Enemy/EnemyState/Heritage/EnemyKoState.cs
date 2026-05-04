@@ -20,12 +20,15 @@ public class EnemyKoState : EnemyBaseState
         {
             actx.Data.KoTime = actx.Data.KoTimeMax;
             actx.AnimManager.HandleKo(true, false);
+            actx.VfxManager.SetKoVfx();
         }
         else
         {
             actx.AnimManager.HandleKo(true, true);
             hasTransitionedToLoop = true;
         }
+        
+        
     }
 
     public override void UpdateState(EnemyContext actx)
@@ -39,7 +42,7 @@ public class EnemyKoState : EnemyBaseState
         {
             var stateInfo = actx.AnimManager.GetCurrentState(0);
 
-            if (stateInfo.normalizedTime >= 0.8f && !actx.AnimManager.Animator.IsInTransition(0))
+            if (stateInfo.normalizedTime >= 0.7f && !actx.AnimManager.Animator.IsInTransition(0))
             {
                 actx.AnimManager.HandleKo(true, true);
                 hasTransitionedToLoop = true;
@@ -50,6 +53,7 @@ public class EnemyKoState : EnemyBaseState
         {
             actx.Data.ResetKo();
             DetermineNextState(actx);
+            actx.VfxManager.StopKoVfx();
         }
     }
 
@@ -65,13 +69,13 @@ public class EnemyKoState : EnemyBaseState
             actx.Manager.Eject(true);
             return;
         }
-
-        Vector3 rayOrigin  = actx.Manager.transform.position + Vector3.up * 0.5f;
-        bool    isOnGround = Physics.Raycast(rayOrigin, Vector3.down, 0.7f, actx.LayerMaskEnemy);
-
-        if (!isOnGround)
+        
+        if (!actx.Manager.IsGrounded(actx.Data.GroundDetectionDistance,actx.Data.NavMeshSampleMargin))
             actx.TransitionTo(actx.Manager.DropState);
         else
+        {
+            actx.Manager.RecoverPhase();
             actx.TransitionTo(actx.Manager.GoToSpawnState);
+        }
     }
 }

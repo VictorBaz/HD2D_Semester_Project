@@ -1,9 +1,11 @@
 using Enum;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CameraTriggerFix : CameraTriggerBase
 {
-    [SerializeField] private Vector3 cameraPosition;
+    [SerializeField] private Transform targetTransform;
+    [FormerlySerializedAs("cameraPosition")] [SerializeField] private Vector3 cameraPositionUnused;
 
     protected override Color GizmoColor => new Color(1, 0, 0, 0.2f);
     
@@ -13,7 +15,7 @@ public class CameraTriggerFix : CameraTriggerBase
     {
         CameraSettings settings = new CameraSettings
         {
-            CameraPosition = cameraPosition,
+            CameraPosition = targetTransform.position,
             CameraPlayerState = CameraPlayerState.Fix
         };
         
@@ -22,8 +24,10 @@ public class CameraTriggerFix : CameraTriggerBase
     
     private void OnDrawGizmosSelected()
     {
+        if (!targetTransform) return;
+        
         Gizmos.color = Color.darkRed;
-        Gizmos.DrawLine(transform.position, cameraPosition);
-        Gizmos.DrawSphere(cameraPosition, 1f);
+        Gizmos.DrawLine(transform.position, targetTransform.position);
+        Gizmos.DrawSphere(targetTransform.position, 1f);
     }
 }

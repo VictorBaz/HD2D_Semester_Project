@@ -4,14 +4,18 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DG.Tweening;
+using Script.Manager;
 using TMPro;
 
 public class UiManager : MonoBehaviour
 {
     #region Variables
 
-    private static UiManager Instance;
+    public static UiManager Instance;
 
+    [Header("UI Elements")] 
+    [SerializeField] private Slider lifeSlider;
+    
     [Header("State Panels")]
     [SerializeField] private CanvasGroup pauseMenuPanel;
     [SerializeField] private CanvasGroup mainMenuPanel;
@@ -47,6 +51,11 @@ public class UiManager : MonoBehaviour
     [SerializeField] private CanvasGroup loadingPanel;
     [SerializeField] private RectTransform loadingIcon;
     [SerializeField] private float rotationSpeed = 200f;
+    [SerializeField] private CanvasGroup blackScreenGroup;
+    
+    [Header("Pop Up")]
+    [SerializeField] private CanvasGroup popupGroup;
+    private Sequence popupSequence;
 
     private float openLeftPanelX;
     private float openRightPanelX;
@@ -103,6 +112,7 @@ public class UiManager : MonoBehaviour
         UiEvents.OnEnergySetup += SetupEnergy;
         EventManager.OnLoadingStarted += HandleLoadingStarted;
         EventManager.OnLoadingFinished += HandleLoadingFinished;
+        UiEvents.OnShowPopup += ShowPopup;
     }
 
     private void OnDisable()
@@ -115,6 +125,7 @@ public class UiManager : MonoBehaviour
         UiEvents.OnEnergySetup -= SetupEnergy;
         EventManager.OnLoadingStarted -= HandleLoadingStarted;
         EventManager.OnLoadingFinished -= HandleLoadingFinished;
+        UiEvents.OnShowPopup -= ShowPopup;
     }
 
     private void OnDestroy()
@@ -235,11 +246,12 @@ public class UiManager : MonoBehaviour
 
     private void HandleEnergyUpdate(int curr, int max) => UpdateEnergyDisplay(curr);
 
-    private void HandleSapUpdate(int curr, int max)
+    private void HandleSapUpdate(int curr)
     {
         if (sapCountText != null)
             sapCountText.text = curr.ToString();
     }
+    
 
     private void HandleLockUpdate(bool isLocked)
     {
@@ -330,4 +342,48 @@ public class UiManager : MonoBehaviour
     }
 
     #endregion
+
+    #region GamePlay Related
+
+    public IEnumerator FadeBlackScreen(float targetAlpha, float duration)
+    {
+        float startAlpha = blackScreenGroup.alpha;
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            blackScreenGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, elapsed / duration);
+            yield return null;
+        }
+
+        blackScreenGroup.alpha = targetAlpha;
+    }
+
+    private void ShowPopup()
+    {
+        float duration = 1.5f;
+        
+        popupSequence?.Kill();
+        
+        popupGroup.alpha  = 0f;
+        popupGroup.gameObject.SetActive(true);
+
+        popupSequence = DOTween.Sequence()
+            .Append(popupGroup.DOFade(1f, 0.4f))
+            .AppendInterval(duration)
+            .Append(popupGroup.DOFade(0f, 0.4f))
+            .OnComplete(() => popupGroup.gameObject.SetActive(false));
+        
+        SoundManager.Instance?.PlaySfx(SoundType.Pop_Up);
+    }
+    
+    #endregion
+
+    public void SetupLifeUi(float maxLife, float currentLife)
+    {
+        lifeSlider.maxValue = maxLife;
+        lifeSlider.value = currentLife;
+    }
+    public void UpdateLifeUi(float value) => this.UpdateSlider(lifeSlider,value,0.5f);
 }

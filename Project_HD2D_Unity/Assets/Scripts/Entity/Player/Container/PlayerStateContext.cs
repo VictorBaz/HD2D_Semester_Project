@@ -6,7 +6,7 @@ public class PlayerStateContext
     public PlayerAnimationManager AnimationManager;
     public LockOnSystem LockOnSystem;
     public InputManager InputManager;
-    public VfxManager VfxManager;
+    public VfxManagerPlayer VfxManagerPlayer;
     
     public PlayerController Controller;
     

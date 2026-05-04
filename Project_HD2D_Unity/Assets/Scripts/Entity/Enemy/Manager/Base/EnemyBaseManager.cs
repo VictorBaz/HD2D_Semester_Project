@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections;
 using Interface;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
 
-public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
+public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarryable
 {
     #region State Properties
     public EnemyPatrolState    PatrolState    { get; protected set; }
@@ -27,10 +28,13 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     [Header("Core Components")]
     [SerializeField] protected Rigidbody             rb;
     [SerializeField] protected NavMeshAgent          agent;
-    [SerializeField] protected Collider              mainCollider;
+    [SerializeField] protected CapsuleCollider              mainCollider;
     [SerializeField] protected EnemyAnimationManager enemyAnimationManager;
     [SerializeField] protected LayerMask enemyLayerMask;
+    [SerializeField] protected LayerMask groundLayerMask;
     [SerializeField] protected Transform carryTransform;
+    [SerializeField] protected VfxManagerEnemy VfxManager;
+    [SerializeField] protected SkinnedMeshRenderer mainRenderer;
 
     [Header("Triggers")]
     [SerializeField] protected Trigger viewRangeTrigger;
@@ -39,7 +43,6 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     [Header("Data & UI")]
     [SerializeField] protected EnemyData enemyData;
     [SerializeField] public    Slider    KoSlider;
-    [SerializeField] private Image feedbackRenderer;
 
     [Header("Patrol Settings")]
     public Transform[] patrolPoints; 
@@ -47,35 +50,30 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
     protected EnemyContext context;
     protected bool         isCarried;
+    
     private   bool         isInitialized;
+    
+    private Vector3 originalPosition;
 
-
+    private bool isInRecover;
+    private Coroutine recoverCoroutine;
+    
     public event Action OnTakeDamage;
+    
     #region Unity Lifecycle
 
     protected virtual void Awake()
     {
-        context = new EnemyContext
-        {
-            Manager        = this,
-            Agent          = agent,
-            Rb             = rb,
-            Movement       = GetComponent<EnemyMovement>(),
-            AnimManager    = enemyAnimationManager,
-            SpawnPosition  = transform.position,
-            LastKnownPosition = transform.position,
-            LayerMaskEnemy = gameObject.layer,
-            Data           = enemyData.Init(),
-        };
-
+        InitContext();
         InitializeCommonStates();
         isInitialized = true;
-        
+
+        originalPosition = transform.position;
     }
 
     protected virtual void Start()
     {
-        InitializeAttackState();
+        InitializeState();
         SubscribeEvents();
         
         if (KoSlider != null)
@@ -109,9 +107,25 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
     #region Initialization
 
-    protected virtual void InitData()
+    protected virtual void InitContext()
     {
-        
+        context = new EnemyContext
+        {
+            Manager        = this,
+            Agent          = agent,
+            Rb             = rb,
+            Movement       = GetComponent<EnemyMovement>(),
+            AnimManager    = enemyAnimationManager,
+            SpawnPosition  = transform.position,
+            LastKnownPosition = transform.position,
+            LayerMaskEnemy = gameObject.layer,
+            GroundLayerMask = groundLayerMask,
+            Data           = enemyData.Init(),
+            VfxManager = VfxManager,
+            CapsuleCollider = mainCollider,
+            MainRenderer = mainRenderer,
+            PropBlock = new MaterialPropertyBlock(),
+        };
     }
 
     protected virtual void InitializeCommonStates()
@@ -128,7 +142,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
         StaticState    = new EnemyStaticState();
     }
 
-    protected abstract void InitializeAttackState();
+    protected abstract void InitializeState();
 
     #endregion
 
@@ -139,12 +153,10 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
         if (newState == null || newState == CurrentState) return;
 
         CurrentState?.ExitState(context);
-        PreviousBaseState = CurrentState;
-        CurrentState      = newState;
         
-
-        if (feedbackRenderer != null && context.Data != null)
-            feedbackRenderer.sprite = context.Data.GetSpriteByStateName(CurrentState.Name);
+        PreviousBaseState = CurrentState;
+        
+        CurrentState      = newState;
         
         CurrentState.EnterState(context);
     }
@@ -239,19 +251,40 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
     #region IDamageable
 
-    public virtual void TakeDamage(int damage, Vector3 hitDirection)
+    public virtual void TakeDamage(int damage, Vector3 hitDirection, int attackType)
     {
-        if (CurrentState is { CanTakeDamage: false }) return;
+        if (isInRecover || (CurrentState != null && !CurrentState.CanTakeDamage)) 
+            return;
 
-        context.HitDirection  = hitDirection;
+        context.HitDirection = hitDirection;
         context.Data.CurrentKo += damage;
-        OnTakeDamage ?.Invoke();
+    
+        OnTakeDamage?.Invoke();
+
+        bool isHeavyAttack = (attackType == 2); 
+
+        if (isHeavyAttack || context.Data.IsKoFull())
+        {
+            ChangeState(HitState);
+            return;
+        }
+
+        VfxManager.PlayHitVfx();
+    }
+
+    public void TakeDamage(int value, Vector3 hitDirection)
+    {
+        context.HitDirection = hitDirection;
+        context.Data.CurrentKo += value;
+        OnTakeDamage?.Invoke();
         ChangeState(HitState);
     }
 
     public Transform GetTransform()          => transform;
     public bool      IsInParryWindow()        => CurrentState != null && CurrentState.CanBeParry;
     public bool      IsInParryWindowPerfect() => false;
+
+    
 
     #endregion
 
@@ -296,6 +329,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
         isCarried = true;
         
         context.AnimManager.SetCarry(true);
+        enemyAnimationManager.ToggleRepulsiveCollider(false);
     }
 
     public void Eject(bool isEscaping = false)
@@ -310,6 +344,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
         isCarried = false;
         ChangeState(DropState);
+        enemyAnimationManager.ToggleRepulsiveCollider(true);
     }
 
     public bool IsCarry() => isCarried;
@@ -347,13 +382,13 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
 
             if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
             {
-                transform.position = targetPosition;
+                //transform.position = targetPosition;
                 agent.enabled = true;
             }
             else
             {
                 agent.enabled = true;
-                agent.Warp(targetPosition);
+                //agent.Warp(targetPosition);
             }
         }
     }
@@ -362,13 +397,9 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     {
         Vector3 rayOrigin = transform.position;
         float totalDist = detectionDistance;
-
         
-        if (Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, totalDist, ~context.LayerMaskEnemy))
-        {
-            return NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, navMeshMargin, NavMesh.AllAreas);
-        }
-        return false;
+        return Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit, totalDist, ~context.LayerMaskEnemy) &&
+               NavMesh.SamplePosition(hit.point, out NavMeshHit navHit, navMeshMargin, NavMesh.AllAreas);
     }
     
     public bool IsGroundedDebug(float detectionDistance = 0.1f, float navMeshMargin = 0.1f)
@@ -402,7 +433,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     }
     
     #endregion
-
+ 
     #region UI need to SRP
 
     private void HandleDamageUI()
@@ -411,4 +442,28 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageable, ICarryable
     }
 
     #endregion
+    
+    public void ResetEnemy()
+    {
+        transform.position = originalPosition;
+        VfxManager.StopKoVfx();
+        context.Data.ResetKo();
+        context.Data.ResetKoTimer();
+        HandleDamageUI();
+        ChangeState(PatrolState);
+        VfxManager.TriggerSpawnVfx();
+    }
+
+    public void RecoverPhase()
+    {
+        if(recoverCoroutine != null) StopCoroutine(recoverCoroutine);
+        recoverCoroutine = StartCoroutine(RecoverPhaseIe());
+    }
+    
+    private IEnumerator RecoverPhaseIe()
+    {
+        isInRecover = true;
+        yield return new WaitForSeconds(2);
+        isInRecover = false;
+    }
 }

@@ -10,6 +10,8 @@ public class EnemyDataInstance
     public float SearchDuration;
     public float SearchRadius;
     public float RotationSpeed;
+    public float GroundCheckDistance;
+    public float NavmeshCheckDistance;
 
     public float AttackCooldown;
     public float HitboxActiveDuration;
@@ -32,15 +34,6 @@ public class EnemyDataInstance
     
     public float ExposedTime;
     
-    public Sprite SpriteSearch;
-    public Sprite SpriteAttackStart;
-    public Sprite SpriteChase;
-    public Sprite SpritePatrol;
-    public Sprite SpriteKo;
-    public Sprite SpriteFall;
-    public Sprite SpriteTakeDamage;
-    public Sprite SpriteExposed;
-    
     public AnimationClip ChargeAnimationClip;
     public AnimationClip AttackAnimationClip;
 
@@ -53,6 +46,8 @@ public class EnemyDataInstance
         SearchDuration = data.Navigation.SearchDuration;
         SearchRadius = data.Navigation.SearchRadius;
         RotationSpeed = data.Navigation.RotationSpeed;
+        GroundCheckDistance = data.Navigation.GroundCheckDistance;
+        NavmeshCheckDistance = data.Navigation.NavmeshCheckDistance;
 
         AttackCooldown = data.Attack.AttackCooldown;
         HitboxActiveDuration = data.Attack.HitboxActiveDuration;
@@ -72,14 +67,6 @@ public class EnemyDataInstance
         ExposedTime = data.Status.ExposedTime;
         CurrentKo = 0;
 
-        SpriteSearch = data.Visuals.SpriteSearch;
-        SpriteAttackStart = data.Visuals.SpriteAttackStart;
-        SpriteChase = data.Visuals.SpriteChase;
-        SpritePatrol = data.Visuals.SpritePatrol;
-        SpriteKo = data.Visuals.SpriteKo;
-        SpriteFall = data.Visuals.SpriteFall;
-        SpriteTakeDamage = data.Visuals.SpriteTakeDamage;
-        SpriteExposed = data.Visuals.SpriteExposed;
         
         ChargeAnimationClip = data.Attack.ChargeAnimationClip;
         AttackAnimationClip = data.Attack.AttackAnimationClip;
@@ -88,22 +75,8 @@ public class EnemyDataInstance
     public bool IsKoFull() => CurrentKo >= MaxKo;
     public bool IsKoTimerEmpty() => KoTime <= 0;
     public void ResetKo() => CurrentKo = 0;
-
-    public Sprite GetSpriteByStateName(string stateName)
-    {
-        return stateName switch
-        {
-            "Chase" => SpriteChase,
-            "Searching" => SpriteSearch,
-            "Attacking" => SpriteAttackStart,
-            "Patrol" => SpritePatrol,
-            "K-O" => SpriteKo,
-            "Falling" => SpriteFall,
-            "Taking Damage" => SpriteTakeDamage,
-            "Exposed" => SpriteExposed,
-            _ => SpritePatrol
-        };
-    }
+    public void ResetKoTimer() => KoTime = 0;
+    
     
     public float GetAnimationCLipLengthChargeAttack() => ChargeAnimationClip.length;
     public float GetAnimationCLipLengthAttack() => AttackAnimationClip.length;

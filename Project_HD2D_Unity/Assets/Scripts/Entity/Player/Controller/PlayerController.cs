@@ -16,8 +16,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private LockOnSystem lockOnSystem;
 
-    [SerializeField] private GameObject colliderAttack;
-
+    [SerializeField] private Camera cam;
     private RaycastHit slopeHit;
     private bool isInLockMode;
     private Quaternion targetRotation;
@@ -27,7 +26,10 @@ public class PlayerController : MonoBehaviour
     
     private bool isJumping;
     
-    [SerializeField] private Camera cam;
+    [SerializeField] private float attackRadius = 0.5f;
+    private static readonly Collider[] _hitBuffer = new Collider[10];
+    [SerializeField] private Vector3 attackColliderLocalOffset = new Vector3(0f, 0.5f, 0.8f);
+    
     #endregion
 
     #region Unity Lifecycle
@@ -37,7 +39,7 @@ public class PlayerController : MonoBehaviour
         if (rb != null) rb.useGravity = false; 
     }
     
-    private void Start() 
+    private void Start()
     {
         targetRotation = transform.rotation;
     }
@@ -236,16 +238,23 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region Collider
-
-    private void ToggleCollider(GameObject collider,bool active)
+    
+    public int OverlapAttack(LayerMask layer)
     {
-        if (collider != null)
-            collider.SetActive(active);
+        Vector3 pos = transform.TransformPoint(attackColliderLocalOffset);
+        return Physics.OverlapSphereNonAlloc(pos, attackRadius, _hitBuffer, layer);
     }
-    
-    public void AttackOn() => ToggleCollider(colliderAttack,true);
-    public void AttackOff() => ToggleCollider(colliderAttack,false);
-    
 
+    public Collider[] HitBuffer => _hitBuffer;
     #endregion
+    
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.4f);
+        Vector3 attackPos = transform.TransformPoint(attackColliderLocalOffset);
+        Gizmos.DrawSphere(attackPos, attackRadius);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(attackPos, attackRadius);
+    }
 }

@@ -1,14 +1,21 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class EnemySheepAttackState : EnemyAttackState
 {
     private const float MULTIPLY_ANTICIPATION_TIME = 2f;
+    
 
     public override void EnterState(EnemyContext actx)
     {
         base.EnterState(actx);
+        
         actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_IDLE);
+
+        chargedTime = actx.Data.GetAnimationCLipLengthChargeAttack() / MULTIPLY_ANTICIPATION_TIME;
+        
+        actx.AnimManager.ToggleRepulsiveCollider(true);
     }
 
     protected override IEnumerator AttackSequence(EnemyContext actx)
@@ -17,6 +24,9 @@ public class EnemySheepAttackState : EnemyAttackState
         
         isAnticipationTime = true;
         var data = actx.Data;
+        
+        if (shaderRoutine != null) actx.Manager.StopCoroutine(shaderRoutine);
+        shaderRoutine = actx.Manager.StartCoroutine(ShaderPulseOn(actx));
 
         actx.AnimManager.Animator.speed = MULTIPLY_ANTICIPATION_TIME;
         
@@ -29,6 +39,9 @@ public class EnemySheepAttackState : EnemyAttackState
         actx.AnimManager.Animator.speed = 1;
         
         actx.AnimManager.TriggerAttack();
+
+        if (shaderRoutine != null) actx.Manager.StopCoroutine(shaderRoutine);
+        shaderRoutine = actx.Manager.StartCoroutine(ShaderPulseOff(actx));
         
         canTakeDamage = false;
 
@@ -59,7 +72,6 @@ public class EnemySheepAttackState : EnemyAttackState
 
             yield return null;
         }
-
         
         yield return new WaitForFixedUpdate();
         
@@ -82,7 +94,11 @@ public class EnemySheepAttackState : EnemyAttackState
     public override void ExitState(EnemyContext actx)
     {
         base.ExitState(actx);
+        if (shaderRoutine != null) actx.Manager.StopCoroutine(shaderRoutine);
         actx.AnimManager.ToggleAttackCollider(false);
         actx.AnimManager.Animator.speed = 1;
+        actx.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME,0,GameConstants.INDEX_MATERIAL_PULSE);
     }
+
+    
 }

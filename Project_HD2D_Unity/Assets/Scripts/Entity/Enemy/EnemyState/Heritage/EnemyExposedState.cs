@@ -10,6 +10,7 @@ public class EnemyExposedState : EnemyBaseState
     {
         timer = actx.Data.ExposedTime;
         actx.AnimManager.SetExposed(true);
+        actx.AnimManager.ToggleRepulsiveCollider(true);
     }
 
     public override void UpdateState(EnemyContext actx)

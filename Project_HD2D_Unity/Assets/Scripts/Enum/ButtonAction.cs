@@ -3,11 +3,13 @@
     public enum ButtonAction
     {
         Menu,
-        Game,
+        LoadGame,
         Pause,
         Settings,
         Quit,
         Credits,
-        ReturnToGame
+        ReturnToGame,
+        SaveGame,
+        NewGame,
     }
 }

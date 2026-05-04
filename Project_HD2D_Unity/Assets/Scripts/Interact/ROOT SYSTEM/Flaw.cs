@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 #if UNITY_EDITOR
@@ -17,7 +18,15 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     [Header("Blocking")]
     [SerializeField] private List<Parasite> blockers;
 
-    private bool _isCurrentlyTargeted; 
+    [Header("Root Visuals")]
+    [SerializeField] private Transform rootVisual;
+    private bool _isCurrentlyTargeted;
+    
+    /*
+    [Header("Energy Visuals")]
+    public SpriteRenderer[] energyIcons;
+    public Sprite fullEnergyIcon;
+    public Sprite depletedEnergyIcon;*/
     #endregion
 
     #region Unity Lifecycle
@@ -30,6 +39,23 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
             
             feedbackCanvasGroup.interactable = false;
             feedbackCanvasGroup.blocksRaycasts = false;
+        }
+
+    }
+
+    private void OnEnable()
+    {
+        foreach (var blocker in blockers)
+        {
+            blocker.OnDeath += UpdateRootVisuals;
+        }
+    }
+
+    private void OnDisable()
+    {
+        foreach (var blocker in blockers)
+        {
+            blocker.OnDeath -= UpdateRootVisuals;
         }
     }
 
@@ -86,9 +112,10 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     public bool IsBlocked()
     {
         if (blockers == null) return false;
-        foreach (var p in blockers) if (p != null) return true;
-        return false;
+        blockers.RemoveAll(p => p == null);
+        return blockers.Count > 0;
     }
+    
     #endregion
 
     #region Gizmos & Init
@@ -108,4 +135,20 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
 
     public void SetRoot(Root root) => this.root = root;
     #endregion
+    
+    public Vector3 GetPositionRootVisuals() => rootVisual.position;
+
+    private void UpdateRootVisuals(Parasite parasite)
+    {
+        blockers.Remove(parasite);
+        root.UpdateVisualEnergy();
+    }
+
+    /*public void SetIcons(int energy)
+    {
+        for (int i = 0; i < energyIcons.Length; i++)
+        {
+            energyIcons[i].sprite = energy >= i + 1 ? fullEnergyIcon : depletedEnergyIcon;
+        }
+    }*/
 }

@@ -28,8 +28,9 @@ public abstract class CameraBaseState
         Quaternion fullRotation = Quaternion.LookRotation(direction);
     
         Vector3 currentEuler = fullRotation.eulerAngles;
+        
         Quaternion targetRotation = Quaternion.Euler(
-            context.Manager.FixedX, 
+            /*context.Manager.FixedX*/ currentEuler.x, 
             currentEuler.y, 
             context.Manager.FixedZ
         );

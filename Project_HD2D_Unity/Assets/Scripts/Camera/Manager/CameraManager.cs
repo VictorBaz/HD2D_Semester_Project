@@ -69,6 +69,7 @@ public class CameraManager : MonoBehaviour
         };
 
         Vector3 currentEuler = cameraTransform.eulerAngles;
+        
         fixedXRotation = currentEuler.x;
         fixedZRotation = currentEuler.z;
         

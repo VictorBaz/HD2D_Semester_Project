@@ -5,12 +5,16 @@ public class CameraCinematicState : CameraBaseState
     private float timer;
     private bool isHolding;
     private bool transition = false;
+    private Vector3 targetPosition;
 
     public override void EnterState(CameraStateContext context)
     {
         timer = context.CurrentSettings.holdDuration;
         isHolding = false;
         transition = false;
+
+        targetPosition = context.CurrentSettings.targetCinematic ? 
+            context.CurrentSettings.targetCinematic.position : context.PlayerTransform.position;
     }
 
     public override void UpdateState(CameraStateContext context)
@@ -24,7 +28,7 @@ public class CameraCinematicState : CameraBaseState
             context.TransitionSpeed 
         );
 
-        ApplyRestrictedRotation(context, context.CurrentSettings.targetCinematic.position);
+        ApplyRestrictedRotation(context, targetPosition);
 
         float sqrDistance = (context.CameraTransform.position - context.CurrentSettings.CameraPosition).sqrMagnitude;
         

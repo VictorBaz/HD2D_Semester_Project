@@ -23,14 +23,14 @@ public class CameraCinematicState : CameraBaseState
         
         context.CameraTransform.position = Vector3.SmoothDamp(
             context.CameraTransform.position,
-            context.CurrentSettings.CameraPosition,
+            context.CurrentSettings.CameraTargetTransform.position,
             ref context.Velocity,
             context.TransitionSpeed 
         );
 
         ApplyRestrictedRotation(context, targetPosition);
 
-        float sqrDistance = (context.CameraTransform.position - context.CurrentSettings.CameraPosition).sqrMagnitude;
+        float sqrDistance = (context.CameraTransform.position - context.CurrentSettings.CameraTargetTransform.position).sqrMagnitude;
         
         if (!isHolding && sqrDistance < 0.01f) isHolding = true;
 

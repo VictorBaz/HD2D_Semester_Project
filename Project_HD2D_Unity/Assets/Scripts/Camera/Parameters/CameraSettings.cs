@@ -4,7 +4,7 @@ using UnityEngine;
 public class CameraSettings
 {
     public Enum.CameraPlayerState CameraPlayerState;
-    public Vector3 CameraPosition;
+    public Transform CameraTargetTransform;
     public float holdDuration;
     public Rail ActiveRail; 
     

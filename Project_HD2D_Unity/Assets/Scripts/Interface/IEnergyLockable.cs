@@ -1,8 +1,8 @@
 ﻿public interface IEnergyLockable : ILockable
 {
-    public void AddEnergy();
-    public void RemoveEnergy();
+    void AddEnergy();
+    void RemoveEnergy();
     bool IsContainingEnergy();
-
     bool IsAtMaximumEnergy();
+    void OnLockStateChanged(bool locked);
 }

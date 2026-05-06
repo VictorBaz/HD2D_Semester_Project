@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Interface;
 using Player.State;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerActionHandler))]
@@ -290,4 +291,5 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     }
 
     private void UpdateCheckPoint(Vector3 pos) => checkPointPos = pos;
+    
 }

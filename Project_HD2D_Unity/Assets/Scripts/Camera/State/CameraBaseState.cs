@@ -22,22 +22,18 @@ public abstract class CameraBaseState
     protected void ApplyRestrictedRotation(CameraStateContext context, Vector3 targetPos)
     {
         Vector3 direction = targetPos - context.CameraTransform.position;
-    
         if (direction.sqrMagnitude < 0.01f) return; 
 
-        Quaternion fullRotation = Quaternion.LookRotation(direction);
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+        Vector3 euler = targetRotation.eulerAngles;
     
-        Vector3 currentEuler = fullRotation.eulerAngles;
-        
-        Quaternion targetRotation = Quaternion.Euler(
-            /*context.Manager.FixedX*/ currentEuler.x, 
-            currentEuler.y, 
-            context.Manager.FixedZ
-        );
+        float zConstraint = context.CurrentSettings?.lockedZRotation ?? 0f;
+
+        Quaternion restrictedRotation = Quaternion.Euler(euler.x, euler.y, zConstraint);
 
         context.CameraTransform.rotation = Quaternion.Slerp(
             context.CameraTransform.rotation, 
-            targetRotation, 
+            restrictedRotation, 
             Time.deltaTime / context.Manager.RotationSmoothTime
         );
     }

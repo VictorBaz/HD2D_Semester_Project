@@ -11,7 +11,7 @@ public class CameraTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (hasTriggered || (triggerOnlyOnce && wasPlayedPermanently)) return;
+        if (settings == null || hasTriggered || (triggerOnlyOnce && wasPlayedPermanently)) return;
 
         if (!other.CompareTag(GameConstants.PLAYER_TAG)) return;
         
@@ -22,13 +22,15 @@ public class CameraTrigger : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag(GameConstants.PLAYER_TAG)) hasTriggered = false;
+        if (other != null && other.CompareTag(GameConstants.PLAYER_TAG)) 
+            hasTriggered = false;
     }
 
     private void OnDrawGizmos()
     {
         BoxCollider box = GetComponent<BoxCollider>();
         if (!box) return;
+        
         Gizmos.matrix = transform.localToWorldMatrix;
         Gizmos.color = new Color(0, 1, 1, 0.2f);
         Gizmos.DrawCube(box.center, box.size);
@@ -37,32 +39,35 @@ public class CameraTrigger : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        if (settings.CameraPlayerState is CameraPlayerState.Cinematic && settings.targetCinematic)
+        if (settings == null) return;
+
+        if (settings.CameraPlayerState == CameraPlayerState.Cinematic && settings.targetCinematic != null)
         {
+            Gizmos.color = Color.yellow;
             Gizmos.DrawLine(transform.position, settings.targetCinematic.position);
             Gizmos.DrawWireSphere(settings.targetCinematic.position, 1f);
             Gizmos.DrawSphere(settings.targetCinematic.position, 0.2f);
         }
         
         if (settings.CameraPlayerState is not (CameraPlayerState.Fix or CameraPlayerState.Cinematic)) return;
-        
+
+        if (settings.CameraTargetTransform == null) return;
+
         Gizmos.color = settings.CameraPlayerState == CameraPlayerState.Fix ? Color.red : Color.cyan;
 
-        Gizmos.DrawLine(transform.position, settings.CameraPosition);
+        Gizmos.DrawLine(transform.position, settings.CameraTargetTransform.position);
+        Gizmos.DrawWireSphere(settings.CameraTargetTransform.position, 1f);
+        Gizmos.DrawSphere(settings.CameraTargetTransform.position, 0.2f);
 
-        Gizmos.DrawWireSphere(settings.CameraPosition, 1f);
-        Gizmos.DrawSphere(settings.CameraPosition, 0.2f);
-
-
-        if (Camera.main != null && Camera.main.transform.parent)
+        if (Camera.main != null)
         {
-            Quaternion rotation = Camera.main.transform.rotation;
+            Transform camRef = Camera.main.transform.parent ? Camera.main.transform.parent : Camera.main.transform;
+            Quaternion rotation = camRef.rotation;
             
-            Gizmos.matrix = Matrix4x4.TRS(settings.CameraPosition, rotation, Vector3.one);
-            Gizmos.DrawFrustum(Vector3.zero, 60f, 3f, 0.5f, 1.77f);
+            Gizmos.matrix = Matrix4x4.TRS(settings.CameraTargetTransform.position, rotation, Vector3.one);
+            Gizmos.DrawFrustum(Vector3.zero, 60f, 3f, 0.1f, 1.77f);
+            
             Gizmos.matrix = Matrix4x4.identity;
         }
-        
-        
     }
 }

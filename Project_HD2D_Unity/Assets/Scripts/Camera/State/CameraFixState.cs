@@ -13,7 +13,7 @@ public class CameraFixState : CameraBaseState
         
         context.CameraTransform.position = Vector3.SmoothDamp(
             context.CameraTransform.position,
-            context.CurrentSettings.CameraPosition,
+            context.CurrentSettings.CameraTargetTransform.position,
             ref context.Velocity,
             context.TransitionSpeed
         );

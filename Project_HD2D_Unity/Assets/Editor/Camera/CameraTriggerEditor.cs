@@ -18,7 +18,6 @@ public class CameraTriggerEditor : Editor
         SerializedProperty posProp = settings.FindPropertyRelative("CameraPosition");
         SerializedProperty railProp = settings.FindPropertyRelative("ActiveRail");
         SerializedProperty smoothProp = settings.FindPropertyRelative("transitionSmoothTime");
-        SerializedProperty lockZProp = settings.FindPropertyRelative("lockedZRotation");
         SerializedProperty holdProp = settings.FindPropertyRelative("holdDuration");
         SerializedProperty targetCinematicProp = settings.FindPropertyRelative("targetCinematic");
 
@@ -35,7 +34,6 @@ public class CameraTriggerEditor : Editor
 
         EditorGUILayout.PropertyField(stateProp);
         EditorGUILayout.PropertyField(smoothProp);
-        EditorGUILayout.PropertyField(lockZProp);
         
         EditorGUILayout.Space(5);
         EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);

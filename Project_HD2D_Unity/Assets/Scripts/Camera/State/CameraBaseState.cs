@@ -26,8 +26,8 @@ public abstract class CameraBaseState
 
         Quaternion targetRotation = Quaternion.LookRotation(direction);
         Vector3 euler = targetRotation.eulerAngles;
-    
-        float zConstraint = context.CurrentSettings?.lockedZRotation ?? 0f;
+
+        float zConstraint = 0f;
 
         Quaternion restrictedRotation = Quaternion.Euler(euler.x, euler.y, zConstraint);
 

@@ -86,7 +86,7 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     {
         UiEvents.TriggerEnergySetup(Context.PlayerData.MaxEnergy, Context.PlayerData.Energy);
         UiEvents.TriggerSapChanged(Context.PlayerData.Sap);
-        UiManager.Instance?.SetupLifeUi(Context.PlayerData.MaxLife, Context.PlayerData.MaxLife);
+        if (UiManager.Instance) UiManager.Instance.SetupLifeUi(Context.PlayerData.MaxLife, Context.PlayerData.MaxLife);
     }
 
     private void Update() => CurrentPlayerState.UpdateState(Context);
@@ -253,6 +253,15 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         {
             playerData         = playerDataRaw.Init();
             Context.PlayerData = playerData;
+
+            if (UiManager.Instance)
+            {
+                UiManager.Instance.SetupLifeUi(Context.PlayerData.MaxLife, Context.PlayerData.MaxLife);
+            }
+            
+            UiEvents.TriggerEnergySetup(Context.PlayerData.MaxEnergy, Context.PlayerData.Energy);
+            UiEvents.TriggerSapChanged(Context.PlayerData.Sap);
+            
 
             var managerData = DataPersistenceManager.Instance;
 

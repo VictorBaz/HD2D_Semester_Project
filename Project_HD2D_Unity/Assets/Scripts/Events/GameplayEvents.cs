@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public static class GameplayEvents
 {
@@ -9,4 +10,7 @@ public static class GameplayEvents
     
     public static event Action<string> OnPuzzleVisited;
     public static void TriggerPuzzleVisited(string puzzleID) => OnPuzzleVisited?.Invoke(puzzleID);
+    
+    public static Action<Vector3> OnCheckpoint;
+    public static void TriggerCheckpoint(Vector3 checkpoint) => OnCheckpoint?.Invoke(checkpoint);
 }

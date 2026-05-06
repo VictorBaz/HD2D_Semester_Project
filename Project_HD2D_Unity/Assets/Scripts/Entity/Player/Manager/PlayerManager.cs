@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using Interface;
 using Player.State;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerActionHandler))]
@@ -8,39 +10,37 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 {
     #region Variables
 
-    [SerializeField] private PlayerController  playerController;
+    [SerializeField] private PlayerController playerController;
     [SerializeField] private PlayerAnimationManager animationManager;
-    [SerializeField] private InputManager      inputManager;
-    [SerializeField] private LockOnSystem      lockOnSystem;
-    [SerializeField] private VfxManagerPlayer  vfxManagerPlayer;
-    [SerializeField] private Transform         cameraTransform;
-    [SerializeField] private Transform         playerHead;
-    [SerializeField] private Rigidbody         rb;
-    [SerializeField] private CapsuleCollider   playerCollider;
-    [SerializeField] private PlayerData        playerDataRaw;
+    [SerializeField] private InputManager inputManager;
+    [SerializeField] private LockOnSystem lockOnSystem;
+    [SerializeField] private VfxManagerPlayer vfxManagerPlayer;
+    [SerializeField] private Transform cameraTransform;
+    [SerializeField] private Transform playerHead;
+    [SerializeField] private Rigidbody rb;
+    [SerializeField] private CapsuleCollider playerCollider;
+    [SerializeField] private PlayerData playerDataRaw;
 
-    public PlayerBaseState     CurrentPlayerState { get; private set; }
-    public PlayerLocomotionState LocomotionState  { get; private set; }
-    public PlayerAttackState     AttackState      { get; private set; }
-    public PlayerLandingState    LandingState     { get; private set; }
-    public PlayerDashState       DashState        { get; private set; }
-    public PlayerCarryState      CarryState       { get; private set; }
-    public PlayerHitState        HitState         { get; private set; }
-    public PlayerParryState      ParryState       { get; private set; }
-    public PlayerJumpState       JumpState        { get; private set; }
-    public PlayerFallState       FallState        { get; private set; }
-    public PlayerBumpState       BumpState        { get; private set; }
+    public PlayerBaseState CurrentPlayerState { get; private set; }
+    public PlayerLocomotionState LocomotionState { get; private set; }
+    public PlayerAttackState AttackState { get; private set; }
+    public PlayerLandingState LandingState { get; private set; }
+    public PlayerDashState DashState { get; private set; }
+    public PlayerCarryState CarryState { get; private set; }
+    public PlayerHitState HitState { get; private set; }
+    public PlayerParryState ParryState { get; private set; }
+    public PlayerJumpState JumpState { get; private set; }
+    public PlayerFallState FallState { get; private set; }
+    public PlayerBumpState BumpState { get; private set; }
 
-    public PlayerStateContext Context    { get; private set; }
+    public PlayerStateContext Context { get; private set; }
 
     private PlayerDataInstance playerData;
     
-    private PositionSaver  positionSaver;
-
     private Vector3 originPos;
-    
+    private Vector3 checkPointPos;
+
     private Coroutine respawnRoutine;
-    
     private float saveTimer;
 
     #endregion
@@ -53,23 +53,21 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 
         playerData = playerDataRaw.Init();
 
-        positionSaver = new PositionSaver(30);
-
         Context = new PlayerStateContext
         {
-            Controller        = playerController,
-            AnimationManager  = animationManager,
-            LockOnSystem      = lockOnSystem,
-            InputManager      = inputManager,
-            Rb                = rb,
-            CameraTransform   = cameraTransform,
-            PlayerTransform   = transform,
-            StateMachine      = this,
-            PlayerData        = playerData,
-            VfxManagerPlayer  = vfxManagerPlayer,
-            ShootDirection    = transform.forward,
+            Controller          = playerController,
+            AnimationManager    = animationManager,
+            LockOnSystem        = lockOnSystem,
+            InputManager        = inputManager,
+            Rb                  = rb,
+            CameraTransform     = cameraTransform,
+            PlayerTransform     = transform,
+            StateMachine        = this,
+            PlayerData          = playerData,
+            VfxManagerPlayer    = vfxManagerPlayer,
+            ShootDirection      = transform.forward,
             PlayerHeadTransform = playerHead,
-            Collider          = playerCollider
+            Collider            = playerCollider
         };
 
         TransitionTo(LocomotionState);
@@ -88,27 +86,22 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     {
         UiEvents.TriggerEnergySetup(Context.PlayerData.MaxEnergy, Context.PlayerData.Energy);
         UiEvents.TriggerSapChanged(Context.PlayerData.Sap);
-        if (UiManager.Instance)
-            UiManager.Instance?.SetupLifeUi(Context.PlayerData.MaxLife, Context.PlayerData.MaxLife);
+        UiManager.Instance?.SetupLifeUi(Context.PlayerData.MaxLife, Context.PlayerData.MaxLife);
     }
 
-    private void Update()
-    {
-        CurrentPlayerState.UpdateState(Context);
-        SavePlayerPos();
-    }
+    private void Update() => CurrentPlayerState.UpdateState(Context);
 
-    private void FixedUpdate()
-    {
-        CurrentPlayerState.FixedUpdateState(Context);
-    }
+    private void FixedUpdate() => CurrentPlayerState.FixedUpdateState(Context);
 
     private void OnDestroy()
     {
-        PlayerEvents.OnRequestPlayerTransform  = null;
-        PlayerEvents.OnRequestPlayerContext    = null;
+        PlayerEvents.OnRequestPlayerTransform   = null;
+        PlayerEvents.OnRequestPlayerContext     = null;
         PlayerEvents.OnRequestCurrentLockTarget = null;
     }
+
+    private void OnEnable()  => GameplayEvents.OnCheckpoint += UpdateCheckPoint;
+    private void OnDisable() => GameplayEvents.OnCheckpoint -= UpdateCheckPoint;
 
     #endregion
 
@@ -144,14 +137,12 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         if (!CurrentPlayerState.CanTakeDamage)     return;
         if (CurrentPlayerState.IsParryWindowActive) return;
 
-        Context.HitDirection = hitDirection;
-
+        Context.HitDirection    = hitDirection;
         Context.PlayerData.Life -= value;
-        
-        if (UiManager.Instance)
-            UiManager.Instance.UpdateLifeUi(Context.PlayerData.Life);
 
-        if (Context.PlayerData.Life <= 0) 
+        UiManager.Instance?.UpdateLifeUi(Context.PlayerData.Life);
+
+        if (Context.PlayerData.Life <= 0)
         {
             TriggerRespawn(true);
             return;
@@ -194,18 +185,9 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 
     public void SaveData(ref GameData data)
     {
-        data.PlayerData = new PlayerSaveData(playerData);
+        data.PlayerData = new PlayerSaveData(playerData, checkPointPos);
     }
-
-    private void SavePlayerPos()
-    {
-        saveTimer += Time.deltaTime;
-
-        if (!(saveTimer >= 1f)) return;
-        
-        positionSaver.Save(transform.position, playerController.IsGrounded);
-        saveTimer = 0f;
-    }
+    
 
     #endregion
 
@@ -219,8 +201,8 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
             ? (playerController.IsGrounded ? Color.green : Color.red)
             : Color.yellow;
 
-        float height    = isRuntime ? playerData.PlayerHeight          : playerDataRaw.Movement.PlayerHeight;
-        float checkDist = isRuntime ? playerData.GroundCheckDistance   : playerDataRaw.Movement.GroundCheckDistance;
+        float height    = isRuntime ? playerData.PlayerHeight        : playerDataRaw.Movement.PlayerHeight;
+        float checkDist = isRuntime ? playerData.GroundCheckDistance : playerDataRaw.Movement.GroundCheckDistance;
         float radius    = 0.2f;
 
         Vector3 rayStart = transform.position - new Vector3(0, (height / 2) - radius, 0);
@@ -247,6 +229,7 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 
         int segments = 10;
         Vector3 prev = center + left * radius;
+
         for (int i = 1; i <= segments; i++)
         {
             float   a    = Mathf.Lerp(-angle, angle, (float)i / segments);
@@ -263,57 +246,50 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     private IEnumerator PlayerRespawn(bool isDead)
     {
         playerController.enabled = false;
+
         yield return StartCoroutine(UiManager.Instance.FadeBlackScreen(1f, 0.5f));
-        
+
         if (isDead)
         {
-            playerData = playerDataRaw.Init();
+            playerData         = playerDataRaw.Init();
             Context.PlayerData = playerData;
 
             var managerData = DataPersistenceManager.Instance;
-        
+
             if (managerData && managerData.HasGameData() && managerData.CanTPPlayerToLastPos())
             {
                 var lastPuzzle = PuzzleManager.Instance.GetPuzzleById(managerData.GetLastVisitedPuzzleId());
 
-                if (lastPuzzle && lastPuzzle.SpawnPoint) 
-                {
-                    transform.position = lastPuzzle.SpawnPoint.position;
-                }
-                else 
-                {
-                    transform.position = originPos; 
-                }
+                transform.position = lastPuzzle && lastPuzzle.SpawnPoint
+                    ? lastPuzzle.SpawnPoint.position
+                    : originPos;
             }
             else
             {
-                transform.position = originPos;
+                transform.position = checkPointPos != Vector3.zero ? checkPointPos : originPos;
             }
         }
         else
         {
-            if (positionSaver is { Count: > 0 })
-            {
-                transform.position = positionSaver.GetRespawnPosition();
-            }
-            
-            positionSaver.Clear();
+            transform.position = checkPointPos != Vector3.zero ? checkPointPos : originPos;
         }
 
         Physics.SyncTransforms();
-        
+
         yield return new WaitForSeconds(0.2f);
-        
-        yield return StartCoroutine(UiManager.Instance.FadeBlackScreen(0f, 0.5f));
+        yield return StartCoroutine(UiManager.Instance.FadeBlackScreen(0f, isDead ? 0.7f : 0.1f));
+
         playerController.enabled = true;
     }
-    
+
     public void TriggerRespawn(bool isDead)
     {
         if (respawnRoutine != null)
             StopCoroutine(respawnRoutine);
-        
 
         respawnRoutine = StartCoroutine(PlayerRespawn(isDead));
     }
+
+    private void UpdateCheckPoint(Vector3 pos) => checkPointPos = pos;
+    
 }

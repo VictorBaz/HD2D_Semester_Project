@@ -4,34 +4,44 @@ public class CameraCinematicState : CameraBaseState
 {
     private float timer;
     private bool isHolding;
+    private bool transition = false;
+    private Vector3 targetPosition;
 
     public override void EnterState(CameraStateContext context)
     {
         timer = context.CurrentSettings.holdDuration;
         isHolding = false;
+        transition = false;
+
+        targetPosition = context.CurrentSettings.targetCinematic ? 
+            context.CurrentSettings.targetCinematic.position : context.PlayerTransform.position;
     }
 
     public override void UpdateState(CameraStateContext context)
     {
+        if (transition) return;
+        
         context.CameraTransform.position = Vector3.SmoothDamp(
             context.CameraTransform.position,
             context.CurrentSettings.CameraPosition,
             ref context.Velocity,
-            context.Manager.TravelDuration 
+            context.TransitionSpeed 
         );
 
-        ApplyRestrictedRotation(context, context.PlayerTransform.position + Vector3.up * 1.5f);
+        ApplyRestrictedRotation(context, targetPosition);
 
-        float distance = Vector3.Distance(context.CameraTransform.position, context.CurrentSettings.CameraPosition);
+        float sqrDistance = (context.CameraTransform.position - context.CurrentSettings.CameraPosition).sqrMagnitude;
         
-        if (distance < 0.1f) isHolding = true;
+        if (!isHolding && sqrDistance < 0.01f) isHolding = true;
 
         if (isHolding)
         {
             timer -= Time.deltaTime;
+            
             if (timer <= 0)
             {
-                context.Manager.TransitionTo(context.Manager.FollowState);
+                transition = true;
+                context.Manager.ReturnFromCinematic();
             }
         }
     }

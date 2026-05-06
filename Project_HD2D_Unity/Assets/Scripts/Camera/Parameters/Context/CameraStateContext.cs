@@ -6,12 +6,10 @@ public class CameraStateContext
     public Transform CameraTransform;
     public Transform PlayerTransform;
     public Vector3 Offset;
-    public float SmoothTimeFix;
-    public float SmoothTimeFollow;
-    public float SmoothTimeRail;
+    public Vector3 Velocity = Vector3.zero;
     
     public CameraSettings CurrentSettings;
-    public Vector3 Velocity = Vector3.zero;
+    public float TransitionSpeed; 
     
     public LayerMask CollisionLayers; 
     public float CollisionPadding = 0.2f;

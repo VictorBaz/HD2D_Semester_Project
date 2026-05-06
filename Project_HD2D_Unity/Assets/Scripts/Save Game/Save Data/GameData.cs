@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 [System.Serializable]
 public class GameData
@@ -13,6 +14,6 @@ public class GameData
     public List<SapSaveData> sapDataList = new();
     public List<ParasiteSaveData> parasiteDataList = new();
 
-    public string LastCompletedPuzzleId;
+    public Vector3 lastCheckpoint;
     public string LastVisitedPuzzleId;
 }

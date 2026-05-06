@@ -143,7 +143,7 @@ namespace Player.State
 
             for (int i = 0; i < count; i++)
             {
-                var damageable = psc.Controller.HitBuffer[i].GetComponent<IDamageable>();
+                var damageable = psc.Controller.HitBuffer[i].GetComponent<IDamageable>();   
                 if (damageable == null || _hitThisCombo.Contains(damageable)) continue;
 
                 if (damageable is IDamageableEnemy enemy)

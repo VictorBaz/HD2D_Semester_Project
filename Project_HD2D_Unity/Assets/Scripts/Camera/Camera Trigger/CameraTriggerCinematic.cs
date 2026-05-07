@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class CameraTriggerCinematic : CameraTriggerBase
 {
-    [SerializeField] private Vector3 cameraPosition;
+    [SerializeField] private Transform cameraTransform;
     [SerializeField] private float holdDuration = 2f;
 
     private bool enter = false;
@@ -19,7 +19,7 @@ public class CameraTriggerCinematic : CameraTriggerBase
 
         CameraSettings settings = new CameraSettings
         {
-            CameraPosition = cameraPosition,
+            CameraTargetTransform = cameraTransform,
             CameraPlayerState = isCinematic ? CameraPlayerState.Cinematic : CameraPlayerState.FollowPlayer,
             holdDuration = isCinematic ? holdDuration : 0f
         };
@@ -30,7 +30,7 @@ public class CameraTriggerCinematic : CameraTriggerBase
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.darkBlue;
-        Gizmos.DrawLine(transform.position, cameraPosition);
-        Gizmos.DrawSphere(cameraPosition, 1f);
+        Gizmos.DrawLine(transform.position, cameraTransform.position);
+        Gizmos.DrawSphere(cameraTransform.position, 1f);
     }
 }

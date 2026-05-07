@@ -15,7 +15,7 @@ public class CameraTriggerFix : CameraTriggerBase
     {
         CameraSettings settings = new CameraSettings
         {
-            CameraPosition = targetTransform.position,
+            CameraTargetTransform = targetTransform,
             CameraPlayerState = CameraPlayerState.Fix
         };
         

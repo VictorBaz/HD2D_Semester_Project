@@ -1,229 +1,98 @@
-using System.Collections;
+using System;
 using Enum;
 using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
-    #region Variables
     [Header("Components")]
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private Transform playerTransform;
     [SerializeField] private Transform childTransform; 
 
-    [Header("Settings Camera Follow")]
+    [Header("Global Settings")]
     [SerializeField] private Vector3 offsetCamera;
-    [SerializeField] private float smoothTimeFix = 0.3f;
-    [SerializeField] private float smoothTimeFollow = 0.3f;
-    [SerializeField] private float smoothTimeRail = 0.3f;
+    [SerializeField] private LayerMask collisionLayers; 
+    [SerializeField] private float collisionPadding = 0.2f;
+    [SerializeField] private CameraPlayerState startingState;
+    [SerializeField] private float rotationSmoothTime = 0.15f;
 
-    [Header("Settings Camera Traveling")]
-    [SerializeField] private float travelDuration = 1f;
-    
-    [Header("Collision Settings")]
-    [SerializeField] private LayerMask CollisionLayers; 
-    [SerializeField] private  float CollisionPadding = 0.2f;
-
-    public CameraFollowState FollowState { get; private set; }
-    public CameraFixState FixState { get; private set; }
-    public CameraCinematicState CinematicState { get; private set; }
-    public CameraRailState RailState { get; private set; }
+    public CameraFollowState FollowState { get; } = new();
+    public CameraFixState FixState { get; } = new();
+    public CameraCinematicState CinematicState { get; } = new();
+    public CameraRailState RailState { get; } = new();
 
     private CameraBaseState currentState;
     private CameraStateContext context;
-    private Coroutine shakeCoroutine;
-
-    public float TravelDuration => travelDuration;
     
-    [SerializeField] private CameraPlayerState startingState;
-    
-    private float fixedXRotation;
-    private float fixedZRotation;
-    [SerializeField] private float rotationSmoothTime = 0.15f;
-    #endregion
+    private CameraBaseState stateBeforeCinematic;
+    private CameraSettings settingsBeforeCinematic;
 
-    #region Unity Lifecycle
     private void Awake()
     {
-        if (cameraTransform == null || playerTransform == null)
-        {
-            enabled = false;
-            return;
-        }
-
-        FollowState = new CameraFollowState();
-        FixState = new CameraFixState();
-        CinematicState = new CameraCinematicState();
-        RailState = new CameraRailState();
-
         context = new CameraStateContext
         {
             Manager = this,
             CameraTransform = cameraTransform,
             PlayerTransform = playerTransform,
             Offset = offsetCamera,
-            SmoothTimeFix = smoothTimeFix,
-            SmoothTimeFollow = smoothTimeFollow,
-            SmoothTimeRail = smoothTimeRail,
-            CollisionLayers = this.CollisionLayers,
-            CollisionPadding = this.CollisionPadding,
+            CollisionLayers = collisionLayers,
+            CollisionPadding = collisionPadding
         };
 
-        Vector3 currentEuler = cameraTransform.eulerAngles;
-        
-        fixedXRotation = currentEuler.x;
-        fixedZRotation = currentEuler.z;
-        
-        TransitionTo(ConvertEnumToState(startingState));
+        TransitionTo(ConvertEnumToState(startingState), null);
     }
 
-    private void OnEnable()
-    {
-        CameraEvents.OnCameraTrigger += OnCameraTrigger;
-        CameraEvents.OnCameraShake += Shake;
-    }
+    private void OnEnable() => CameraEvents.OnCameraTrigger += OnCameraTrigger;
+    private void OnDisable() => CameraEvents.OnCameraTrigger -= OnCameraTrigger;
 
-    private void OnDisable()
-    {
-        CameraEvents.OnCameraTrigger -= OnCameraTrigger;
-        CameraEvents.OnCameraShake -= Shake;
-    }
+    private void LateUpdate() => currentState?.UpdateState(context);
 
-    private void LateUpdate()
-    {
-        if (currentState != null)
-        {
-            currentState.UpdateState(context);
-        }
-    }
-    #endregion
-
-    #region State Management
-    public void TransitionTo(CameraBaseState newState)
+    public void TransitionTo(CameraBaseState newState, CameraSettings newSettings)
     {
         if (newState == null) return;
 
-        if (currentState != null)
-            currentState.ExitState(context);
+        if (newState == CinematicState)
+        {
+            stateBeforeCinematic = currentState;
+            settingsBeforeCinematic = context.CurrentSettings; 
+        }
 
+        context.CurrentSettings = newSettings;
+        context.TransitionSpeed = newSettings?.transitionSmoothTime ?? 0.3f;
+
+        currentState?.ExitState(context);
         currentState = newState;
-        
-        context.Velocity = Vector3.zero; 
-
         currentState.EnterState(context);
     }
 
     private void OnCameraTrigger(CameraSettings settings)
     {
-        context.CurrentSettings = settings;
-
-        switch (settings.CameraPlayerState)
-        {
-            case CameraPlayerState.FollowPlayer:
-                TransitionTo(FollowState);
-                break;
-            case CameraPlayerState.Fix:
-                TransitionTo(FixState);
-                break;
-            case CameraPlayerState.Cinematic:
-                TransitionTo(CinematicState);
-                break;
-            case CameraPlayerState.Rail: 
-                TransitionTo(RailState);
-                break;
-        }
-    }
-    #endregion
-
-    #region Shake Logic
-    private void Shake()
-    {
-        if (shakeCoroutine != null)
-            StopCoroutine(shakeCoroutine);
-
-        shakeCoroutine = StartCoroutine(ShakeIE(0.2f, 0.7f));
+        TransitionTo(ConvertEnumToState(settings.CameraPlayerState), settings);
     }
 
-    private IEnumerator ShakeIE(float duration, float magnitude)
+    private CameraBaseState ConvertEnumToState(CameraPlayerState state) => state switch
     {
-        float elapsed = 0f;
-        float seed = UnityEngine.Random.value * 100f;
+        CameraPlayerState.Fix => FixState,
+        CameraPlayerState.Cinematic => CinematicState,
+        CameraPlayerState.Rail => RailState,
+        _ => FollowState
+    };
 
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = elapsed / duration;
-
-            float currentMagnitude = Mathf.Lerp(magnitude, 0f, t);
-
-            childTransform.localPosition = new Vector3(
-                (Mathf.PerlinNoise(seed + t * 10f, 0f) - 0.5f) * 2f * currentMagnitude,
-                (Mathf.PerlinNoise(0f, seed + t * 10f) - 0.5f) * 2f * currentMagnitude,
-                0
-            );
-
-            yield return null;
-        }
-
-        childTransform.localPosition = Vector3.zero;
-        shakeCoroutine = null;
-    }
-    #endregion
-    
-    
-    private void OnDrawGizmos()
+    public void ReturnFromCinematic()
     {
-        if (context == null || cameraTransform == null || playerTransform == null) return;
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(cameraTransform.position, playerTransform.position + Vector3.up * 1.5f);
-
-        if (currentState == FollowState)
+        if (stateBeforeCinematic == null || settingsBeforeCinematic == null)
         {
-            Gizmos.color = Color.cyan;
-            Vector3 targetPos = playerTransform.position + offsetCamera;
-            Gizmos.DrawWireSphere(targetPos, 0.5f);
-            Gizmos.DrawLine(cameraTransform.position, targetPos);
-        }
-        else if (currentState == FixState || currentState == CinematicState)
-        {
-            Gizmos.color = Color.red;
-            if (context.CurrentSettings != null)
-            {
-                Gizmos.DrawWireCube(context.CurrentSettings.CameraPosition, Vector3.one * 0.5f);
-                Gizmos.DrawLine(cameraTransform.position, context.CurrentSettings.CameraPosition);
-            }
-        }
-        else if (currentState == RailState)
-        {
-            Gizmos.color = Color.magenta;
-            if (context.CurrentSettings != null && context.CurrentSettings.ActiveRail != null)
-            {
-                Vector3 railPoint = context.CurrentSettings.ActiveRail.ProjectPositionOnRail(playerTransform.position);
-                Gizmos.DrawWireSphere(railPoint, 0.3f);
-            }
-        }
-    }
-
-    private CameraBaseState ConvertEnumToState(CameraPlayerState state)
-    {
-        switch (state)
-        {
-            case CameraPlayerState.Fix:
-                return FixState;
-            case CameraPlayerState.FollowPlayer:
-                return FollowState;
-            case CameraPlayerState.Cinematic:
-                return CinematicState;
-            case CameraPlayerState.Rail:
-                return RailState;
-            default:
-                return FollowState;
+            TransitionTo(FollowState, null); 
+            return;
         }
         
+        context.Velocity = Vector3.zero; 
+
+        TransitionTo(stateBeforeCinematic, settingsBeforeCinematic);
+        
+        stateBeforeCinematic = null;
+        settingsBeforeCinematic = null;
     }
     
     public float RotationSmoothTime => rotationSmoothTime;
-    public float FixedX => fixedXRotation;
-    public float FixedZ => fixedZRotation;
-    
 }

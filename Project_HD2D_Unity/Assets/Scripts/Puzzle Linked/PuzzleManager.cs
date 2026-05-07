@@ -92,7 +92,6 @@ public class PuzzleManager : MonoBehaviour, IDataPersistence
     public void SaveData(ref GameData data)
     {
         data.CompletedPuzzles = new List<string>(completedPuzzles);
-        data.LastCompletedPuzzleId = LastPuzzleCompleted();
         data.LastVisitedPuzzleId = LastPuzzleCompleted();
     }
 

@@ -22,7 +22,7 @@ public class CameraRailState : CameraBaseState
             context.CameraTransform.position,
             targetOnRail,
             ref context.Velocity,
-            context.SmoothTimeRail
+            context.TransitionSpeed
         );
 
         ApplyRestrictedRotation(context, context.PlayerTransform.position + Vector3.up * 1.5f);

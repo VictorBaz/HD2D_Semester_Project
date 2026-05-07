@@ -37,16 +37,16 @@ public class CameraTrigger : MonoBehaviour
         switch (settings.CameraPlayerState)
         {
             case CameraPlayerState.Fix:
-                Gizmos.color = Color.yellow;
+                Gizmos.color = new Color(1, 1, 0, 0.5f);
                 break;
             case CameraPlayerState.FollowPlayer:
-                Gizmos.color = Color.mediumPurple;
+                Gizmos.color = new Color(0.5f, 0.5f, 1, 0.5f);
                 break;
             case CameraPlayerState.Cinematic:
-                Gizmos.color = Color.deepSkyBlue;
+                Gizmos.color = new Color(0.5f, 1, 1, 0.5f);
                 break;
             case CameraPlayerState.Rail:
-                Gizmos.color = Color.red;
+                Gizmos.color = new Color(1, 0, 0, 0.5f);
                 break;
             default:
                 Gizmos.color = new Color(0, 1, 1, 0.2f);

@@ -10,38 +10,43 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 {
     #region Variables
 
-    [SerializeField] private PlayerController playerController;
+    [SerializeField] private PlayerController      playerController;
     [SerializeField] private PlayerAnimationManager animationManager;
-    [SerializeField] private InputManager inputManager;
-    [SerializeField] private LockOnSystem lockOnSystem;
-    [SerializeField] private VfxManagerPlayer vfxManagerPlayer;
-    [SerializeField] private Transform cameraTransform;
-    [SerializeField] private Transform playerHead;
-    [SerializeField] private Rigidbody rb;
-    [SerializeField] private CapsuleCollider playerCollider;
-    [SerializeField] private PlayerData playerDataRaw;
+    [SerializeField] private InputManager          inputManager;
+    [SerializeField] private LockOnSystem          lockOnSystem;
+    [SerializeField] private VfxManagerPlayer      vfxManagerPlayer;
+    [SerializeField] private Transform             cameraTransform;
+    [SerializeField] private Transform             playerHead;
+    [SerializeField] private Rigidbody             rb;
+    [SerializeField] private CapsuleCollider       playerCollider;
+    [SerializeField] private PlayerData            playerDataRaw;
 
-    public PlayerBaseState CurrentPlayerState { get; private set; }
-    public PlayerLocomotionState LocomotionState { get; private set; }
-    public PlayerAttackState AttackState { get; private set; }
-    public PlayerLandingState LandingState { get; private set; }
-    public PlayerDashState DashState { get; private set; }
-    public PlayerCarryState CarryState { get; private set; }
-    public PlayerHitState HitState { get; private set; }
-    public PlayerParryState ParryState { get; private set; }
-    public PlayerJumpState JumpState { get; private set; }
-    public PlayerFallState FallState { get; private set; }
-    public PlayerBumpState BumpState { get; private set; }
+    public PlayerBaseState     CurrentPlayerState { get; private set; }
+    public PlayerLocomotionState LocomotionState  { get; private set; }
+    public PlayerAttackState   AttackState        { get; private set; }
+    public PlayerLandingState  LandingState       { get; private set; }
+    public PlayerDashState     DashState          { get; private set; }
+    public PlayerCarryState    CarryState         { get; private set; }
+    public PlayerHitState      HitState           { get; private set; }
+    public PlayerParryState    ParryState         { get; private set; }
+    public PlayerJumpState     JumpState          { get; private set; }
+    public PlayerFallState     FallState          { get; private set; }
+    public PlayerBumpState     BumpState          { get; private set; }
 
     public PlayerStateContext Context { get; private set; }
 
     private PlayerDataInstance playerData;
-    
-    private Vector3 originPos;
-    private Vector3 checkPointPos;
 
+    private Vector3   originPos;
+    private Vector3   checkPointPos;
     private Coroutine respawnRoutine;
-    private float saveTimer;
+
+    [Header("Passive Regen")]
+    [SerializeField] private float regenDelay     = 5f;
+    [SerializeField] private float regenSpeed     = 2f;
+
+    private float timeSinceLastDamage = Mathf.Infinity;
+    private float regenAccumulator = 0f;
 
     #endregion
 
@@ -86,10 +91,14 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     {
         UiEvents.TriggerEnergySetup(Context.PlayerData.MaxEnergy, Context.PlayerData.Energy);
         UiEvents.TriggerSapChanged(Context.PlayerData.Sap);
-        UiManager.Instance?.SetupLifeUi(Context.PlayerData.MaxLife, Context.PlayerData.MaxLife);
+        if (UiManager.Instance) UiManager.Instance.SetupLifeUi(Context.PlayerData.MaxLife, Context.PlayerData.MaxLife);
     }
 
-    private void Update() => CurrentPlayerState.UpdateState(Context);
+    private void Update()
+    {
+        CurrentPlayerState.UpdateState(Context);
+        HandlePassiveRegen();
+    }
 
     private void FixedUpdate() => CurrentPlayerState.FixedUpdateState(Context);
 
@@ -137,6 +146,9 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         if (!CurrentPlayerState.CanTakeDamage)     return;
         if (CurrentPlayerState.IsParryWindowActive) return;
 
+        timeSinceLastDamage = 0f;
+        regenAccumulator    = 0f;
+        
         Context.HitDirection    = hitDirection;
         Context.PlayerData.Life -= value;
 
@@ -158,6 +170,28 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 
     public bool IsInParryWindowPerfect()
         => CurrentPlayerState is PlayerParryState p && p.IsPerfectWindowActive;
+
+    #endregion
+
+    #region Passive Regen
+
+    private void HandlePassiveRegen()
+    {
+        if (Context.PlayerData.IsPlayerFullLife()) return;
+
+        timeSinceLastDamage += Time.deltaTime;
+        if (timeSinceLastDamage < regenDelay) return;
+
+        regenAccumulator += regenSpeed * Time.deltaTime;
+
+        if (regenAccumulator < 1f) return;
+
+        int points = Mathf.FloorToInt(regenAccumulator);
+        regenAccumulator -= points;
+
+        Context.PlayerData.Life = Mathf.Min(Context.PlayerData.Life + points, Context.PlayerData.MaxLife);
+        UiManager.Instance?.UpdateLifeUi(Context.PlayerData.Life);
+    }
 
     #endregion
 
@@ -187,10 +221,67 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     {
         data.PlayerData = new PlayerSaveData(playerData, checkPointPos);
     }
-    
 
     #endregion
 
+    private PlayerStateContext GetContext() => Context;
+
+    private IEnumerator PlayerRespawn(bool isDead)
+    {
+        playerController.enabled = false;
+
+        yield return StartCoroutine(UiManager.Instance.FadeBlackScreen(1f, 0.5f));
+
+        if (isDead)
+        {
+            playerData         = playerDataRaw.Init();
+            Context.PlayerData = playerData;
+
+            if (UiManager.Instance)
+                UiManager.Instance.SetupLifeUi(Context.PlayerData.MaxLife, Context.PlayerData.MaxLife);
+
+            UiEvents.TriggerEnergySetup(Context.PlayerData.MaxEnergy, Context.PlayerData.Energy);
+            UiEvents.TriggerSapChanged(Context.PlayerData.Sap);
+
+            var managerData = DataPersistenceManager.Instance;
+
+            if (managerData && managerData.HasGameData() && managerData.CanTPPlayerToLastPos())
+            {
+                var lastPuzzle = PuzzleManager.Instance.GetPuzzleById(managerData.GetLastVisitedPuzzleId());
+
+                transform.position = lastPuzzle && lastPuzzle.SpawnPoint
+                    ? lastPuzzle.SpawnPoint.position
+                    : originPos;
+            }
+            else
+            {
+                transform.position = checkPointPos != Vector3.zero ? checkPointPos : originPos;
+            }
+        }
+        else
+        {
+            transform.position = checkPointPos != Vector3.zero ? checkPointPos : originPos;
+        }
+
+        timeSinceLastDamage = 0f;
+        regenAccumulator    = 0f;
+
+        Physics.SyncTransforms();
+
+        yield return new WaitForSeconds(0.2f);
+        yield return StartCoroutine(UiManager.Instance.FadeBlackScreen(0f, isDead ? 0.7f : 0.1f));
+
+        playerController.enabled = true;
+    }
+
+    public void TriggerRespawn(bool isDead)
+    {
+        if (respawnRoutine != null) StopCoroutine(respawnRoutine);
+        respawnRoutine = StartCoroutine(PlayerRespawn(isDead));
+    }
+
+    private void UpdateCheckPoint(Vector3 pos) => checkPointPos = pos;
+    
     #region Gizmos
 
     private void OnDrawGizmos()
@@ -227,8 +318,8 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         Gizmos.DrawLine(center, center + left  * radius);
         Gizmos.DrawLine(center, center + right * radius);
 
-        int segments = 10;
-        Vector3 prev = center + left * radius;
+        int     segments = 10;
+        Vector3 prev     = center + left * radius;
 
         for (int i = 1; i <= segments; i++)
         {
@@ -240,56 +331,4 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     }
 
     #endregion
-
-    private PlayerStateContext GetContext() => Context;
-
-    private IEnumerator PlayerRespawn(bool isDead)
-    {
-        playerController.enabled = false;
-
-        yield return StartCoroutine(UiManager.Instance.FadeBlackScreen(1f, 0.5f));
-
-        if (isDead)
-        {
-            playerData         = playerDataRaw.Init();
-            Context.PlayerData = playerData;
-
-            var managerData = DataPersistenceManager.Instance;
-
-            if (managerData && managerData.HasGameData() && managerData.CanTPPlayerToLastPos())
-            {
-                var lastPuzzle = PuzzleManager.Instance.GetPuzzleById(managerData.GetLastVisitedPuzzleId());
-
-                transform.position = lastPuzzle && lastPuzzle.SpawnPoint
-                    ? lastPuzzle.SpawnPoint.position
-                    : originPos;
-            }
-            else
-            {
-                transform.position = checkPointPos != Vector3.zero ? checkPointPos : originPos;
-            }
-        }
-        else
-        {
-            transform.position = checkPointPos != Vector3.zero ? checkPointPos : originPos;
-        }
-
-        Physics.SyncTransforms();
-
-        yield return new WaitForSeconds(0.2f);
-        yield return StartCoroutine(UiManager.Instance.FadeBlackScreen(0f, isDead ? 0.7f : 0.1f));
-
-        playerController.enabled = true;
-    }
-
-    public void TriggerRespawn(bool isDead)
-    {
-        if (respawnRoutine != null)
-            StopCoroutine(respawnRoutine);
-
-        respawnRoutine = StartCoroutine(PlayerRespawn(isDead));
-    }
-
-    private void UpdateCheckPoint(Vector3 pos) => checkPointPos = pos;
-    
 }

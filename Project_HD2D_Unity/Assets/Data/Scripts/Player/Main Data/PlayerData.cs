@@ -262,4 +262,6 @@ public class PlayerDataInstance
     public bool IsEnergyEmpty() => Energy <= 0;
     public void RemoveEnergy() => Energy = Mathf.Max(0, Energy - 1);
     public void AddEnergy() => Energy = Mathf.Min(MaxEnergy, Energy + 1);
+    
+    public bool IsPlayerFullLife() => Life >= MaxLife;
 }

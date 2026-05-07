@@ -1,3 +1,4 @@
+using System;
 using Enum;
 using UnityEngine;
 
@@ -32,7 +33,27 @@ public class CameraTrigger : MonoBehaviour
         if (!box) return;
         
         Gizmos.matrix = transform.localToWorldMatrix;
-        Gizmos.color = new Color(0, 1, 1, 0.2f);
+
+        switch (settings.CameraPlayerState)
+        {
+            case CameraPlayerState.Fix:
+                Gizmos.color = Color.yellow;
+                break;
+            case CameraPlayerState.FollowPlayer:
+                Gizmos.color = Color.mediumPurple;
+                break;
+            case CameraPlayerState.Cinematic:
+                Gizmos.color = Color.deepSkyBlue;
+                break;
+            case CameraPlayerState.Rail:
+                Gizmos.color = Color.red;
+                break;
+            default:
+                Gizmos.color = new Color(0, 1, 1, 0.2f);
+                break;
+        }
+        
+        
         Gizmos.DrawCube(box.center, box.size);
         Gizmos.DrawWireCube(box.center, box.size);
     }
@@ -68,6 +89,14 @@ public class CameraTrigger : MonoBehaviour
             Gizmos.DrawFrustum(Vector3.zero, 60f, 3f, 0.1f, 1.77f);
             
             Gizmos.matrix = Matrix4x4.identity;
+        }
+        
+        if (settings.CameraPlayerState == CameraPlayerState.Rail && settings.ActiveRail != null)
+        {
+            Gizmos.color = Color.yellow;
+            Vector3 firstNode = settings.ActiveRail.Nodes[0];
+            Gizmos.DrawLine(firstNode, firstNode + settings.RailOffset);
+            Gizmos.DrawWireSphere(firstNode + settings.RailOffset, 0.5f);
         }
     }
 }

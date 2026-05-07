@@ -27,6 +27,7 @@ public class CameraTriggerEditor : Editor
         SerializedProperty smoothProp = settings.FindPropertyRelative("transitionSmoothTime");
         SerializedProperty holdProp = settings.FindPropertyRelative("holdDuration");
         SerializedProperty targetCinematicProp = settings.FindPropertyRelative("targetCinematic");
+        SerializedProperty railOffsetProp = settings.FindPropertyRelative("RailOffset");
 
         if (stateProp == null)
         {
@@ -84,12 +85,17 @@ public class CameraTriggerEditor : Editor
                 break;
 
             case CameraPlayerState.Rail:
-                if (railProp != null)
+                EditorGUILayout.PropertyField(railProp);
+    
+                if (railOffsetProp != null)
                 {
-                    EditorGUILayout.PropertyField(railProp);
-                    Rail rail = railProp.objectReferenceValue as Rail;
-                    if (rail != null) DrawRailTools(rail);
-                    else EditorGUILayout.HelpBox("Veuillez assigner un script Rail.", MessageType.Warning);
+                    EditorGUILayout.PropertyField(railOffsetProp, new GUIContent("Rail Offset", "Décalage de la caméra par rapport au rail."));
+                }
+
+                Rail rail = railProp.objectReferenceValue as Rail;
+                if (rail != null) 
+                {
+                    DrawRailTools(rail);
                 }
                 break;
 

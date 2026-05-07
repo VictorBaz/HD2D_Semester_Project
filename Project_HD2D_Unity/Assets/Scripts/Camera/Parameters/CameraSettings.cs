@@ -7,6 +7,7 @@ public class CameraSettings
     public Transform CameraTargetTransform;
     public float holdDuration;
     public Rail ActiveRail; 
+    public Vector3 RailOffset;
     
     [Header("Transition")]
     [Tooltip("Vitesse de transition vers cet état (SmoothTime)")]

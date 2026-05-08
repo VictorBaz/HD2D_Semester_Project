@@ -203,7 +203,7 @@ public class UiManager : MonoBehaviour
                 () => currentEnergyFillBackground,
                 x => { currentEnergyFillBackground = x; energyFillImageBackground.materialForRendering.SetFloat("_fillAmount", x); },
                 targetFill,
-                isDecreasing ? 0.9f : 0.5f)
+                isDecreasing ? 0.8f : 0.6f)
             .SetDelay(isDecreasing ? 0.3f : 0f)
             .SetEase(isDecreasing ? Ease.OutCubic : Ease.InOutCubic);
     }

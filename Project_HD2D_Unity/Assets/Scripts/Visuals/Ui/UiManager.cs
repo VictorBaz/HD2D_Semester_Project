@@ -15,7 +15,8 @@ public class UiManager : MonoBehaviour
 
     [Header("UI Elements")]
     [SerializeField] private Slider lifeSlider;
-
+    [SerializeField] private Slider lifeSliderBackground;
+    
     [Header("State Panels")]
     [SerializeField] private CanvasGroup pauseMenuPanel;
     [SerializeField] private CanvasGroup mainMenuPanel;
@@ -345,11 +346,17 @@ public class UiManager : MonoBehaviour
 
     public void SetupLifeUi(float maxLife, float currentLife)
     {
-        lifeSlider.maxValue = maxLife;
-        lifeSlider.value    = currentLife;
+        lifeSlider.maxValue            = maxLife;
+        lifeSlider.value               = currentLife;
+        lifeSliderBackground.maxValue  = maxLife;
+        lifeSliderBackground.value     = currentLife;
     }
 
-    public void UpdateLifeUi(float value) => this.UpdateSlider(lifeSlider, value, 0.5f);
+    public void UpdateLifeUi(float value)
+    {
+        this.UpdateSlider(lifeSlider, value, 0.5f);
+        this.UpdateSlider(lifeSliderBackground, value, 0.7f);
+    }
 
     #endregion
 }

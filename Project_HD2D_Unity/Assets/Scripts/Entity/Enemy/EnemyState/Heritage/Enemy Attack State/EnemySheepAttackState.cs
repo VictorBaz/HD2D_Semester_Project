@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class EnemySheepAttackState : EnemyAttackState
 {
@@ -16,6 +17,8 @@ public class EnemySheepAttackState : EnemyAttackState
         chargedTime = actx.Data.GetAnimationCLipLengthChargeAttack() / MULTIPLY_ANTICIPATION_TIME;
         
         actx.AnimManager.ToggleRepulsiveCollider(true);
+        
+        canTakeDamage = true;
     }
 
     protected override IEnumerator AttackSequence(EnemyContext actx)
@@ -69,6 +72,16 @@ public class EnemySheepAttackState : EnemyAttackState
 
             if (elapsed >= data.HitboxActiveDuration)
                 actx.AnimManager.ToggleAttackCollider(false);
+
+            if (Keyboard.current.tabKey.wasPressedThisFrame)
+            {
+                Debug.Log($"Elapsed : {elapsed} and Time : {activePhaseDuration}");
+            }
+            
+            if(!canTakeDamage && elapsed >= activePhaseDuration * 0.6f) //can damage after 60% animation attack done
+            {
+                canTakeDamage = true;
+            }
 
             yield return null;
         }

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4298736289261596677
+--- !u!114 &-4941746668734155417
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,13 +20,13 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Shader Graphs_TerrainScanner_unlit
-  m_Shader: {fileID: -6465566751694194690, guid: 1812d89cf84d32b489dd18b0cbfa6918, type: 3}
+  m_Name: Fluid_M
+  m_Shader: {fileID: -6465566751694194690, guid: e0d0c0e718e1f5f4ab6cd62a62e71bfd, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords:
+  m_ValidKeywords: []
+  m_InvalidKeywords:
   - _SURFACE_TYPE_TRANSPARENT
-  m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -56,21 +56,32 @@ Material:
     m_Floats:
     - _AlphaClip: 0
     - _AlphaToMask: 0
-    - _Blend: 0
+    - _Blend: 2
     - _CastShadows: 1
+    - _ColorMask: 15
     - _Cull: 0
-    - _DstBlend: 10
-    - _DstBlendAlpha: 10
-    - _IntersectionDepth: 0.9
+    - _DstBlend: 1
+    - _DstBlendAlpha: 1
     - _QueueControl: 0
     - _QueueOffset: 0
     - _SrcBlend: 5
     - _SrcBlendAlpha: 1
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
     - _Surface: 1
+    - _UIMaskSoftnessX: 1
+    - _UIMaskSoftnessY: 1
     - _ZTest: 4
     - _ZWrite: 0
     - _ZWriteControl: 0
+    - _fillAlpha: 1
+    - _fillAmount: 1
+    - _waveMultiplier: 1
     m_Colors:
-    - _IntersectionColor: {r: 0, g: 3.0405827, b: 15.282926, a: 1}
+    - White: {r: 1, g: 1, b: 1, a: 1}
+    - _ClipRect: {r: 0, g: 0, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

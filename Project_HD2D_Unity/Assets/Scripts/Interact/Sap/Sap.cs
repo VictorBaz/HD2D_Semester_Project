@@ -7,6 +7,7 @@ public class Sap : MonoBehaviour, ISapLockable, IDataPersistence
     [SerializeField] private GameObject vfxSapPresent;
     [SerializeField] private Slider     progressSlider;
     [SerializeField] private float      collectDuration = 2f;
+    [SerializeField] private ParticleSystem particleSap;
 
     private bool  _isEmpty;
     private bool  _playerInZone;
@@ -67,6 +68,7 @@ public class Sap : MonoBehaviour, ISapLockable, IDataPersistence
         var player = PlayerEvents.OnRequestPlayerContext?.Invoke();
         player?.PlayerData.AddSap();
         UiEvents.TriggerSapChanged(player?.PlayerData.Sap ?? 0);
+        particleSap.TriggerParticleSystem();
     }
     
     private void TickTimer()

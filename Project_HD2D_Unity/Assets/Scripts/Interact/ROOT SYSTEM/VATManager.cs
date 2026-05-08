@@ -19,6 +19,7 @@ public class VATManager : MonoBehaviour, IRootLink
 
     [Header("Scan")]
     [SerializeField] private ParticleSystem psScan;
+    [SerializeField] private ParticleSystem psScanBlocked;
 
     protected float currentNormalizedValue = 0f;
     protected MaterialPropertyBlock propBlock;
@@ -92,11 +93,19 @@ public class VATManager : MonoBehaviour, IRootLink
     {
         if (locked)
         {
-            psScan.TriggerParticleSystem();
+            if (IsBlocked())
+            {
+                psScanBlocked.TriggerParticleSystem();
+            }
+            else
+            {
+                psScan.TriggerParticleSystem();
+            }
         }
         else
         {
             psScan.StopParticleSystem();
+            psScanBlocked.StopParticleSystem();
         }
     }
 

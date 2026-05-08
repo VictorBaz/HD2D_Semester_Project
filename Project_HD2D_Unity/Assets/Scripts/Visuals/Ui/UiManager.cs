@@ -31,7 +31,11 @@ public class UiManager : MonoBehaviour
     [SerializeField] private Sprite energyEmptySprite;
 
     [Header("Sap Settings")]
-    [SerializeField] private TMP_Text sapCountText;
+    [SerializeField] private Image sapFillImage;
+    [SerializeField] private int maxSap = 3;
+    private Tween sapFillTween;
+    private float currentSapFill;
+    private const float MaxSapShaderValue = 1f;
 
     [Header("Panel Settings")]
     [SerializeField] private CanvasGroup canvasGroupLeftPanel;
@@ -248,8 +252,19 @@ public class UiManager : MonoBehaviour
 
     private void HandleSapUpdate(int curr)
     {
-        if (sapCountText != null)
-            sapCountText.text = curr.ToString();
+
+        if (sapFillImage != null)
+        {
+            float targetFill = (maxSap > 0) ? (MaxSapShaderValue / maxSap) * curr : 0f;
+
+            sapFillTween?.Kill();
+            sapFillTween = DOTween.To(
+                    () => currentSapFill,
+                    x  => { currentSapFill = x; sapFillImage.materialForRendering.SetFloat("_fillAmount", x); },
+                    targetFill,
+                    0.7f)
+                .SetEase(Ease.InOutCubic);
+        }
     }
     
 

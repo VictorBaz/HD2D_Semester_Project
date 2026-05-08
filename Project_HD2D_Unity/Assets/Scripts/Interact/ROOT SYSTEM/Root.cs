@@ -53,6 +53,7 @@ public class Root : MonoBehaviour, IDataPersistence
         InitFlaws();
         InitVatManagers();
         InitPropBlocks();
+        timerScan = timerScanMax;
     }
 
     private void Update() => HandleVATShaders();

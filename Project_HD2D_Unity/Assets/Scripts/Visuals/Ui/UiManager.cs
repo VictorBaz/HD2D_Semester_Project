@@ -13,9 +13,9 @@ public class UiManager : MonoBehaviour
 
     public static UiManager Instance;
 
-    [Header("UI Elements")] 
+    [Header("UI Elements")]
     [SerializeField] private Slider lifeSlider;
-    
+
     [Header("State Panels")]
     [SerializeField] private CanvasGroup pauseMenuPanel;
     [SerializeField] private CanvasGroup mainMenuPanel;
@@ -24,18 +24,16 @@ public class UiManager : MonoBehaviour
     [SerializeField] private CanvasGroup settingsPanel;
 
     [Header("Energy Settings")]
-    [SerializeField] private Transform energyContainer;
-    [SerializeField] private GameObject energyPointPrefab;
-    [SerializeField] private List<Image> energyIcons;
-    [SerializeField] private Sprite energyFullSprite;
-    [SerializeField] private Sprite energyEmptySprite;
+    [SerializeField] private Image energyFillImage;
+    [SerializeField] private Image energyFillImageBackground;
+    private const float MaxEnergyShaderValue = 1f;
+    private Tween energyFillTween;
+    private Tween energyFillBackgroundTween;
+    private float currentEnergyFill;
+    private float currentEnergyFillBackground;
 
     [Header("Sap Settings")]
-    [SerializeField] private Image sapFillImage;
-    [SerializeField] private int maxSap = 3;
-    private Tween sapFillTween;
-    private float currentSapFill;
-    private const float MaxSapShaderValue = 1f;
+    [SerializeField] private TMP_Text sapCountText;
 
     [Header("Panel Settings")]
     [SerializeField] private CanvasGroup canvasGroupLeftPanel;
@@ -56,7 +54,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private RectTransform loadingIcon;
     [SerializeField] private float rotationSpeed = 200f;
     [SerializeField] private CanvasGroup blackScreenGroup;
-    
+
     [Header("Pop Up")]
     [SerializeField] private CanvasGroup popupGroup;
     private Sequence popupSequence;
@@ -113,7 +111,6 @@ public class UiManager : MonoBehaviour
         UiEvents.OnSapChanged += HandleSapUpdate;
         UiEvents.OnLockStateChanged += HandleLockUpdate;
         UiEvents.OnToggleInputPanel += DisplayPanelInput;
-        UiEvents.OnEnergySetup += SetupEnergy;
         EventManager.OnLoadingStarted += HandleLoadingStarted;
         EventManager.OnLoadingFinished += HandleLoadingFinished;
         UiEvents.OnShowPopup += ShowPopup;
@@ -126,7 +123,6 @@ public class UiManager : MonoBehaviour
         UiEvents.OnSapChanged -= HandleSapUpdate;
         UiEvents.OnLockStateChanged -= HandleLockUpdate;
         UiEvents.OnToggleInputPanel -= DisplayPanelInput;
-        UiEvents.OnEnergySetup -= SetupEnergy;
         EventManager.OnLoadingStarted -= HandleLoadingStarted;
         EventManager.OnLoadingFinished -= HandleLoadingFinished;
         UiEvents.OnShowPopup -= ShowPopup;
@@ -135,69 +131,6 @@ public class UiManager : MonoBehaviour
     private void OnDestroy()
     {
         transform.DOKill(true);
-    }
-
-    #endregion
-
-    #region Energy Logic
-
-    private void UpdateEnergyDisplay(int currentEnergy)
-    {
-        for (int i = 0; i < energyIcons.Count; i++)
-        {
-            bool shouldBeFull = (i < currentEnergy);
-            bool isFull = energyIcons[i].sprite == energyFullSprite;
-
-            if (isFull == shouldBeFull) continue;
-
-            if (shouldBeFull)
-                AnimateGain(energyIcons[i], energyFullSprite);
-            else
-                AnimateLoss(energyIcons[i], energyEmptySprite);
-        }
-    }
-
-    private void SetupEnergy(int maxEnergy, int currentEnergy)
-    {
-        foreach (Transform child in energyContainer)
-            Destroy(child.gameObject);
-        
-        energyIcons.Clear();
-
-        for (int i = 0; i < maxEnergy; i++)
-        {
-            GameObject obj = Instantiate(energyPointPrefab, energyContainer);
-            if (!obj.TryGetComponent(out Image img)) continue;
-
-            img.raycastTarget = false;
-            img.sprite = i < currentEnergy ? energyFullSprite : energyEmptySprite;
-            energyIcons.Add(img);
-        }
-    }
-
-    #endregion
-
-    #region Animations
-
-    private void AnimateLoss(Image icon, Sprite sprite)
-    {
-        icon.transform.DOPunchRotation(new Vector3(0, 0, 15), 0.3f);
-        icon.DOFade(0f, 0.15f).OnComplete(() =>
-        {
-            icon.sprite = sprite;
-            icon.DOFade(1f, 0.15f);
-        });
-    }
-
-    private void AnimateGain(Image icon, Sprite sprite)
-    {
-        icon.transform.DOKill();
-        icon.DOFade(0f, 0.15f).OnComplete(() =>
-        {
-            icon.sprite = sprite;
-            icon.DOFade(1f, 0.15f);
-            icon.transform.DOScale(1.2f, 0.1f).OnComplete(() => icon.transform.DOScale(1.0f, 0.1f));
-        });
     }
 
     #endregion
@@ -248,36 +181,49 @@ public class UiManager : MonoBehaviour
 
     #region Event Handlers
 
-    private void HandleEnergyUpdate(int curr, int max) => UpdateEnergyDisplay(curr);
+    private void HandleEnergyUpdate(int curr, int max)
+    {
+        if (energyFillImage == null) return;
+
+        float targetFill = (max > 0) ? (MaxEnergyShaderValue / max) * curr : 0f;
+        bool isDecreasing = targetFill < currentEnergyFill;
+
+        energyFillTween?.Kill();
+        energyFillTween = DOTween.To(
+                () => currentEnergyFill,
+                x => { currentEnergyFill = x; energyFillImage.materialForRendering.SetFloat("_fillAmount", x); },
+                targetFill,
+                0.7f)
+            .SetEase(Ease.InOutCubic);
+
+        if (energyFillImageBackground == null) return;
+
+        energyFillBackgroundTween?.Kill();
+        energyFillBackgroundTween = DOTween.To(
+                () => currentEnergyFillBackground,
+                x => { currentEnergyFillBackground = x; energyFillImageBackground.materialForRendering.SetFloat("_fillAmount", x); },
+                targetFill,
+                isDecreasing ? 0.9f : 0.5f)
+            .SetDelay(isDecreasing ? 0.3f : 0f)
+            .SetEase(isDecreasing ? Ease.OutCubic : Ease.InOutCubic);
+    }
 
     private void HandleSapUpdate(int curr)
     {
-
-        if (sapFillImage != null)
-        {
-            float targetFill = (maxSap > 0) ? (MaxSapShaderValue / maxSap) * curr : 0f;
-
-            sapFillTween?.Kill();
-            sapFillTween = DOTween.To(
-                    () => currentSapFill,
-                    x  => { currentSapFill = x; sapFillImage.materialForRendering.SetFloat("_fillAmount", x); },
-                    targetFill,
-                    0.7f)
-                .SetEase(Ease.InOutCubic);
-        }
+        if (sapCountText != null)
+            sapCountText.text = curr.ToString();
     }
-    
 
     private void HandleLockUpdate(bool isLocked)
     {
         if (isLocked == lastPlayerLock && Time.time > 0.1f) return;
         lastPlayerLock = isLocked;
 
-        float lockAlpha = isLocked ? 1f : 0f;
+        float lockAlpha   = isLocked ? 1f : 0f;
         float unlockAlpha = isLocked ? 0f : 1f;
 
-        AnimateButtonSwap(playerLockXButtonImage, playerNotLockXButtonImage, lockAlpha, unlockAlpha);
-        AnimateButtonSwap(playerLockAButtonImage, playerNotLockAButtonImage, lockAlpha, unlockAlpha);
+        AnimateButtonSwap(playerLockXButtonImage,    playerNotLockXButtonImage,    lockAlpha, unlockAlpha);
+        AnimateButtonSwap(playerLockAButtonImage,    playerNotLockAButtonImage,    lockAlpha, unlockAlpha);
     }
 
     private void HandleLoadingStarted()
@@ -352,7 +298,7 @@ public class UiManager : MonoBehaviour
     {
         group.DOKill();
         group.blocksRaycasts = show;
-        group.interactable = show;
+        group.interactable   = show;
         group.DOFade(show ? targetAlpha : 0f, duration).SetUpdate(true);
     }
 
@@ -363,7 +309,7 @@ public class UiManager : MonoBehaviour
     public IEnumerator FadeBlackScreen(float targetAlpha, float duration)
     {
         float startAlpha = blackScreenGroup.alpha;
-        float elapsed = 0f;
+        float elapsed    = 0f;
 
         while (elapsed < duration)
         {
@@ -378,10 +324,10 @@ public class UiManager : MonoBehaviour
     private void ShowPopup()
     {
         float duration = 1.5f;
-        
+
         popupSequence?.Kill();
-        
-        popupGroup.alpha  = 0f;
+
+        popupGroup.alpha = 0f;
         popupGroup.gameObject.SetActive(true);
 
         popupSequence = DOTween.Sequence()
@@ -389,16 +335,21 @@ public class UiManager : MonoBehaviour
             .AppendInterval(duration)
             .Append(popupGroup.DOFade(0f, 0.4f))
             .OnComplete(() => popupGroup.gameObject.SetActive(false));
-        
+
         SoundManager.Instance?.PlaySfx(SoundType.Pop_Up);
     }
-    
+
     #endregion
+
+    #region Life UI
 
     public void SetupLifeUi(float maxLife, float currentLife)
     {
         lifeSlider.maxValue = maxLife;
-        lifeSlider.value = currentLife;
+        lifeSlider.value    = currentLife;
     }
-    public void UpdateLifeUi(float value) => this.UpdateSlider(lifeSlider,value,0.5f);
+
+    public void UpdateLifeUi(float value) => this.UpdateSlider(lifeSlider, value, 0.5f);
+
+    #endregion
 }

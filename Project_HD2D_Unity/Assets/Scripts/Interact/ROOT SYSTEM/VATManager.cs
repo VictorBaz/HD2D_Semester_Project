@@ -99,6 +99,19 @@ public class VATManager : MonoBehaviour, IRootLink
             }
             else
             {
+                psScan.SetSubEmittersProbability(0);
+                switch (CurrentEnergy)
+                {
+                    case 2:
+                        psScan.SetSubEmitterProbability(0,1);
+                        break;
+                    case 3: 
+                        psScan.SetSubEmitterProbability(0,1);
+                        psScan.SetSubEmitterProbability(1,1);
+                        break;
+                    default:
+                        break;
+                }
                 psScan.TriggerParticleSystem();
             }
         }

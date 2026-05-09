@@ -9,23 +9,29 @@ namespace Player.State
     {
         #region Variables
 
-        public override string Name   => "Attack Melee";
+        public override string Name    => "Attack Melee";
         public override bool   CanMove => true;
+        public override bool   CanDash => canDash;
+        public int             ComboIndex => comboIndex;
 
         private bool      bufferNextAttack;
         private bool      bufferWindowOpen;
+        private bool      canDash;
         private int       comboIndex;
         private Coroutine currentAttackRoutine;
-        private readonly HashSet<IDamageable> _hitThisCombo = new();
+
+        private readonly HashSet<IDamageable> hitThisCombo = new();
+
         #endregion
 
-        #region Base State Methods
+        #region Base State
 
         public override void EnterState(PlayerStateContext psc)
         {
-            _hitThisCombo.Clear();
+            hitThisCombo.Clear();
             comboIndex       = 0;
             bufferNextAttack = false;
+            canDash          = false;
 
             psc.Controller.SetGravity(false);
             StartAttackSequence(psc);
@@ -49,10 +55,7 @@ namespace Player.State
             HandleMovement(psc);
         }
 
-        public override void FixedUpdateState(PlayerStateContext psc)
-        {
-            HandlePhysics(psc, 0.45f);
-        }
+        public override void FixedUpdateState(PlayerStateContext psc) => HandlePhysics(psc, 0.45f);
 
         public void BufferAttack()
         {
@@ -61,65 +64,62 @@ namespace Player.State
         }
 
         #endregion
-        
+
+        #region Attack Sequence
 
         private void StartAttackSequence(PlayerStateContext psc)
         {
-            _hitThisCombo.Clear();
-            
+            hitThisCombo.Clear();
+            canDash = false;
+
             if (currentAttackRoutine != null)
                 psc.Controller.StopCoroutine(currentAttackRoutine);
 
             psc.AnimationManager.SetAttackState(true, comboIndex);
             currentAttackRoutine = psc.Controller.RunRoutine(AttackMeleeIe(psc));
-            
+
             SoundManager.Instance?.PlaySfx(GetSoundAttack(comboIndex));
-        }
-
-        private void RotateTowardsInput(PlayerStateContext psc)
-        {
-            CalculateTargetDirection(psc);
-
-            if (psc.TargetDirection.magnitude > 0.1f)
-                psc.PlayerTransform.forward = psc.TargetDirection;
         }
 
         private IEnumerator AttackMeleeIe(PlayerStateContext psc)
         {
-            CombatHitData hit            = psc.PlayerData.ComboHits[comboIndex];
-            float         animLength     = psc.PlayerData.GetAttackClipLength(comboIndex);
-            Vector3       dashDir        = psc.PlayerTransform.forward;
-            bool          hitboxIsActive = false;
-            float         elapsed        = 0f;
+            CombatHitData hit     = psc.PlayerData.ComboHits[comboIndex];
+            float         length  = psc.PlayerData.GetAttackClipLength(comboIndex);
+            Vector3       dashDir = psc.PlayerTransform.forward;
+            float         elapsed = 0f;
+            bool          hitboxFired = false;
 
             bufferWindowOpen = true;
-            
             psc.VfxManagerPlayer.PlayFxCombo(comboIndex);
-            
-            float actionDuration = Mathf.Max(
-                animLength,
-                hit.DashStartOffset    + hit.DashDuration,
-                hit.HitboxStartOffset  + hit.HitboxActiveDuration);
 
-            while (elapsed < actionDuration)
+            while (elapsed < length)
             {
                 elapsed += Time.deltaTime;
 
+                if (!canDash && elapsed >= length * 0.8f)
+                    canDash = true;
+
+                if (!hitboxFired && elapsed >= hit.HitboxStartOffset)
+                {
+                    hitboxFired = true;
+                    FireHitbox(psc, hit);
+                }
+
                 UpdateDashVelocity(psc, hit, dashDir, elapsed);
-                UpdateHitbox(psc, hit, elapsed);
+
                 yield return null;
             }
 
             psc.Rb.linearVelocity = Vector3.zero;
+            bufferWindowOpen      = false;
 
-            yield return new WaitForSeconds(0.1f);
-            bufferWindowOpen = false;
             ResolveCombo(psc);
         }
 
         private void UpdateDashVelocity(PlayerStateContext psc, CombatHitData hit, Vector3 dashDir, float elapsed)
         {
-            bool inDashWindow = elapsed >= hit.DashStartOffset && elapsed <= hit.DashStartOffset + hit.DashDuration;
+            bool inDashWindow = elapsed >= hit.DashStartOffset &&
+                                elapsed <= hit.DashStartOffset + hit.DashDuration;
 
             if (inDashWindow)
             {
@@ -132,26 +132,22 @@ namespace Player.State
             }
         }
 
-        private void UpdateHitbox(PlayerStateContext psc, CombatHitData hit, float elapsed)
+        //TODO CHANGE HARD CODED ATTACK VALUE
+        private void FireHitbox(PlayerStateContext psc, CombatHitData hit)
         {
-            bool shouldBeActive = elapsed >= hit.HitboxStartOffset &&
-                                  elapsed <= hit.HitboxStartOffset + hit.HitboxActiveDuration;
-
-            if (!shouldBeActive) return;
-
             int count = psc.Controller.OverlapAttack(psc.PlayerData.LayerEnemy);
 
             for (int i = 0; i < count; i++)
             {
-                var damageable = psc.Controller.HitBuffer[i].GetComponent<IDamageable>();   
-                if (damageable == null || _hitThisCombo.Contains(damageable)) continue;
+                var damageable = psc.Controller.HitBuffer[i].GetComponent<IDamageable>();
+                if (damageable == null || hitThisCombo.Contains(damageable)) continue;
 
                 if (damageable is IDamageableEnemy enemy)
                     enemy.TakeDamage(2, psc.PlayerTransform.forward, comboIndex);
                 else
                     damageable.TakeDamage(2, psc.PlayerTransform.forward);
 
-                _hitThisCombo.Add(damageable);
+                hitThisCombo.Add(damageable);
             }
         }
 
@@ -169,17 +165,13 @@ namespace Player.State
             }
         }
 
-        private SoundType GetSoundAttack(int comboIndex)
+        private static SoundType GetSoundAttack(int index) => index switch
         {
-            return comboIndex switch
-            {
-                0 => SoundType.Combo_Woosh_1,
-                1 => SoundType.Combo_Woosh_2,
-                2 => SoundType.Combo_Woosh_3,
-                _ => SoundType.Combo_Woosh_1
-            };
-        }
-        
-        public int ComboIndex => comboIndex;
+            1 => SoundType.Combo_Woosh_2,
+            2 => SoundType.Combo_Woosh_3,
+            _ => SoundType.Combo_Woosh_1
+        };
+
+        #endregion
     }
 }

@@ -253,8 +253,10 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
 
     public virtual void TakeDamage(int damage, Vector3 hitDirection, int attackType)
     {
-        if (isInRecover || (CurrentState != null && !CurrentState.CanTakeDamage)) 
+        if (isInRecover || CurrentState is { CanTakeDamage: false })
+        {
             return;
+        }
 
         context.HitDirection = hitDirection;
         context.Data.CurrentKo += damage;

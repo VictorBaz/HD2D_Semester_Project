@@ -70,7 +70,6 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
             StateMachine        = this,
             PlayerData          = playerData,
             VfxManagerPlayer    = vfxManagerPlayer,
-            ShootDirection      = transform.forward,
             PlayerHeadTransform = playerHead,
             Collider            = playerCollider
         };

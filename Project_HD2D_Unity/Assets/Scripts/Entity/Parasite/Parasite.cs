@@ -1,5 +1,6 @@
 using System;
-using System.Collections.Generic; 
+using System.Collections.Generic;
+using Script.Manager;
 using UnityEngine;
 
 public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
@@ -37,7 +38,12 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     public void TakeDamage(int value, Vector3 hitDirection)
     {
         if (_isDead || _playerContext == null) return;
-        if (_playerContext.PlayerData.IsSapEmpty()) return;
+        if (_playerContext.PlayerData.IsSapEmpty())
+        {
+            if (SoundManager.Instance) SoundManager.Instance.PlaySfx(SoundType.Damage_Ineffective);
+            return;
+        }
+        
         ApplyDamage();
     }
 
@@ -52,6 +58,7 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
         _playerContext.PlayerData.RemoveSap();
         UiEvents.TriggerSapChanged(_playerContext.PlayerData.Sap);
         life--;
+        if (SoundManager.Instance) SoundManager.Instance.PlaySfx(SoundType.Damage_Effective);
         if (life <= 0) Die();
     }
 

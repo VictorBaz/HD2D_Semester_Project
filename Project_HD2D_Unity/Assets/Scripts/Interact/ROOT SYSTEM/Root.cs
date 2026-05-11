@@ -106,8 +106,17 @@ public class Root : MonoBehaviour, IDataPersistence
         UpdateVisualEnergy();
     }
 
-    public void AddEnergy()    => CurrentEnergy++;
-    public void RemoveEnergy() => CurrentEnergy--;
+    public void AddEnergy()
+    {
+        CurrentEnergy++;
+        foreach (VATManager vat in vatManagers) vat.OnNotifyEnergyChanged?.Invoke(true);
+    }
+
+    public void RemoveEnergy()
+    {
+        CurrentEnergy--;
+        foreach (VATManager vat in vatManagers) vat.OnNotifyEnergyChanged?.Invoke(false);
+    }
 
     public bool IsContainingEnergy() => currentEnergy > 0;
     public bool IsAtMaximumEnergy()  => currentEnergy >= maxEnergy;

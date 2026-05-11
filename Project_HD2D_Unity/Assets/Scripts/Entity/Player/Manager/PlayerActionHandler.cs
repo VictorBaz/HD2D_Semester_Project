@@ -158,6 +158,7 @@ public class PlayerActionHandler : MonoBehaviour
             pm.Context.CurrentTargetCarry.Eject();
             pm.Context.CurrentTargetCarry = null;
             pm.TransitionTo(pm.LocomotionState);
+            return;
         }
 
         if (!pm.CurrentPlayerState.CanCarry) return;

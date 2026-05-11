@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 792059306658851556}
   - component: {fileID: 6365416010564633743}
   - component: {fileID: 4107083425997660460}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Camera Trigger Universal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 44.925, y: 0, z: 9.22}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3.4036, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -47,9 +47,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraTrigger
   settings:
     CameraPlayerState: 0
-    CameraPosition: {x: 0, y: 0, z: 0}
+    CameraTargetTransform: {fileID: 0}
     holdDuration: 0
     ActiveRail: {fileID: 0}
+    RailOffset: {x: 0, y: 0, z: 0}
     transitionSmoothTime: 1
     targetCinematic: {fileID: 0}
   triggerOnlyOnce: 0
@@ -72,5 +73,5 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 10.472244, y: 3.11, z: 2.39}
-  m_Center: {x: 5.146122, y: 0, z: 0}
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0.5, z: 0}

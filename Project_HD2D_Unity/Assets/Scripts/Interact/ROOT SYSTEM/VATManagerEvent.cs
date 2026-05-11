@@ -1,3 +1,4 @@
+using Script.Manager;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -22,11 +23,21 @@ public class VATManagerEvent : VATManager
             case false when newValue >= (threshold - 0.01f):
                 isThresholdActive = true;
                 OnThresholdReached?.Invoke();
+                PlayBumperSound(true);
                 break;
             case true when newValue < (threshold - 0.01f):
                 isThresholdActive = false;
                 OnThresholdExited?.Invoke();
+                PlayBumperSound(false);
                 break;
         }
     }
+
+    private void PlayBumperSound(bool open)
+    {
+        if (!SoundManager.Instance) return;
+        
+        SoundManager.Instance.PlaySfx(open ? SoundType.Bouncer_Open : SoundType.Bouncer_Close);
+    }
+    
 }

@@ -70,20 +70,30 @@ public class LockOnSystem : MonoBehaviour
         if (CurrentTarget is IEnergyLockable energyLockable)
             energyLockable.OnLockStateChanged(true);
 
-        SoundManager.Instance?.PlaySfx(SoundType.Energy_activation);
-        SoundManager.Instance?.PlayLoopingSfx(SoundType.Fissure_Lock);
+        if (SoundManager.Instance)
+        {
+            SoundManager.Instance.PlaySfx(SoundType.Energy_activation);
+            SoundManager.Instance.PlayLoopingSfx(SoundType.Fissure_Lock);
+        }
+
+        
     }
 
     public void Unlock()
     {
+        if (SoundManager.Instance && CurrentTarget != null)
+        {
+            SoundManager.Instance.PlaySfx(SoundType.Energy_desactivation);
+            SoundManager.Instance.StopLoopingSfx(SoundType.Fissure_Lock);
+        }
+        
         if (CurrentTarget is IEnergyLockable energyLockable)
             energyLockable.OnLockStateChanged(false);
 
         CurrentTarget = null;
         vfxManagerPlayer.LinkVfx(false);
 
-        SoundManager.Instance?.PlaySfx(SoundType.Energy_desactivation);
-        SoundManager.Instance?.StopLoopingSfx(SoundType.Fissure_Lock);
+        
     }
 
     #endregion

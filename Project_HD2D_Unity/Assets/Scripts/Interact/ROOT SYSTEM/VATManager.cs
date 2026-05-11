@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using Script.Manager;
 using UnityEngine;
 
 public class VATManager : MonoBehaviour, IRootLink
@@ -25,7 +27,8 @@ public class VATManager : MonoBehaviour, IRootLink
     protected MaterialPropertyBlock propBlock;
     protected Root root;
 
-
+    public Action<bool> OnNotifyEnergyChanged;
+    
     #endregion
 
     #region Unity Lifecycle
@@ -41,12 +44,16 @@ public class VATManager : MonoBehaviour, IRootLink
     {
         foreach (var blocker in blockers)
             blocker.OnDeath += UpdateRootVisuals;
+
+        OnNotifyEnergyChanged += PlaySound;
     }
 
     private void OnDisable()
     {
         foreach (var blocker in blockers)
             blocker.OnDeath -= UpdateRootVisuals;
+        
+        OnNotifyEnergyChanged -= PlaySound;
     }
 
     protected virtual void Update() => UpdateVAT();
@@ -165,4 +172,11 @@ public class VATManager : MonoBehaviour, IRootLink
     }
 
     #endregion
+
+    protected virtual void PlaySound(bool grow)
+    {
+        if (!SoundManager.Instance) return;
+        
+        SoundManager.Instance.PlaySfx(grow ? SoundType.Plant_Grow : SoundType.Plant_Shrink);
+    }
 }

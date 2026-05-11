@@ -31,4 +31,5 @@ public class PlayerStateContext
     public Vector3 TargetDirection;
 
     public CapsuleCollider Collider;
+    public PreviewEjectionPlayer PreviewEjectionPlayer;
 }

@@ -334,15 +334,22 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
         enemyAnimationManager.ToggleRepulsiveCollider(false);
     }
 
-    public void Eject(bool isEscaping = false)
+    public void Eject(Vector3 force, bool isEscaping = false)
     {
         context.AnimManager.SetCarry(false);
-        
         transform.SetParent(null, true);
         mainCollider.enabled = true;
-
         ApplyMovementMode(true);
-        rb.AddForce((transform.forward + Vector3.up) * 5f, ForceMode.Impulse);
+
+        if (isEscaping)
+        {
+            Vector3 escapeDir = (Vector3.up + transform.forward).normalized;
+            rb.AddForce(escapeDir * enemyData.Status.EjectForce, ForceMode.Impulse);
+        }
+        else
+        {
+            rb.AddForce(force, ForceMode.Impulse);
+        }
 
         isCarried = false;
         ChangeState(DropState);

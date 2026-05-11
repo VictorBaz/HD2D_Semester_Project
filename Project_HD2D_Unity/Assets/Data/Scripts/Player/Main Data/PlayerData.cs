@@ -106,7 +106,7 @@ public class AbilitySettings
     public float CarryRange = 3f;
     public float CarryAngle = 90f;
     public LayerMask CarryLayer;
-    public float EjectionForce = 10f;
+    public Vector3 EjectionForce = new Vector3(0,3,10);
 }
 
 [System.Serializable]
@@ -190,7 +190,7 @@ public class PlayerDataInstance
     public float CarryRange;
     public float CarryAngle;
     public LayerMask CarryLayer;
-    public float EjectionForce;
+    public Vector3 EjectionForce;
 
     public int Life;
     public int MaxLife;

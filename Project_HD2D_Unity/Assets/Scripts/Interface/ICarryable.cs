@@ -8,7 +8,7 @@ namespace Interface
         
         bool IsCarryable();
         
-        void Eject(bool isEscaping = false);
+        void Eject(Vector3 force ,bool isEscaping = false);
 
         bool IsCarry();
     }

@@ -20,6 +20,9 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     [SerializeField] private Rigidbody             rb;
     [SerializeField] private CapsuleCollider       playerCollider;
     [SerializeField] private PlayerData            playerDataRaw;
+    [SerializeField] private GameObject            previewElement;
+    [SerializeField] private LineRenderer          trajectoryLineRenderer;
+    [SerializeField] private Transform             trajectoryStartTransform;
 
     public PlayerBaseState     CurrentPlayerState { get; private set; }
     public PlayerLocomotionState LocomotionState  { get; private set; }
@@ -47,6 +50,8 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 
     private float timeSinceLastDamage = Mathf.Infinity;
     private float regenAccumulator = 0f;
+    
+    private PreviewEjectionPlayer  previewEjectionPlayer;
 
     #endregion
 
@@ -56,6 +61,12 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     {
         InitStates();
 
+        previewEjectionPlayer = new PreviewEjectionPlayer(
+            previewElement,
+            trajectoryLineRenderer,
+            trajectoryStartTransform
+        );
+        
         playerData = playerDataRaw.Init();
 
         Context = new PlayerStateContext
@@ -71,7 +82,8 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
             PlayerData          = playerData,
             VfxManagerPlayer    = vfxManagerPlayer,
             PlayerHeadTransform = playerHead,
-            Collider            = playerCollider
+            Collider            = playerCollider,
+            PreviewEjectionPlayer = previewEjectionPlayer,
         };
 
         TransitionTo(LocomotionState);

@@ -20,5 +20,7 @@
     
     Energy_activation, Energy_desactivation,
     
-    Pop_Up
+    Pop_Up,
+    
+    None
 }

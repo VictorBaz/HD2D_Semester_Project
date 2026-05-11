@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Enum;
+using Script.Manager;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -51,6 +52,7 @@ public class GameManager : MonoBehaviour
         
         currentState = newState;
         NewStateBehaviorTime(currentState);
+        NewStateBehaviorMusic(currentState);
 
         EventManager.TriggerGameStateChanged(newState);
     }
@@ -72,6 +74,25 @@ public class GameManager : MonoBehaviour
             default:
                 throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
         }
+    }
+
+    private void NewStateBehaviorMusic(GameState newState)
+    {
+        switch (newState)
+        {
+            case GameState.Menu:
+                PlayMusic(MusicType.Menu);
+                break;
+            case GameState.Game:
+                PlayMusic(MusicType.Puzzle_Calm);
+                break;
+        }
+    }
+
+    private void PlayMusic(MusicType musicType)
+    {
+        if (!SoundManager.Instance) return;
+        SoundManager.Instance.PlayMusic(musicType);
     }
 
     public void GoBack()

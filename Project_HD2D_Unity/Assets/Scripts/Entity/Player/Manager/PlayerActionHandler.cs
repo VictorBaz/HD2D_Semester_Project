@@ -155,9 +155,11 @@ public class PlayerActionHandler : MonoBehaviour
     {
         if (pm.Context.CurrentTargetCarry != null)
         {
-            pm.Context.CurrentTargetCarry.Eject();
+            Vector3 forceMondiale = transform.TransformDirection(Data.EjectionForce);
+            pm.Context.CurrentTargetCarry.Eject(forceMondiale);
             pm.Context.CurrentTargetCarry = null;
             pm.TransitionTo(pm.LocomotionState);
+            return;
         }
 
         if (!pm.CurrentPlayerState.CanCarry) return;

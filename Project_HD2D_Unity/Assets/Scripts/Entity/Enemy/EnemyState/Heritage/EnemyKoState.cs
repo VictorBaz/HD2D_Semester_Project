@@ -66,7 +66,7 @@ public class EnemyKoState : EnemyBaseState
     {
         if (actx.Manager.IsCarry())
         {
-            actx.Manager.Eject(true);
+            actx.Manager.Eject(Vector3.zero ,true);
             return;
         }
         

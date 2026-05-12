@@ -20,7 +20,7 @@ public class ArrayCurveSplineMesh : MonoBehaviour
     [Header("Editor Controls")]
     [SerializeField] private bool rebuildInEditor = true;
     [SerializeField] private bool autoUpdateEveryFrame = false;
-    
+
     [Header("Visual Settings")]
     [SerializeField] private Material visualMaterial;
     [SerializeField] private string subContainerName = "Generated_Visual_Branches";
@@ -60,32 +60,32 @@ public class ArrayCurveSplineMesh : MonoBehaviour
         if (splineContainer == null)
             splineContainer = GetComponent<SplineContainer>();
     }
-    
-    
+
+
     private void SafeRebuild()
     {
         if (this == null) return;
         Rebuild();
     }
-    
+
     [ContextMenu("Rebuild")]
     public void Rebuild()
     {
         if (Application.isPlaying) return;
-        
+
 #if UNITY_EDITOR
-        if (UnityEditor.EditorApplication.isCompiling || UnityEditor.BuildPipeline.isBuildingPlayer) 
+        if (UnityEditor.EditorApplication.isCompiling || UnityEditor.BuildPipeline.isBuildingPlayer)
             return;
 #endif
-        
+
         Cache();
-        
+
         if (this == null) return;
-        
+
         Transform visualContainer = GetOrCreateContainer();
-        
+
         if (visualContainer == null) return;
-        
+
         ClearGeneratedObjects(visualContainer);
 
         if (sourceMesh == null)
@@ -99,7 +99,7 @@ public class ArrayCurveSplineMesh : MonoBehaviour
             Debug.LogError("ArrayCurveSplineMesh : SplineContainer ou Spline manquant.", this);
             return;
         }
-        
+
 
         for (int i = 0; i < splineContainer.Splines.Count; i++)
         {
@@ -112,6 +112,7 @@ public class ArrayCurveSplineMesh : MonoBehaviour
             Vector3[] srcVerts = sourceMesh.vertices;
             Vector3[] srcNormals = sourceMesh.normals;
             Vector2[] srcUVs = sourceMesh.uv;
+            Vector2[] srcUV2s = sourceMesh.uv2;
             int[] srcTriangles = sourceMesh.triangles;
 
             Bounds bounds = sourceMesh.bounds;
@@ -130,6 +131,7 @@ public class ArrayCurveSplineMesh : MonoBehaviour
             List<Vector3> combinedVerts = new List<Vector3>();
             List<Vector3> combinedNormals = new List<Vector3>();
             List<Vector2> combinedUVs = new List<Vector2>();
+            List<Vector2> combinedUV2s = new List<Vector2>();
             List<int> combinedTriangles = new List<int>();
 
             for (int copyIndex = 0; copyIndex < count; copyIndex++)
@@ -148,19 +150,20 @@ public class ArrayCurveSplineMesh : MonoBehaviour
 
                     if (srcUVs != null && srcUVs.Length == srcVerts.Length)
                     {
-                        Vector2 uv = srcUVs[j];
-                        float localAlong = GetAxis(srcVerts[j], forwardAxis) - minAlong;
-                        float globalAlong = (copyIndex * segmentLength) + localAlong;
-                        float totalLength = count * segmentLength;
-                        uv.y = globalAlong / totalLength;
-                        combinedUVs.Add(uv);
+                        combinedUVs.Add(srcUVs[j]);
                     }
                     else
                     {
-                        float localAlong = GetAxis(srcVerts[j], forwardAxis) - minAlong;
-                        float globalAlong = (copyIndex * segmentLength) + localAlong;
-                        float totalLength = count * segmentLength;
-                        combinedUVs.Add(new Vector2(0f, globalAlong / totalLength));
+                        combinedUVs.Add(Vector2.zero);
+                    }
+
+                    if (srcUV2s != null && srcUV2s.Length == srcVerts.Length)
+                    {
+                        combinedUV2s.Add(srcUV2s[j]);
+                    }
+                    else
+                    {
+                        combinedUV2s.Add(Vector2.zero);
                     }
                 }
 
@@ -201,15 +204,15 @@ public class ArrayCurveSplineMesh : MonoBehaviour
                     : Vector3.up;
                 if (up.sqrMagnitude < 0.000001f) up = Vector3.up;
 
-                Vector3 right = Vector3.Cross(tangent, up).normalized;
+                Vector3 right = Vector3.Cross(up, tangent).normalized;
                 if (right.sqrMagnitude < 0.000001f)
                 {
                     right = Vector3.right;
-                    up = Vector3.Cross(tangent, right).normalized;
+                    up = Vector3.Cross(right, tangent).normalized;
                 }
                 else
                 {
-                    up = Vector3.Cross(tangent, right).normalized;
+                    up = Vector3.Cross(right, tangent).normalized;
                 }
 
                 Vector2 cross = GetCrossCoordinates(v, forwardAxis);
@@ -232,14 +235,20 @@ public class ArrayCurveSplineMesh : MonoBehaviour
                 deformedNormals[l] = worldToLocal.MultiplyVector(deformedNormalWorld).normalized;
             }
 
-            CreateMeshObject(visualContainer, i, deformedVerts, combinedTriangles.ToArray(), combinedUVs.ToArray(), deformedNormals);
+            CreateMeshObject(visualContainer,
+    i,
+    deformedVerts,
+    combinedTriangles.ToArray(),
+    combinedUVs.ToArray(),
+    combinedUV2s.ToArray(),
+    deformedNormals);
         }
     }
 
     private Transform GetOrCreateContainer()
     {
         Transform container = transform.Find(subContainerName);
-        
+
         if (container == null)
         {
             GameObject go = new GameObject(subContainerName);
@@ -250,17 +259,25 @@ public class ArrayCurveSplineMesh : MonoBehaviour
         }
         return container;
     }
-    
-    private void CreateMeshObject(Transform parent, int index, Vector3[] verts, int[] tris, Vector2[] uvs, Vector3[] normals)
+
+    private void CreateMeshObject(Transform parent,int index,Vector3[] verts, int[] tris,Vector2[] uvs,
+    Vector2[] uv2s,
+    Vector3[] normals)
     {
         GameObject go = new GameObject($"Branch_{index}");
         go.transform.SetParent(parent);
         go.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
-
-        Mesh mesh = new Mesh {
+        Mesh mesh = new Mesh
+        {
             name = $"Mesh_Branch_{index}",
-            indexFormat = verts.Length > 65535 ? UnityEngine.Rendering.IndexFormat.UInt32 : UnityEngine.Rendering.IndexFormat.UInt16,
-            vertices = verts, triangles = tris, uv = uvs, normals = normals
+            indexFormat = verts.Length > 65535
+                ? UnityEngine.Rendering.IndexFormat.UInt32
+                : UnityEngine.Rendering.IndexFormat.UInt16,
+            vertices = verts,
+            triangles = tris,
+            uv = uvs,
+            uv2 = uv2s,
+            normals = normals
         };
         mesh.RecalculateBounds();
         mesh.RecalculateTangents();
@@ -294,13 +311,13 @@ public class ArrayCurveSplineMesh : MonoBehaviour
                 Mesh m = meshesRootsVisual[i];
                 if (m == null) continue;
 
-                if (Application.isPlaying) 
+                if (Application.isPlaying)
                 {
                     Destroy(m);
                 }
-                else 
+                else
                 {
-                    DestroyImmediate(m, true); 
+                    DestroyImmediate(m, true);
                 }
             }
             meshesRootsVisual.Clear();

@@ -18,8 +18,8 @@ public class PlayerStateContext
     
     public PlayerDataInstance PlayerData;
     
-    public Vector3 ShootDirection = Vector3.zero;
     public Vector3 HitDirection = Vector3.zero;
+    public Vector3 TrajectoryPoint = Vector3.zero;
     
     public bool JumpReleased = false;
     public bool HasDash = false;
@@ -31,4 +31,5 @@ public class PlayerStateContext
     public Vector3 TargetDirection;
 
     public CapsuleCollider Collider;
+    public PreviewEjectionPlayer PreviewEjectionPlayer;
 }

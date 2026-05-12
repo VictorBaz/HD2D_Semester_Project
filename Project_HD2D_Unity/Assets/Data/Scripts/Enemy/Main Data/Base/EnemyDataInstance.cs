@@ -31,6 +31,7 @@ public class EnemyDataInstance
     public int CurrentKo;
     
     public float StunDuration;
+    public float EjectForce;
     
     public float ExposedTime;
     
@@ -54,6 +55,8 @@ public class EnemyDataInstance
         AttackDashSpeed = data.Attack.AttackDashSpeed;
         AttackDashDuration = data.Attack.AttackDashDuration;
 
+        EjectForce = data.Status.EjectForce;
+        
         AttackJumpForce = data.Attack.AttackJumpForce;
         GroundDetectionDistance = data.Attack.GroundDetectionDistance;
         NavMeshSampleMargin = data.Attack.NavMeshSampleMargin;

@@ -58,6 +58,13 @@ public class UiManager : MonoBehaviour
 
     [Header("Pop Up")]
     [SerializeField] private CanvasGroup popupGroup;
+    
+    [Header("Area Notification")]
+    [SerializeField] private CanvasGroup areaPanelGroup;
+    [SerializeField] private TMP_Text areaNameText;
+    [SerializeField] private float areaDisplayDuration = 2f;
+    
+    private Sequence areaSequence;
     private Sequence popupSequence;
 
     private float openLeftPanelX;
@@ -115,6 +122,7 @@ public class UiManager : MonoBehaviour
         EventManager.OnLoadingStarted += HandleLoadingStarted;
         EventManager.OnLoadingFinished += HandleLoadingFinished;
         UiEvents.OnShowPopup += ShowPopup;
+        UiEvents.OnShowArea += ShowAreaNotification;
     }
 
     private void OnDisable()
@@ -127,6 +135,7 @@ public class UiManager : MonoBehaviour
         EventManager.OnLoadingStarted -= HandleLoadingStarted;
         EventManager.OnLoadingFinished -= HandleLoadingFinished;
         UiEvents.OnShowPopup -= ShowPopup;
+        UiEvents.OnShowArea -= ShowAreaNotification;
     }
 
     private void OnDestroy()
@@ -338,6 +347,30 @@ public class UiManager : MonoBehaviour
             .OnComplete(() => popupGroup.gameObject.SetActive(false));
 
         SoundManager.Instance?.PlaySfx(SoundType.Pop_Up);
+    }
+
+    private void ShowAreaNotification(string areaName)
+    {
+        if (areaPanelGroup == null || areaNameText == null) return;
+
+        areaSequence?.Kill();
+        areaNameText.text = areaName;
+
+        areaPanelGroup.alpha = 0f;
+        areaNameText.transform.localScale = Vector3.one * 0.9f; 
+        areaPanelGroup.gameObject.SetActive(true);
+
+        areaSequence = DOTween.Sequence();
+
+        areaSequence.Append(areaPanelGroup.DOFade(1f, 1.2f).SetEase(Ease.OutSine))
+            .Join(areaNameText.transform.DOScale(1f, 1.2f).SetEase(Ease.OutSine));
+
+        areaSequence.AppendInterval(areaDisplayDuration);
+
+        areaSequence.Append(areaPanelGroup.DOFade(0f, 1.2f).SetEase(Ease.InSine))
+            .Join(areaNameText.transform.DOScale(0.9f, 1.2f).SetEase(Ease.InSine));
+    
+        areaSequence.OnComplete(() => areaPanelGroup.gameObject.SetActive(false));
     }
 
     #endregion

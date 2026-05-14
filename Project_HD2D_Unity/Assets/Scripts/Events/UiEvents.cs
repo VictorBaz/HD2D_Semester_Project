@@ -19,4 +19,8 @@ public static class UiEvents
     public static Action OnShowPopup;
     public static void TriggerShowPopup() 
         => OnShowPopup?.Invoke();
+    
+    public static Action<string> OnShowArea;
+    public static void TriggerShowArea(string areaName) 
+        => OnShowArea?.Invoke(areaName);
 }

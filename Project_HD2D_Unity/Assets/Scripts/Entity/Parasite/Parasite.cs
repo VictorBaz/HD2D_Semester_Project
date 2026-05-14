@@ -30,6 +30,8 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     
     [Header("VFX")]
     [SerializeField] private SkinnedMeshRenderer skinnedRenderer;
+    [SerializeField, Range(0.1f, 2f)] private float deathAnimationSpeed = 0.5f;
+    [SerializeField] private  ParticleSystem vfxHit;
     private MaterialPropertyBlock _propBlock;
     private static readonly int DissolveHash = Shader.PropertyToID("_Progression");
     #endregion
@@ -79,6 +81,8 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
         
         if (SoundManager.Instance) SoundManager.Instance.PlaySfx(SoundType.Damage_Effective);
 
+        vfxHit.TriggerParticleSystem();
+        
         if (life <= 0)
         {
             Die();
@@ -92,22 +96,26 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     private void Die()
     {
         if (isDead) return;
+    
+        animatorParasite.speed = deathAnimationSpeed; 
+    
         animatorParasite.SetTrigger(DeathHash);
         isDead = true;
         OnDeath?.Invoke(this);
+    
         if (deathCoroutine != null) StopCoroutine(deathCoroutine);
         deathCoroutine = StartCoroutine(DeathIe());
     }
 
     private IEnumerator DeathIe()
     {
-        float duration = animationClipDeath.length;
+        float realDuration = animationClipDeath.length / deathAnimationSpeed;
         float elapsed = 0;
 
-        while (elapsed < duration)
+        while (elapsed < realDuration)
         {
             elapsed += Time.deltaTime;
-            float progress = Mathf.Clamp01(elapsed / duration);
+            float progress = Mathf.Clamp01(elapsed / realDuration);
             SetDissolve(progress);
             yield return null;
         }

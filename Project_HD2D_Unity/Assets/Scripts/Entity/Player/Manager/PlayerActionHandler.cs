@@ -12,6 +12,7 @@ public class PlayerActionHandler : MonoBehaviour
     [SerializeField] private PlayerController playerController;
     [SerializeField] private PlayerAnimationManager animationManager;
     [SerializeField] private LockOnSystem    lockOnSystem;
+    [SerializeField] private VfxManagerPlayer vfxManagerPlayer;
 
     private PlayerManager pm;
 
@@ -232,6 +233,7 @@ public class PlayerActionHandler : MonoBehaviour
         Data.RemoveEnergy();
         UiEvents.TriggerEnergyChanged(Data.Energy, Data.MaxEnergy);
         SoundManager.Instance?.PlaySfx(SoundType.Fissure_Energy_In);
+        vfxManagerPlayer.EffectAddEnergy();
     }
 
     private void TryTakeEnergy()
@@ -244,6 +246,7 @@ public class PlayerActionHandler : MonoBehaviour
         Data.AddEnergy();
         UiEvents.TriggerEnergyChanged(Data.Energy, Data.MaxEnergy);
         SoundManager.Instance?.PlaySfx(SoundType.Fissure_Energy_Out);
+        vfxManagerPlayer.EffectRemoveEnergy();
     }
 
     private bool TryGetEnergyTarget(out IEnergyLockable target)

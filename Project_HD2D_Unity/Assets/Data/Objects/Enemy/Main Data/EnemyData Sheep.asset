@@ -20,6 +20,8 @@ MonoBehaviour:
     SearchDuration: 10
     SearchRadius: 5
     RotationSpeed: 10
+    GroundCheckDistance: 1.2
+    NavmeshCheckDistance: 0.5
   Attack:
     AttackCooldown: 1
     HitboxActiveDuration: 0.2
@@ -35,7 +37,8 @@ MonoBehaviour:
     AttackAnimationClip: {fileID: 7400000, guid: db369a4dd560bb741869d67264f4d613, type: 2}
   Status:
     MaxKo: 10
-    KoTimeMax: 5
+    KoTimeMax: 2
+    EjectForce: 5
     StunDuration: 0.35
     ExposedTime: 3.5
   Visuals:

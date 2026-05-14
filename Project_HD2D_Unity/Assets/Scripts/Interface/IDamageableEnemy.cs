@@ -2,5 +2,5 @@
 
 public interface IDamageableEnemy : IDamageable
 {
-        void TakeDamage(int value, Vector3 hitDirection,int index);
+        void TakeDamageIndex(int value, Vector3 hitDirection,int index);
 }

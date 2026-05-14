@@ -19,7 +19,7 @@ public class PlayerActionHandler : MonoBehaviour
     private float jumpCooldownTimer  = 0f;
     private float parryCooldownTimer = 0f;
     
-    private bool unlockParry = false;
+    [SerializeField] private bool unlockParry = false;
 
     private PlayerDataInstance Data => pm.Context.PlayerData;
 

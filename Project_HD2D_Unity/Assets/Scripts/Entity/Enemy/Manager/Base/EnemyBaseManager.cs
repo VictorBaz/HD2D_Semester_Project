@@ -251,7 +251,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
 
     #region IDamageable
 
-    public virtual void TakeDamage(int damage, Vector3 hitDirection, int attackType)
+    public virtual void TakeDamageIndex(int damage, Vector3 hitDirection, int attackType)
     {
         if (isInRecover || CurrentState is { CanTakeDamage: false })
         {
@@ -280,6 +280,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
         context.Data.CurrentKo += value;
         OnTakeDamage?.Invoke();
         ChangeState(HitState);
+        VfxManager.PlayHitVfx();
     }
 
     public Transform GetTransform()          => transform;
@@ -294,7 +295,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
 
     public virtual void HandleParry()
     {
-        ChangeState(ExposedState);
+        
     }
 
     public virtual void HandlePerfectParry()

@@ -143,15 +143,15 @@ public class VfxManagerPlayer : VfxManagerBase
 
     public void LinkVfx(bool isOn, Transform target = null)
     {
-        if (energyLink == null ) return;
+        if (!energyLink ) return;
 
-        if (target == null)
+        if (!target)
         {
-            energyLink.gameObject.SetActive(false);
+            energyLink.line.enabled = false;
             return;
         }
         
-        energyLink.gameObject.SetActive(isOn);
+        energyLink.line.enabled = isOn;
 
         energyLink.startPoint = isOn ? energyLink.transform : null;
         energyLink.endPoint = isOn ? target : null;
@@ -159,6 +159,8 @@ public class VfxManagerPlayer : VfxManagerBase
 
     #endregion
 
+    public void EffectAddEnergy() => energyLink.TriggerTraceFollow(0.5f,false);
+    public void EffectRemoveEnergy() => energyLink.TriggerTraceFollow(0.5f,true);
 }
 
 [Serializable]

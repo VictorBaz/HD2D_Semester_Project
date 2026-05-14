@@ -241,7 +241,8 @@ MonoBehaviour:
   playerController: {fileID: 143367907673488275}
   animationManager: {fileID: 5493685116220184583}
   lockOnSystem: {fileID: 5517195392810808536}
-  unlockParry: 0
+  vfxManagerPlayer: {fileID: 2850999364860100435}
+  unlockParry: 1
 --- !u!1 &3561949359964513721
 GameObject:
   m_ObjectHideFlags: 0
@@ -1490,6 +1491,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2000121637177399522}
     m_Modifications:
+    - target: {fileID: 1055790199136890586, guid: bf6d994ed14d4dc45acf62903bb2ba4a, type: 3}
+      propertyPath: energyParticlePrefab
+      value: 
+      objectReference: {fileID: 8840266126361765477, guid: ede7cc0509903374e8bcbe8c80f6c9c4, type: 3}
     - target: {fileID: 7458058045132896967, guid: bf6d994ed14d4dc45acf62903bb2ba4a, type: 3}
       propertyPath: m_Name
       value: Link_Vfx

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Script.Manager;
 using UnityEngine;
@@ -17,8 +18,20 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
 
     [SerializeField] private EntityID entityID;
     
-    private PlayerStateContext _playerContext;
-    private bool _isDead;
+    private PlayerStateContext playerContext;
+    private bool isDead;
+    
+    [Header("Animation")]
+    [SerializeField] private Animator animatorParasite;
+    [SerializeField] private AnimationClip animationClipDeath;
+    private static readonly int HitHash = Animator.StringToHash("Hit");
+    private static readonly int DeathHash = Animator.StringToHash("Death");
+    private Coroutine deathCoroutine;
+    
+    [Header("VFX")]
+    [SerializeField] private SkinnedMeshRenderer skinnedRenderer;
+    private MaterialPropertyBlock _propBlock;
+    private static readonly int DissolveHash = Shader.PropertyToID("_Progression");
     #endregion
 
     #region Unity Lifecycle
@@ -29,16 +42,19 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     private void Init()
     {
         life = lifeMax;
+        
         if (PlayerEvents.OnRequestPlayerContext != null)
-            _playerContext = PlayerEvents.OnRequestPlayerContext.Invoke();
+            playerContext = PlayerEvents.OnRequestPlayerContext.Invoke();
+        
+        _propBlock = new MaterialPropertyBlock();
     }
     #endregion
 
     #region IDamageable Implementation
     public void TakeDamage(int value, Vector3 hitDirection)
     {
-        if (_isDead || _playerContext == null) return;
-        if (_playerContext.PlayerData.IsSapEmpty())
+        if (isDead || playerContext == null) return;
+        if (playerContext.PlayerData.IsSapEmpty())
         {
             if (SoundManager.Instance) SoundManager.Instance.PlaySfx(SoundType.Damage_Ineffective);
             return;
@@ -55,19 +71,56 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     #region Combat Logic
     private void ApplyDamage()
     {
-        _playerContext.PlayerData.RemoveSap();
-        UiEvents.TriggerSapChanged(_playerContext.PlayerData.Sap);
+        playerContext.PlayerData.RemoveSap();
+        
+        UiEvents.TriggerSapChanged(playerContext.PlayerData.Sap);
+        
         life--;
+        
         if (SoundManager.Instance) SoundManager.Instance.PlaySfx(SoundType.Damage_Effective);
-        if (life <= 0) Die();
+
+        if (life <= 0)
+        {
+            Die();
+        }
+        else
+        {
+            animatorParasite.SetTrigger(HitHash);
+        }
     }
 
     private void Die()
     {
-        if (_isDead) return;
-        _isDead = true;
+        if (isDead) return;
+        animatorParasite.SetTrigger(DeathHash);
+        isDead = true;
         OnDeath?.Invoke(this);
+        if (deathCoroutine != null) StopCoroutine(deathCoroutine);
+        deathCoroutine = StartCoroutine(DeathIe());
+    }
+
+    private IEnumerator DeathIe()
+    {
+        float duration = animationClipDeath.length;
+        float elapsed = 0;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float progress = Mathf.Clamp01(elapsed / duration);
+            SetDissolve(progress);
+            yield return null;
+        }
+
         Destroy(gameObject);
+    }
+    
+    private void SetDissolve(float value)
+    {
+        _propBlock ??= new MaterialPropertyBlock();
+        skinnedRenderer.GetPropertyBlock(_propBlock);
+        _propBlock.SetFloat(DissolveHash, value);
+        skinnedRenderer.SetPropertyBlock(_propBlock);
     }
     #endregion
 
@@ -79,9 +132,9 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
         if (myData != null)
         {
             this.life = myData.currentLife;
-            this._isDead = myData.isDead;
+            this.isDead = myData.isDead;
 
-            if (_isDead)
+            if (isDead)
             {
                 gameObject.SetActive(false); 
             }
@@ -94,14 +147,14 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
         if (index != -1)
         {
             data.parasiteDataList[index].currentLife = this.life;
-            data.parasiteDataList[index].isDead = this._isDead;
+            data.parasiteDataList[index].isDead = this.isDead;
         }
         else
         {
             data.parasiteDataList.Add(new ParasiteSaveData { 
                 id = entityID.ID, 
                 currentLife = this.life, 
-                isDead = this._isDead 
+                isDead = this.isDead 
             });
         }
     }

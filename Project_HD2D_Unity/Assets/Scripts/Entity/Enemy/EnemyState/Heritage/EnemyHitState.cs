@@ -12,7 +12,16 @@ public class EnemyHitState : EnemyBaseState
     public override void EnterState(EnemyContext actx)
     {
         actx.Manager.ApplyMovementMode(true);
-        actx.Rb.AddForce(actx.HitDirection * 5f, ForceMode.Impulse);
+
+        if (actx.HitDirection == Vector3.zero)
+        {
+            actx.Rb.linearVelocity= Vector3.zero;
+        }
+        else
+        {
+            actx.Rb.AddForce(actx.HitDirection * 5f, ForceMode.VelocityChange);
+        }
+        
         actx.AnimManager.SetHit(true);
 
         if (actx.Data.IsKoFull())

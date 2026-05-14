@@ -18,6 +18,8 @@ public class PlayerActionHandler : MonoBehaviour
     private float dashCooldownTimer  = 0f;
     private float jumpCooldownTimer  = 0f;
     private float parryCooldownTimer = 0f;
+    
+    private bool unlockParry = false;
 
     private PlayerDataInstance Data => pm.Context.PlayerData;
 
@@ -181,6 +183,7 @@ public class PlayerActionHandler : MonoBehaviour
 
     private void TryParry()
     {
+        if (!unlockParry) return;
         if (parryCooldownTimer > 0f) return;
         if (lockOnSystem.IsLocked) return;
         if (pm.CurrentPlayerState is PlayerParryState) return;
@@ -190,6 +193,11 @@ public class PlayerActionHandler : MonoBehaviour
         pm.TransitionTo(pm.ParryState);
     }
 
+    public void UnlockParry()
+    {
+        unlockParry = true;
+    }
+    
     #endregion
 
     #region Lock On

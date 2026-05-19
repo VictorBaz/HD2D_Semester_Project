@@ -75,7 +75,7 @@ public class GrassPainterWindow : EditorWindow
     {
         Debug.Log("init");
         // Get existing open window or if none, make a new one:
-        GrassPainterWindow window = (GrassPainterWindow)EditorWindow.GetWindow(typeof(GrassPainterWindow), false, "Grass Tool", true);
+        GrassPainterWindow window = (GrassPainterWindow)GetWindow(typeof(GrassPainterWindow), false, "Grass Tool", true);
         var icon = EditorGUIUtility.FindTexture("tree_icon");
         SO_GrassToolSettings m_toolSettings = (SO_GrassToolSettings)AssetDatabase.LoadAssetAtPath("Assets/Settings/grassToolSettings.asset", typeof(SO_GrassToolSettings));
         if (m_toolSettings == null)
@@ -108,8 +108,7 @@ public class GrassPainterWindow : EditorWindow
 
         if (grassObject == null)
         {
-            grassObject = FindObjectOfType<GrassComputeScript>()?.gameObject;
-
+            grassObject = FindFirstObjectByType<GrassComputeScript>()?.gameObject;
         }
 
 

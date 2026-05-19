@@ -2,12 +2,17 @@
 // credits  to  forkercat https://gist.github.com/junhaowww/fb6c030c17fe1e109a34f1c92571943f
 // and  NedMakesGames https://gist.github.com/NedMakesGames/3e67fabe49e2e3363a657ef8a6a09838
 // for the base setup for compute shaders
+// Updated for Unity 6 compatibility:
+// - [ExecuteInEditMode] -> [ExecuteAlways]
+// - FindObjectsOfType -> FindObjectsByType
+// - Graphics.DrawProceduralIndirect -> Graphics.RenderPrimitivesIndirect
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
-[ExecuteInEditMode]
+[ExecuteAlways] // was [ExecuteInEditMode]
 public class GrassComputeScript : MonoBehaviour
 {
     // very slow, but will update always
@@ -36,7 +41,7 @@ public class GrassComputeScript : MonoBehaviour
     // A compute buffer to hold vertex data of the generated mesh
     private ComputeBuffer m_DrawBuffer;
     // A compute buffer to hold indirect draw arguments
-    private ComputeBuffer m_ArgsBuffer;
+    private GraphicsBuffer m_ArgsBuffer;
     // Instantiate the shaders so data belong to their unique compute buffers
     private ComputeShader m_InstantiatedComputeShader;
     // buffer that contains the ids of all visible instances
@@ -205,7 +210,7 @@ public class GrassComputeScript : MonoBehaviour
 
         m_DrawBuffer = new ComputeBuffer(maxBufferSize, DRAW_STRIDE, ComputeBufferType.Append);
 
-        m_ArgsBuffer = new ComputeBuffer(1, argsBufferReset.Length * sizeof(uint), ComputeBufferType.IndirectArguments);
+        m_ArgsBuffer = new GraphicsBuffer(GraphicsBuffer.Target.IndirectArguments, argsBufferReset.Length, sizeof(uint));
 
         m_VisibleIDBuffer = new ComputeBuffer(grassData.Count, sizeof(int), ComputeBufferType.Structured); //uint only, per visible grass
 
@@ -379,9 +384,15 @@ public class GrassComputeScript : MonoBehaviour
         {
             // Dispatch the grass shader. It will run on the GPU
             m_InstantiatedComputeShader.Dispatch(m_IdGrassKernel, m_DispatchSize, 1, 1);
-            // DrawProceduralIndirect queues a draw call up for our generated mesh
-            Graphics.DrawProceduralIndirect(m_InstantiatedMaterial, bounds, MeshTopology.Triangles,
-            m_ArgsBuffer, 0, null, null, currentPresets.castShadow, true, gameObject.layer);
+
+            // Unity 6: RenderPrimitivesIndirect replaces the deprecated DrawProceduralIndirect
+            var renderParams = new RenderParams(m_InstantiatedMaterial)
+            {
+                worldBounds = bounds,
+                shadowCastingMode = currentPresets.castShadow,
+                layer = gameObject.layer
+            };
+            Graphics.RenderPrimitivesIndirect(renderParams, MeshTopology.Triangles, m_ArgsBuffer);
         }
     }
 
@@ -399,11 +410,10 @@ public class GrassComputeScript : MonoBehaviour
         {
             m_InstantiatedComputeShader.SetFloat("_MinFadeDist", currentPresets.minFadeDistance);
             m_InstantiatedComputeShader.SetFloat("_MaxFadeDist", currentPresets.maxDrawDistance);
-            interactors = (ShaderInteractor[])FindObjectsOfType(typeof(ShaderInteractor));
+            interactors = FindObjectsByType<ShaderInteractor>(FindObjectsSortMode.None);
         }
         else
         {
-            // if theres a lot of grass, just cull earlier so we can still see what we're paiting, otherwise it will be invisible
             if (grassData.Count > 200000)
             {
                 m_InstantiatedComputeShader.SetFloat("_MinFadeDist", 40f);

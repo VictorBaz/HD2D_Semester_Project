@@ -139,6 +139,7 @@ public class PlayerActionHandler : MonoBehaviour
 
     private void TryDash()
     {
+        if (pm.Context.LockOnSystem.IsLocked) return;
         if (!pm.CurrentPlayerState.CanDash) return;
         if (dashCooldownTimer > 0f) return;
         if (pm.Context.HasDash) return;

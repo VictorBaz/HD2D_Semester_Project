@@ -32,6 +32,7 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     [SerializeField] private SkinnedMeshRenderer skinnedRenderer;
     [SerializeField, Range(0.1f, 2f)] private float deathAnimationSpeed = 0.5f;
     [SerializeField] private  ParticleSystem vfxHit;
+    [SerializeField] private  ParticleSystem vfxParasiteAndLock;
     private MaterialPropertyBlock _propBlock;
     private static readonly int DissolveHash = Shader.PropertyToID("_Progression");
     #endregion
@@ -165,6 +166,15 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
                 isDead = this.isDead 
             });
         }
+    }
+
+    #endregion
+
+    #region VFX
+
+    public void EmitParasitePresenceVfx()
+    {
+        vfxParasiteAndLock.TriggerParticleSystem();
     }
 
     #endregion

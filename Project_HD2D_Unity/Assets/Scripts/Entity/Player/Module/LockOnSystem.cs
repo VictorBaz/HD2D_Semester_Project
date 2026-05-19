@@ -17,40 +17,45 @@ public class LockOnSystem : MonoBehaviour
 
     private readonly List<ILockable> lockableTargets = new List<ILockable>();
 
+    private LayerMask _obstaclesMask;
+
     #endregion
 
     #region Init
 
-    public void InitData(PlayerDataInstance data)    => playerData = data;
+    public void InitData(PlayerDataInstance data)
+    {
+        playerData     = data;
+        _obstaclesMask = ~(playerData.LockableLayer | playerData.PlayerLayer);
+    }
 
-    public void InitManager(PlayerStateContext psc)  => vfxManagerPlayer = psc.VfxManagerPlayer;
+    public void InitManager(PlayerStateContext psc) => vfxManagerPlayer = psc.VfxManagerPlayer;
 
     #endregion
 
     #region Lock Behaviour
 
-    public Quaternion CalculLockRotation()
+    public void CalculLockRotation()
     {
-        if (!IsLocked) return playerTransform.rotation;
+        if (!IsLocked) return;
 
-        if (!IsTargetValid(CurrentTarget))
+        if (!IsTargetValid(CurrentTarget) || IsTargetBehindWall(CurrentTarget))
         {
             Unlock();
-            return playerTransform.rotation;
+            return;
         }
 
         Vector3 directionToTarget = (CurrentTarget.GetLockTransform().position - playerTransform.position).normalized;
         directionToTarget.y = 0;
 
-        if (directionToTarget == Vector3.zero) return playerTransform.rotation;
+        if (directionToTarget == Vector3.zero) return;
 
         Quaternion targetRotation = Quaternion.LookRotation(directionToTarget);
 
-        return Quaternion.Slerp(
+        Quaternion.Slerp(
             playerTransform.rotation,
             targetRotation,
-            playerData.RotationSpeed * Time.deltaTime
-        );
+            playerData.RotationSpeed * Time.deltaTime);
     }
 
     #endregion
@@ -75,8 +80,6 @@ public class LockOnSystem : MonoBehaviour
             SoundManager.Instance.PlaySfx(SoundType.Energy_activation);
             SoundManager.Instance.PlayLoopingSfx(SoundType.Fissure_Lock);
         }
-
-        
     }
 
     public void Unlock()
@@ -86,14 +89,12 @@ public class LockOnSystem : MonoBehaviour
             SoundManager.Instance.PlaySfx(SoundType.Energy_desactivation);
             SoundManager.Instance.StopLoopingSfx(SoundType.Fissure_Lock);
         }
-        
+
         if (CurrentTarget is IEnergyLockable energyLockable)
             energyLockable.OnLockStateChanged(false);
 
         CurrentTarget = null;
         vfxManagerPlayer.LinkVfx(false);
-
-        
     }
 
     #endregion
@@ -104,20 +105,15 @@ public class LockOnSystem : MonoBehaviour
     {
         lockableTargets.Clear();
 
-        Collider[] colliders = Physics.OverlapSphere(
-            playerTransform.position,
+        List<ILockable> candidates = DetectionHelper.FindVisibleTargets<ILockable>(
+            playerTransform,
             playerData.LockRange,
+            playerData.LockAngle,
             playerData.LockableLayer);
 
-        foreach (var collider in colliders)
+        foreach (ILockable lockable in candidates)
         {
-            ILockable lockable = collider.GetComponent<ILockable>();
-            if (lockable == null || !lockable.IsLockable()) continue;
-
-            Vector3 direction   = (lockable.GetLockTransform().position - playerTransform.position).normalized;
-            float   angleToTarget = Vector3.Angle(playerTransform.forward, direction);
-
-            if (angleToTarget <= playerData.LockAngle)
+            if (lockable.IsLockable() && !IsTargetBehindWall(lockable))
                 lockableTargets.Add(lockable);
         }
     }
@@ -127,13 +123,14 @@ public class LockOnSystem : MonoBehaviour
         ILockable bestTarget = null;
         float     bestScore  = float.MaxValue;
 
-        foreach (var target in targets)
+        foreach (ILockable target in targets)
         {
             if (!IsTargetValid(target)) continue;
 
-            float distance = Vector3.Distance(playerTransform.position, target.GetLockTransform().position);
+            Transform t   = target.GetLockTransform();
+            float distance = Vector3.Distance(playerTransform.position, t.position);
             float angle    = Vector3.Angle(playerTransform.forward,
-                                 (target.GetLockTransform().position - playerTransform.position).normalized);
+                                 (t.position - playerTransform.position).normalized);
 
             float score = distance + angle * 0.1f;
             if (score >= bestScore) continue;
@@ -149,8 +146,20 @@ public class LockOnSystem : MonoBehaviour
     {
         if (target == null || !target.IsLockable()) return false;
 
-        return Vector3.Distance(playerTransform.position, target.GetLockTransform().position)
-               <= playerData.LockRange;
+        return DetectionHelper.IsInDistance(
+            playerTransform,
+            target.GetLockTransform(),
+            playerData.LockRange);
+    }
+
+    private bool IsTargetBehindWall(ILockable target)
+    {
+        Transform targetTransform = target.GetLockTransform();
+        Vector3   origin          = playerTransform.position;
+        Vector3   direction       = (targetTransform.position - origin).normalized;
+        float     distance        = Vector3.Distance(origin, targetTransform.position);
+
+        return Physics.Raycast(origin, direction, distance, _obstaclesMask);
     }
 
     #endregion

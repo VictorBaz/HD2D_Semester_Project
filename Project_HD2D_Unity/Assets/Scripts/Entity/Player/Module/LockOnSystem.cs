@@ -11,6 +11,7 @@ public class LockOnSystem : MonoBehaviour
 
     private PlayerDataInstance playerData;
     private VfxManagerPlayer   vfxManagerPlayer;
+    private EnergyTrace        energyTrace;
 
     public ILockable CurrentTarget { get; private set; }
     public bool IsLocked => CurrentTarget != null;
@@ -29,7 +30,11 @@ public class LockOnSystem : MonoBehaviour
         _obstaclesMask = ~(playerData.LockableLayer | playerData.PlayerLayer);
     }
 
-    public void InitManager(PlayerStateContext psc) => vfxManagerPlayer = psc.VfxManagerPlayer;
+    public void InitManager(PlayerStateContext psc)
+    {
+        vfxManagerPlayer = psc.VfxManagerPlayer;
+        energyTrace = psc.VfxManagerPlayer.EnergyTrace;
+    }
 
     #endregion
 
@@ -72,8 +77,11 @@ public class LockOnSystem : MonoBehaviour
 
         vfxManagerPlayer.LinkVfx(true, CurrentTarget.GetLockTransform());
 
-        if (CurrentTarget is IEnergyLockable energyLockable)
-            energyLockable.OnLockStateChanged(true);
+        if (CurrentTarget is Flaw flaw)
+        {
+            flaw.OnLockStateChanged(true);
+            vfxManagerPlayer.UpdateLinkVisuals(flaw.IsBlocked());
+        }
 
         if (SoundManager.Instance)
         {
@@ -90,8 +98,11 @@ public class LockOnSystem : MonoBehaviour
             SoundManager.Instance.StopLoopingSfx(SoundType.Fissure_Lock);
         }
 
-        if (CurrentTarget is IEnergyLockable energyLockable)
-            energyLockable.OnLockStateChanged(false);
+        if (CurrentTarget is Flaw flaw)
+        {
+            flaw.OnLockStateChanged(false);
+            vfxManagerPlayer.UpdateLinkVisuals(flaw.IsBlocked());
+        }
 
         CurrentTarget = null;
         vfxManagerPlayer.LinkVfx(false);

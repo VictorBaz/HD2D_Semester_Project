@@ -96,12 +96,21 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
     #region IEnergyLockable
 
     public Transform GetLockTransform()  => pivotPoint;
-    public bool IsLockable()             => root != null && !IsBlocked();
+    public bool IsLockable()             => root;
     public float GetLockPriority()       => 1f;
     public bool IsContainingEnergy()     => root != null && root.IsContainingEnergy();
     public bool IsAtMaximumEnergy()      => root != null && root.IsAtMaximumEnergy();
-    public void AddEnergy()              => root?.AddEnergy();
-    public void RemoveEnergy()           => root?.RemoveEnergy();
+
+    public void AddEnergy()
+    {
+        if (!IsBlocked()) root?.AddEnergy();
+    }
+
+
+    public void RemoveEnergy()
+    {
+        if (!IsBlocked()) root?.RemoveEnergy();
+    }
 
     public void OnLockStateChanged(bool locked)
     {

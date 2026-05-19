@@ -50,7 +50,7 @@ GameObject:
   - component: {fileID: 7639307828989827210}
   - component: {fileID: 8691987281759648894}
   m_Layer: 9
-  m_Name: Player Alpha
+  m_Name: Player Beta
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -153,6 +153,7 @@ MonoBehaviour:
   cam: {fileID: 0}
   attackRadius: 2
   attackColliderLocalOffset: {x: 0, y: 0.06, z: 1.82}
+  wallCheckDistance: 0.6
 --- !u!114 &7459953298653950144
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -204,7 +205,7 @@ MonoBehaviour:
     - {fileID: 4821841287818765893}
     - {fileID: 6383431184870391244}
   rendererShield: {fileID: 709668345432453594}
-  energyLink: {fileID: 6678010281623036802}
+  energyTrace: {fileID: 6678010281623036802}
 --- !u!114 &7639307828989827210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1495,6 +1496,22 @@ PrefabInstance:
       propertyPath: energyParticlePrefab
       value: 
       objectReference: {fileID: 8840266126361765477, guid: ede7cc0509903374e8bcbe8c80f6c9c4, type: 3}
+    - target: {fileID: 1055790199136890586, guid: bf6d994ed14d4dc45acf62903bb2ba4a, type: 3}
+      propertyPath: visuals.lineMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 5d0837af4a3865a4eb41ac610587a299, type: 2}
+    - target: {fileID: 1055790199136890586, guid: bf6d994ed14d4dc45acf62903bb2ba4a, type: 3}
+      propertyPath: visuals.emitterMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: e362df1f20bc84643944dd10bff8560e, type: 2}
+    - target: {fileID: 1055790199136890586, guid: bf6d994ed14d4dc45acf62903bb2ba4a, type: 3}
+      propertyPath: visuals.lineParasiteMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 1a81e05fc7528624fa8bc99c5725ed57, type: 2}
+    - target: {fileID: 1055790199136890586, guid: bf6d994ed14d4dc45acf62903bb2ba4a, type: 3}
+      propertyPath: visuals.emitterParasiteMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: 86031474de49a654ba9b7c89a46ffa4d, type: 2}
     - target: {fileID: 7458058045132896967, guid: bf6d994ed14d4dc45acf62903bb2ba4a, type: 3}
       propertyPath: m_Name
       value: Link_Vfx

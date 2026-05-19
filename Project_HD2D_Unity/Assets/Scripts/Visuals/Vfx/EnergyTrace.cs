@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -26,6 +27,8 @@ public class EnergyTrace : MonoBehaviour
     public ParticleSystem particlePrefab;
     public int staticEmittersCount = 8;
     private ParticleSystem[] staticEmitters;
+    private Renderer[]       staticEmitterRenderers;
+    [SerializeField] private EnergyDataVisuals visuals;
 
     #region Unity Lifecycle
 
@@ -35,6 +38,7 @@ public class EnergyTrace : MonoBehaviour
             ObjectPooler.SetupPool(energyParticlePrefab, 15, POOL_KEY);
 
         CreateStaticEmitters();
+        SetParasiteMode(false);
     }
 
     void Update()
@@ -91,10 +95,14 @@ public class EnergyTrace : MonoBehaviour
     {
         if (!particlePrefab || staticEmittersCount <= 0) return;
 
-        staticEmitters = new ParticleSystem[staticEmittersCount];
+        staticEmitters         = new ParticleSystem[staticEmittersCount];
+        staticEmitterRenderers = new Renderer[staticEmittersCount];
 
         for (int i = 0; i < staticEmittersCount; i++)
-            staticEmitters[i] = Instantiate(particlePrefab, transform);
+        {
+            staticEmitters[i]         = Instantiate(particlePrefab, transform);
+            staticEmitterRenderers[i] = staticEmitters[i].GetComponent<Renderer>();
+        }
     }
 
     private void UpdateStaticEmitters()
@@ -209,4 +217,45 @@ public class EnergyTrace : MonoBehaviour
     }
 
     #endregion
+    
+    public void SetStaticEmittersActive(bool active)
+    {
+        if (staticEmitters == null) return;
+
+        foreach (ParticleSystem emitter in staticEmitters)
+        {
+            if (!emitter) continue;
+
+            if (active) emitter.Play();
+            else        emitter.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        }
+    }
+    
+    public void SetParasiteMode(bool parasite)
+    {
+        line.sharedMaterial = visuals.GetLineMaterial(parasite);
+
+        if (staticEmitterRenderers == null) return;
+        Material mat = visuals.GetEmitterMaterial(parasite);
+
+        foreach (Renderer r in staticEmitterRenderers)
+        {
+            if (r) r.sharedMaterial = mat;
+        }
+    }
+}
+
+[Serializable]
+struct EnergyDataVisuals
+{
+    [Header("Line Renderer")]
+    public Material lineMaterial;
+    public Material lineParasiteMaterial;
+
+    [Header("Static Emitters")]
+    public Material emitterMaterial;
+    public Material emitterParasiteMaterial;
+
+    public Material GetLineMaterial(bool parasite)       => parasite ? lineParasiteMaterial    : lineMaterial;
+    public Material GetEmitterMaterial(bool parasite)    => parasite ? emitterParasiteMaterial : emitterMaterial;
 }

@@ -208,7 +208,6 @@ public class PlayerActionHandler : MonoBehaviour
     {
         lockOnSystem.TryLock();
         UiEvents.TriggerLockStateChanged(lockOnSystem.IsLocked);
-        TryGiveSap();
     }
 
     private void OnLockRelease()
@@ -226,11 +225,11 @@ public class PlayerActionHandler : MonoBehaviour
 
     private void TryGiveEnergy()
     {
-        if (!TryGetEnergyTarget(out IEnergyLockable target)) return;
-        if (Data.IsEnergyEmpty()) return;
-        if (target.IsAtMaximumEnergy()) return;
+        if (!TryGetFlawTarget(out Flaw flaw)) return;
+        
+        if (Data.IsEnergyEmpty() || flaw.IsAtMaximumEnergy() || !flaw.IsLockable()) return;
 
-        target.AddEnergy();
+        flaw.AddEnergy();
         Data.RemoveEnergy();
         UiEvents.TriggerEnergyChanged(Data.Energy, Data.MaxEnergy);
         SoundManager.Instance?.PlaySfx(SoundType.Fissure_Energy_In);
@@ -239,15 +238,24 @@ public class PlayerActionHandler : MonoBehaviour
 
     private void TryTakeEnergy()
     {
-        if (pm.Context.PlayerData.Energy >= pm.Context.PlayerData.MaxEnergy) return;
-        if (!TryGetEnergyTarget(out IEnergyLockable target)) return;
-        if (!target.IsContainingEnergy()) return;
+        if (!TryGetFlawTarget(out Flaw flaw)) return;
+        
+        if (Data.Energy >= Data.MaxEnergy || !flaw.IsContainingEnergy()) return;
 
-        target.RemoveEnergy();
+        flaw.RemoveEnergy();
         Data.AddEnergy();
         UiEvents.TriggerEnergyChanged(Data.Energy, Data.MaxEnergy);
         SoundManager.Instance?.PlaySfx(SoundType.Fissure_Energy_Out);
         vfxManagerPlayer.EffectRemoveEnergy();
+    }
+
+    private bool TryGetFlawTarget(out Flaw flaw)
+    {
+        flaw = null;
+        if (!TryGetEnergyTarget(out IEnergyLockable target)) return false;
+        if (target is not Flaw f || f.IsBlocked()) return false;
+        flaw = f;
+        return true;
     }
 
     private bool TryGetEnergyTarget(out IEnergyLockable target)
@@ -261,23 +269,4 @@ public class PlayerActionHandler : MonoBehaviour
 
     #endregion
 
-    #region Sap
-
-    private void TryGiveSap()
-    {/*
-        var targets = DetectionHelper.FindVisibleTargets<ISapLockable>(
-            transform, Data.LockRange, Data.LockAngle, Data.SapLayerMask);
-
-        targets.RemoveAll(t => !t.IsLockable());
-
-        ISapLockable sap = DetectionHelper.GetBestTarget(transform, targets);
-
-        if (sap == null) return;
-
-        sap.GiveSap();
-        Data.AddSap();
-        UiEvents.TriggerSapChanged(Data.Sap);*/
-    }
-
-    #endregion
 }

@@ -52,13 +52,13 @@ namespace Player.State
             psc.VfxManagerPlayer.ToggleDashTrail(true);
 
             while (elapsed < psc.PlayerData.DashDuration)
-            {
-                float t = elapsed / psc.PlayerData.DashDuration;
-                
-                psc.Rb.linearVelocity = Vector3.Lerp(
+            {/*
+                float t = elapsed / psc.PlayerData.DashDuration;*/
+
+                psc.Rb.linearVelocity = dashDirection * psc.PlayerData.DashSpeed;/*Vector3.Lerp(
                     dashDirection * psc.PlayerData.DashSpeed,
                     dashDirection * (psc.PlayerData.DashSpeed * 0.08f),
-                    t);
+                    t);*/
                 
                 psc.Rb.linearVelocity = new Vector3(
                     psc.Rb.linearVelocity.x,

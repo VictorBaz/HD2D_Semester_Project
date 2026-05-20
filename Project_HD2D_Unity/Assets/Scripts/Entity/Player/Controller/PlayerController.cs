@@ -192,6 +192,21 @@ public class PlayerController : MonoBehaviour
         IsOnWall   = false;
         wallNormal = Vector3.zero;
     }
+    
+    public bool IsFacingWall()
+    {
+        foreach (Vector3 localDir in _wallDirections)
+        {
+            Vector3 worldDir = transform.TransformDirection(localDir);
+
+            if (!Physics.Raycast(transform.position, worldDir, wallCheckDistance, playerData.GroundMask))
+                continue;
+
+            return true;
+        }
+
+        return false;
+    }
 
     private bool OnSlope()
     {

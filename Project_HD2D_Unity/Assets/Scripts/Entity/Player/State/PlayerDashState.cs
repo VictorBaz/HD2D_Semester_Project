@@ -32,12 +32,20 @@ namespace Player.State
         public override void ExitState(PlayerStateContext psc)
         {
             psc.AnimationManager.SetDashing(false);
+            psc.VfxManagerPlayer.ToggleDashTrail(false);
             psc.Controller.SetGravity(true);
         }
 
         public override void UpdateState(PlayerStateContext psc)
         {
             HandleAnimation(psc);
+            
+            if (psc.Controller.IsFacingWall())
+            {
+                float yStock = psc.Rb.linearVelocity.y;
+                psc.Rb.linearVelocity = Vector3.zero + new Vector3(0, yStock, 0);
+                DetermineState(psc);
+            }
         }
 
         public override void FixedUpdateState(PlayerStateContext psc) { }

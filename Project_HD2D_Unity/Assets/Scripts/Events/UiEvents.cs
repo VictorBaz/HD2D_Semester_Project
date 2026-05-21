@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public static class UiEvents
 {
@@ -23,4 +24,10 @@ public static class UiEvents
     public static Action<string> OnShowArea;
     public static void TriggerShowArea(string areaName) 
         => OnShowArea?.Invoke(areaName);
+    
+    public static event Action<System.Collections.Generic.List<Sprite>> OnShowSpritePopup;
+    public static event Action OnHideSpritePopup;
+
+    public static void TriggerShowSpritePopup(System.Collections.Generic.List<Sprite> sprites) => OnShowSpritePopup?.Invoke(sprites);
+    public static void TriggerHideSpritePopup() => OnHideSpritePopup?.Invoke();
 }

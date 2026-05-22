@@ -21,7 +21,7 @@ public class SpriteBillboard : MonoBehaviour
 
     #region Unity Lifecycle
 
-    private void Awake()
+    private void Start()
     {
         cameraTransform = CameraEvents.RequestGetCameraTransform.Invoke();
         originalRotation = cameraTransform.rotation.eulerAngles;
@@ -29,7 +29,7 @@ public class SpriteBillboard : MonoBehaviour
 
     private void OnEnable()
     {
-        cameraTransform = CameraEvents.RequestGetCameraTransform.Invoke();
+        cameraTransform = CameraEvents.RequestGetCameraTransform?.Invoke();
     }
 
     private void LateUpdate()

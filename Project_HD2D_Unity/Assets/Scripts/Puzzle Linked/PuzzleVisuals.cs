@@ -12,6 +12,7 @@ public class PuzzleVisuals
     public void Initialize()
     {
         _propBlock = new MaterialPropertyBlock();
+        ApplyProgress(1f);
     }
 
     public void ApplyProgress(float progress)

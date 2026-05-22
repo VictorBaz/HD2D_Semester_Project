@@ -23,12 +23,15 @@ public class SpriteBillboard : MonoBehaviour
 
     private void Awake()
     {
-        if (!cameraTransform)
-            if (Camera.main != null)
-                cameraTransform = Camera.main.transform;
+        cameraTransform = CameraEvents.RequestGetCameraTransform.Invoke();
         originalRotation = cameraTransform.rotation.eulerAngles;
     }
-    
+
+    private void OnEnable()
+    {
+        cameraTransform = CameraEvents.RequestGetCameraTransform.Invoke();
+    }
+
     private void LateUpdate()
     {
         DisplaySpriteBillboard();

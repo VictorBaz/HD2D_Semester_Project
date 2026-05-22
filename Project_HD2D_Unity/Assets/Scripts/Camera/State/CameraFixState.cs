@@ -5,11 +5,7 @@ public class CameraFixState : CameraBaseState
     public override void EnterState(CameraStateContext context) { }
     public override void UpdateState(CameraStateContext context)
     {
-        if (context.CurrentSettings == null)
-        {
-            Debug.LogError("No camera settings found.");
-            return;
-        }
+        if (context.CurrentSettings == null) return;
         
         context.CameraTransform.position = Vector3.SmoothDamp(
             context.CameraTransform.position,

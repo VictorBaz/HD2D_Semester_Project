@@ -95,6 +95,7 @@ public class BigGuyJumpAttackState : EnemyAttackState
         actx.AnimManager.ToggleAttackCollider(true); 
         actx.Manager.StartCoroutine(DisableHitboxLate(actx, actx.Data.ShockwaveActiveDuration));
         actx.VfxManager.TriggerAttackVfx();
+        GamepadVibrationHelper.Vibrate(0.9f,0.15f,0.12f);
     }
 
     private IEnumerator DisableHitboxLate(EnemyContext actx, float delay)

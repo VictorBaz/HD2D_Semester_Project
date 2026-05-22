@@ -47,6 +47,8 @@ public class DestructibleElement : MonoBehaviour
 
         onDestructionEvent?.Invoke();
         
+        GamepadVibrationHelper.Vibrate(0.15f,0.5f,0.25f);
+        
         StartCoroutine(UpdateMpIe(dissolutionDuration));
         
         Destroy(gameObject, dissolutionDuration);

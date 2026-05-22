@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6255717363136174026
+--- !u!1 &7166434709052217689
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,9 +8,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 884504829370553536}
-  - component: {fileID: 7823201422127011233}
-  - component: {fileID: 3705518665424666350}
+  - component: {fileID: 6024079289682905736}
+  - component: {fileID: 3544361075289707120}
+  - component: {fileID: 2123515451466589472}
   m_Layer: 0
   m_Name: Trigger Tuto Lancer Mouton
   m_TagString: Untagged
@@ -18,41 +18,46 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!4 &884504829370553536
+--- !u!4 &6024079289682905736
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6255717363136174026}
+  m_GameObject: {fileID: 7166434709052217689}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 28.81438, y: -1.7, z: 7.0246}
+  m_LocalPosition: {x: 27.8244, y: -1.7, z: 7.187}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7823201422127011233
+--- !u!114 &3544361075289707120
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6255717363136174026}
+  m_GameObject: {fileID: 7166434709052217689}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 01370d50499241b4b8eaa6162a5052ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AreaPopupTriggerTuto
-  popupSprites: []
---- !u!65 &3705518665424666350
+  popupSprites:
+  - {fileID: -1477309224, guid: 5e61d59cc6d8b374b930e6986ba1c4cb, type: 3}
+  - {fileID: 315466695, guid: 5e61d59cc6d8b374b930e6986ba1c4cb, type: 3}
+  - {fileID: 968090426, guid: 5e61d59cc6d8b374b930e6986ba1c4cb, type: 3}
+  - {fileID: -1683819658, guid: 5e61d59cc6d8b374b930e6986ba1c4cb, type: 3}
+  - {fileID: 1784219822, guid: 5e61d59cc6d8b374b930e6986ba1c4cb, type: 3}
+--- !u!65 &2123515451466589472
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6255717363136174026}
+  m_GameObject: {fileID: 7166434709052217689}
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2

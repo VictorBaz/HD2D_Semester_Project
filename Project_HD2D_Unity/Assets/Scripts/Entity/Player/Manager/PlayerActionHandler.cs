@@ -234,6 +234,7 @@ public class PlayerActionHandler : MonoBehaviour
         UiEvents.TriggerEnergyChanged(Data.Energy, Data.MaxEnergy);
         SoundManager.Instance?.PlaySfx(SoundType.Fissure_Energy_In);
         vfxManagerPlayer.EffectAddEnergy();
+        GamepadVibrationHelper.Vibrate(0.25f,1f,0.25f);
     }
 
     private void TryTakeEnergy()
@@ -247,6 +248,7 @@ public class PlayerActionHandler : MonoBehaviour
         UiEvents.TriggerEnergyChanged(Data.Energy, Data.MaxEnergy);
         SoundManager.Instance?.PlaySfx(SoundType.Fissure_Energy_Out);
         vfxManagerPlayer.EffectRemoveEnergy();
+        GamepadVibrationHelper.Vibrate(0.15f,0.5f,0.25f);
     }
 
     private bool TryGetFlawTarget(out Flaw flaw)

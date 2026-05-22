@@ -265,9 +265,11 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
 
         bool isHeavyAttack = (attackType == 2); 
 
+        
         if (isHeavyAttack || context.Data.IsKoFull())
         {
             ChangeState(HitState);
+            GamepadVibrationHelper.Vibrate(0.15f,0.5f,0.25f);
             return;
         }
 

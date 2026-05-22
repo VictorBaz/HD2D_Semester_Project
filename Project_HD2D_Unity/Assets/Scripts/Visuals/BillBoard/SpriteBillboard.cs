@@ -21,14 +21,17 @@ public class SpriteBillboard : MonoBehaviour
 
     #region Unity Lifecycle
 
-    private void Awake()
+    private void Start()
     {
-        if (!cameraTransform)
-            if (Camera.main != null)
-                cameraTransform = Camera.main.transform;
+        cameraTransform = CameraEvents.RequestGetCameraTransform.Invoke();
         originalRotation = cameraTransform.rotation.eulerAngles;
     }
-    
+
+    private void OnEnable()
+    {
+        cameraTransform = CameraEvents.RequestGetCameraTransform?.Invoke();
+    }
+
     private void LateUpdate()
     {
         DisplaySpriteBillboard();

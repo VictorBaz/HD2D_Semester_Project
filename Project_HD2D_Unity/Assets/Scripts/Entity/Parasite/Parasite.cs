@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Script.Manager;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
 {
@@ -15,6 +16,7 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     [Header("Stats")]
     [SerializeField] private int life = 3;
     [SerializeField] private int lifeMax = 3;
+    [SerializeField] private bool isBoss = false; 
 
     [SerializeField] private EntityID entityID;
     
@@ -35,6 +37,10 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     [SerializeField] private  ParticleSystem vfxParasiteAndLock;
     private MaterialPropertyBlock _propBlock;
     private static readonly int DissolveHash = Shader.PropertyToID("_Progression");
+
+    [Header("Boss UI Direct Link")] 
+    [SerializeField] private Slider bossLifeSlider;
+    
     #endregion
 
     #region Unity Lifecycle
@@ -50,13 +56,23 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
             playerContext = PlayerEvents.OnRequestPlayerContext.Invoke();
         
         _propBlock = new MaterialPropertyBlock();
+
+        if (bossLifeSlider != null)
+        {
+            bossLifeSlider.maxValue = lifeMax;
+            bossLifeSlider.value = life;
+            bossLifeSlider.gameObject.SetActive(true);
+        }
     }
     #endregion
 
     #region IDamageable Implementation
     public void TakeDamage(int value, Vector3 hitDirection)
     {
+        if (isBoss) if(playerContext.PlayerData.Sap < life) return;
+        
         if (isDead || playerContext == null) return;
+        
         if (playerContext.PlayerData.IsSapEmpty())
         {
             if (SoundManager.Instance) SoundManager.Instance.PlaySfx(SoundType.Damage_Ineffective);
@@ -75,10 +91,14 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     private void ApplyDamage()
     {
         playerContext.PlayerData.RemoveSap();
-        
         UiEvents.TriggerSapChanged(playerContext.PlayerData.Sap);
         
         life--;
+        
+        if (bossLifeSlider)
+        {
+            bossLifeSlider.value = life;
+        }
         
         if (SoundManager.Instance) SoundManager.Instance.PlaySfx(SoundType.Damage_Effective);
 
@@ -86,6 +106,7 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
         
         if (life <= 0)
         {
+            if (bossLifeSlider != null) bossLifeSlider.gameObject.SetActive(false);
             Die();
         }
         else

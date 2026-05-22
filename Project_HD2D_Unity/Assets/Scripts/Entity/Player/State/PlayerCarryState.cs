@@ -15,9 +15,12 @@ public class PlayerCarryState : PlayerBaseState
     {
         psc.AnimationManager.SetCarrying(false);
 
-        if (psc.CurrentTargetCarry != null &&  psc.CurrentTargetCarry.IsCarry()) 
+        psc.PreviewEjectionPlayer.TogglePreview(false);
+
+        if (psc.CurrentTargetCarry != null && psc.CurrentTargetCarry.IsCarry()) 
         {
-            psc.CurrentTargetCarry.Eject();
+            Vector3 forceMondiale = psc.PlayerTransform.TransformDirection(psc.PlayerData.EjectionForce);
+            psc.CurrentTargetCarry.Eject(forceMondiale);
         }
         
         psc.CurrentTargetCarry =  null;
@@ -41,6 +44,18 @@ public class PlayerCarryState : PlayerBaseState
 
         blendInput = GetBlendTreeInput(psc);
         psc.AnimationManager.HandleAnimation(animMagnitude, blendInput, psc.Controller.IsGrounded);
+        
+        Vector3 finalForce = psc.PlayerTransform.TransformDirection(psc.PlayerData.EjectionForce);
+        Vector3? impactPoint = psc.PreviewEjectionPlayer.UpdateTrajectory(finalForce);
+
+        bool hasImpact = impactPoint.HasValue;
+        psc.PreviewEjectionPlayer.TogglePreview(hasImpact);
+
+        if (hasImpact)
+        {
+            psc.TrajectoryPoint = impactPoint.Value;
+            psc.PreviewEjectionPlayer.UpdatePreviewElementPosition(psc);
+        }
     }
 
     public override void FixedUpdateState(PlayerStateContext psc)

@@ -14,15 +14,19 @@ public class CameraRailState : CameraBaseState
 
     public override void UpdateState(CameraStateContext context)
     {
-        if (currentRail == null) return;
+        Rail activeRail = context.CurrentSettings.ActiveRail;
 
-        Vector3 targetOnRail = currentRail.ProjectPositionOnRail(context.PlayerTransform.position);
+        if (!activeRail) return;
+
+        Vector3 targetOnRail = activeRail.ProjectPositionOnRail(context.PlayerTransform.position);
+
+        Vector3 finalPosition = targetOnRail + context.CurrentSettings.RailOffset;
 
         context.CameraTransform.position = Vector3.SmoothDamp(
             context.CameraTransform.position,
-            targetOnRail,
+            finalPosition,
             ref context.Velocity,
-            context.SmoothTimeRail
+            context.TransitionSpeed
         );
 
         ApplyRestrictedRotation(context, context.PlayerTransform.position + Vector3.up * 1.5f);

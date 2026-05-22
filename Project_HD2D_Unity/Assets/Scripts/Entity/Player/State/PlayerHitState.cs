@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Script.Manager;
+using UnityEngine;
 
 namespace Player.State
 {
@@ -18,6 +19,8 @@ namespace Player.State
             psc.AnimationManager.SetHit(true);
             
             Hit(psc);
+
+            if (SoundManager.Instance) SoundManager.Instance.PlaySfx(SoundType.Damage_Taken);
         }
 
         public override void ExitState(PlayerStateContext psc)

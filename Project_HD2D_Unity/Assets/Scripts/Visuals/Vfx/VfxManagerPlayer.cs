@@ -15,7 +15,8 @@ public class VfxManagerPlayer : VfxManagerBase
     [SerializeField] private Renderer rendererShield;
     
     [Header("Energy Settings")]
-    [SerializeField] private EnergyTrace energyLink;
+    [SerializeField] private EnergyTrace energyTrace;
+    public EnergyTrace EnergyTrace => energyTrace;
 
     private MaterialPropertyBlock _propBlockShield;
     private Coroutine _shieldCoroutine;
@@ -143,22 +144,30 @@ public class VfxManagerPlayer : VfxManagerBase
 
     public void LinkVfx(bool isOn, Transform target = null)
     {
-        if (energyLink == null ) return;
+        if (!energyTrace ) return;
 
-        if (target == null)
+        energyTrace.SetStaticEmittersActive(isOn);
+        
+        if (!target)
         {
-            energyLink.gameObject.SetActive(false);
+            energyTrace.line.enabled = false;
             return;
         }
         
-        energyLink.gameObject.SetActive(isOn);
+        energyTrace.line.enabled = isOn;
 
-        energyLink.startPoint = isOn ? energyLink.transform : null;
-        energyLink.endPoint = isOn ? target : null;
+        energyTrace.startPoint = isOn ? energyTrace.transform : null;
+        energyTrace.endPoint = isOn ? target : null;
+        
     }
 
     #endregion
+    
+    public void UpdateLinkVisuals(bool parasite) => energyTrace.SetParasiteMode(parasite);
+    
 
+    public void EffectAddEnergy() => energyTrace.TriggerTraceFollow(0.5f,false);
+    public void EffectRemoveEnergy() => energyTrace.TriggerTraceFollow(0.5f,true);
 }
 
 [Serializable]

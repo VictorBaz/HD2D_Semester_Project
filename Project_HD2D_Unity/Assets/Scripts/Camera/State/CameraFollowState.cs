@@ -16,7 +16,7 @@ public class CameraFollowState : CameraBaseState
             context.CameraTransform.position, 
             finalPosition, 
             ref context.Velocity, 
-            context.SmoothTimeFollow
+            context.TransitionSpeed
         );
         
         ApplyRestrictedRotation(context, context.PlayerTransform.position + Vector3.up * 1.5f);

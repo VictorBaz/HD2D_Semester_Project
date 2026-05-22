@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public static class UiEvents
 {
@@ -7,9 +8,6 @@ public static class UiEvents
 
     public static event Action<int, int> OnEnergyChanged;
     public static void TriggerEnergyChanged(int current, int max) => OnEnergyChanged?.Invoke(current, max);
-    
-    public static event Action<int, int> OnEnergySetup;
-    public static void TriggerEnergySetup(int max, int current) => OnEnergySetup?.Invoke(max, current);
 
     public static event Action<int> OnSapChanged;
     public static event Action OnSapRemove;
@@ -22,4 +20,14 @@ public static class UiEvents
     public static Action OnShowPopup;
     public static void TriggerShowPopup() 
         => OnShowPopup?.Invoke();
+    
+    public static Action<string> OnShowArea;
+    public static void TriggerShowArea(string areaName) 
+        => OnShowArea?.Invoke(areaName);
+    
+    public static event Action<System.Collections.Generic.List<Sprite>> OnShowSpritePopup;
+    public static event Action OnHideSpritePopup;
+
+    public static void TriggerShowSpritePopup(System.Collections.Generic.List<Sprite> sprites) => OnShowSpritePopup?.Invoke(sprites);
+    public static void TriggerHideSpritePopup() => OnHideSpritePopup?.Invoke();
 }

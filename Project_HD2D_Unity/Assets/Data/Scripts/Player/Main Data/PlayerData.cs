@@ -42,6 +42,7 @@ public class MovementSettings
     public float GroundCheckDistance = 0.2f;
     public float PlayerHeight = 2f;
     public float MaxSlopeAngle = 45f;
+    public LayerMask PlayerLayer;
 }
 
 [System.Serializable]
@@ -106,6 +107,7 @@ public class AbilitySettings
     public float CarryRange = 3f;
     public float CarryAngle = 90f;
     public LayerMask CarryLayer;
+    public Vector3 EjectionForce = new Vector3(0,3,10);
 }
 
 [System.Serializable]
@@ -117,7 +119,6 @@ public class ResourceSettings
     public int StartingEnergy = 0;
     public int StartingSap = 0;
     public int MaxSap = 3;
-    public LayerMask SapLayerMask;
 }
 
 [System.Serializable]
@@ -160,6 +161,7 @@ public class PlayerDataInstance
     public float PlayerHeight;
     public float MaxSlopeAngle;
     public float CoyoteTime;
+    public LayerMask PlayerLayer;
     
     public LayerMask LayerEnemy;
     public CombatHitData[] ComboHits;
@@ -189,13 +191,13 @@ public class PlayerDataInstance
     public float CarryRange;
     public float CarryAngle;
     public LayerMask CarryLayer;
+    public Vector3 EjectionForce;
 
     public int Life;
     public int MaxLife;
     public int Energy;
     public int MaxEnergy;
-
-    public LayerMask SapLayerMask;
+    
     public int Sap;
     public int MaxSap;
 
@@ -243,6 +245,8 @@ public class PlayerDataInstance
         CarryRange = data.Abilities.CarryRange;
         CarryAngle = data.Abilities.CarryAngle;
         CarryLayer = data.Abilities.CarryLayer;
+        EjectionForce = data.Abilities.EjectionForce;
+        PlayerLayer = data.Movement.PlayerLayer;
 
         MaxLife = data.Resources.MaxLife;
         MaxEnergy = data.Resources.MaxEnergy;
@@ -250,7 +254,6 @@ public class PlayerDataInstance
         Energy = data.Resources.StartingEnergy;
         Sap = data.Resources.StartingSap;
         MaxSap = data.Resources.MaxSap;
-        SapLayerMask = data.Resources.SapLayerMask;
     }
 
     public bool IsSapEmpty() => Sap <= 0;
@@ -262,4 +265,6 @@ public class PlayerDataInstance
     public bool IsEnergyEmpty() => Energy <= 0;
     public void RemoveEnergy() => Energy = Mathf.Max(0, Energy - 1);
     public void AddEnergy() => Energy = Mathf.Min(MaxEnergy, Energy + 1);
+    
+    public bool IsPlayerFullLife() => Life >= MaxLife;
 }

@@ -31,7 +31,7 @@ public class PlayerLocomotionState : PlayerBaseState
     public override void UpdateState(PlayerStateContext psc)
     {
         if (TryLeaveGround(psc)) return;
-
+        
         psc.LockOnSystem.CalculLockRotation();
         psc.Controller.SetLockMode(psc.LockOnSystem.IsLocked);
 
@@ -58,7 +58,7 @@ public class PlayerLocomotionState : PlayerBaseState
         if (!psc.Controller.IsGrounded)
         {
             airTimeBuffer += Time.deltaTime;
-
+            
             if (airTimeBuffer > psc.PlayerData.CoyoteTime)
             {
                 DetermineState(psc);

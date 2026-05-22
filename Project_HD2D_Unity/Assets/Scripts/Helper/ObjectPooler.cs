@@ -37,6 +37,11 @@ public static class ObjectPooler
     /// <returns>L'objet récupéré du pool</returns>
     public static T DequeueObject<T>(string key) where T : Component
     {
+        if (!PoolDictionary.ContainsKey(key)) {
+            Debug.LogError($"Le pool {key} n'existe pas !");
+            return null;
+        }
+        
         if (PoolDictionary[key].TryDequeue(out var item))
         {
             return (T)item;
@@ -65,14 +70,16 @@ public static class ObjectPooler
     /// <param name="dictionaryEntry">Le nom du pool</param>
     public static void SetupPool<T>(T pooledItemPrefab, int poolSize, string dictionaryEntry) where T : Component
     {
+        if (PoolDictionary.ContainsKey(dictionaryEntry)) return; 
+
         PoolDictionary.Add(dictionaryEntry, new Queue<Component>());
         PoolLookUp.Add(dictionaryEntry, pooledItemPrefab);
-            
+        
         for (int i = 0; i < poolSize; i++)
         {
             T pooledInstance = Object.Instantiate(pooledItemPrefab);
             pooledInstance.gameObject.SetActive(false);
-            PoolDictionary[dictionaryEntry].Enqueue((T)pooledInstance);
+            PoolDictionary[dictionaryEntry].Enqueue(pooledInstance);
         }
     }
 }

@@ -54,27 +54,44 @@ namespace Script.Manager
 
         #region Music Logic
 
-        public void PlayMusic(AudioClip newClip, float fadeDuration = 1.5f)
+        public void PlayMusic(MusicType type, float fadeDuration = 4f)
         {
-            if (musicSource.clip == newClip && musicSource.isPlaying) return;
+            var entry = dataBank.GetMusic(type);
+            if (entry == null || entry.clip == null) return;
+            if (musicSource.clip == entry.clip && musicSource.isPlaying) return;
 
             if (musicFadeCoroutine != null) StopCoroutine(musicFadeCoroutine);
-            musicFadeCoroutine = StartCoroutine(MusicTransitionCoroutine(newClip, fadeDuration));
+            musicFadeCoroutine = StartCoroutine(MusicTransitionCoroutine(entry, fadeDuration));
         }
 
-        private IEnumerator MusicTransitionCoroutine(AudioClip newClip, float duration)
+        public void StopMusic(float fadeDuration = 1.5f)
+        {
+            if (!musicSource.isPlaying) return;
+            if (musicFadeCoroutine != null) StopCoroutine(musicFadeCoroutine);
+            musicFadeCoroutine = StartCoroutine(FadeOutAndStop(fadeDuration));
+        }
+
+        private IEnumerator MusicTransitionCoroutine(AudioDataBank.AudioEntry entry, float duration)
         {
             if (musicSource.isPlaying)
-            {
                 yield return StartCoroutine(musicSource.FadeVolume(0, duration / 2));
-            }
 
             musicSource.Stop();
-            musicSource.clip = newClip;
+            musicSource.clip = entry.clip;
+            musicSource.pitch = entry.pitch;
             musicSource.volume = 0;
+            musicSource.loop = true;
             musicSource.Play();
 
-            yield return StartCoroutine(musicSource.FadeVolume(masterVolume, duration / 2));
+            yield return StartCoroutine(musicSource.FadeVolume(entry.volume * masterVolume, duration / 2));
+            musicFadeCoroutine = null;
+        }
+
+        private IEnumerator FadeOutAndStop(float duration)
+        {
+            yield return StartCoroutine(musicSource.FadeVolume(0, duration));
+            musicSource.Stop();
+            musicSource.clip = null;
             musicFadeCoroutine = null;
         }
         #endregion

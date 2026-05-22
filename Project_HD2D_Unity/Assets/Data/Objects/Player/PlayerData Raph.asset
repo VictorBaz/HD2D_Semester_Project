@@ -23,10 +23,13 @@ MonoBehaviour:
     RunThreshold: 0.7
     GroundMask:
       serializedVersion: 2
-      m_Bits: 9
+      m_Bits: 32905
     GroundCheckDistance: 0.2
     PlayerHeight: 1.85
     MaxSlopeAngle: 45
+    PlayerLayer:
+      serializedVersion: 2
+      m_Bits: 512
   Combat:
     LayerEnemy:
       serializedVersion: 2
@@ -74,21 +77,19 @@ MonoBehaviour:
     CoyoteTime: 0.2
     AirControlForce: 12
     FallAndJumpThreshold: 0.1
-    DashSpeed: 20
-    DashDuration: 0.3
+    DashSpeed: 18
+    DashDuration: 0.125
     DashCooldown: 0.7
     CarryRange: 2
     CarryAngle: 90
     CarryLayer:
       serializedVersion: 2
       m_Bits: 64
+    EjectionForce: {x: 0, y: 6, z: 5}
   Resources:
     MaxLife: 5
     MaxEnergy: 2
     StartingLife: 5
-    StartingEnergy: 2
+    StartingEnergy: 0
     StartingSap: 0
     MaxSap: 4
-    SapLayerMask:
-      serializedVersion: 2
-      m_Bits: 8192

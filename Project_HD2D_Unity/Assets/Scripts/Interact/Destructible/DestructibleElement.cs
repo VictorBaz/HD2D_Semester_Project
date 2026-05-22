@@ -8,20 +8,26 @@ public class DestructibleElement : MonoBehaviour
     [SerializeField] private GameObject intactVisual;
     [SerializeField] private GameObject fracturedParent;
     [SerializeField] private ParticleSystem breakParticles;
-
+    [SerializeField] private Renderer[] rendererTargets;
+    
     [Header("Settings")]
     [SerializeField] private float explosionForce = 500f;
     [SerializeField] private float explosionRadius = 2f;
+    [SerializeField] private float dissolutionDuration = 1.0f; 
     
     [Header("Events")]
     [SerializeField] private UnityEvent onDestructionEvent;
 
     private bool isDestroyed = false;
+    
+    private MaterialPropertyBlock block;
+    private static readonly int ProgressionHash = Shader.PropertyToID("_Progression");
 
     private void Start()
     {
         if (intactVisual) intactVisual.SetActive(true);
         if (fracturedParent) fracturedParent.SetActive(false);
+        block = new MaterialPropertyBlock();
     }
 
     private void TriggerDestruction()
@@ -40,7 +46,10 @@ public class DestructibleElement : MonoBehaviour
         }
 
         onDestructionEvent?.Invoke();
-
+        
+        StartCoroutine(UpdateMpIe(dissolutionDuration));
+        
+        Destroy(gameObject, dissolutionDuration);
     }
     
 
@@ -48,10 +57,28 @@ public class DestructibleElement : MonoBehaviour
     {
         if (!collision.gameObject.CompareTag("Enemy")) return;
         if (!collision.gameObject.TryGetComponent<EnemyBaseManager>(out var enemy)) return;
-        
-        if (enemy.CurrentState is EnemyDropState)
+        if (enemy.CurrentState is EnemyDropState) TriggerDestruction();
+    }
+
+    private IEnumerator UpdateMpIe(float duration)
+    {
+        float elapsed = 0f;
+
+        while (elapsed < duration)
         {
-            TriggerDestruction();
+            elapsed += Time.deltaTime;
+            float t = Mathf.Clamp01(elapsed / duration);
+
+            foreach (var rd in rendererTargets)
+            {
+                if (rd == null) continue; 
+                
+                rd.GetPropertyBlock(block);
+                block.SetFloat(ProgressionHash, t); 
+                rd.SetPropertyBlock(block);
+            }
+            
+            yield return null;
         }
     }
 }

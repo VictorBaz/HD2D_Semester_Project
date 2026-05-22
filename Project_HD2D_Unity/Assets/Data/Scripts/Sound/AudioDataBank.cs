@@ -8,6 +8,7 @@ public class AudioDataBank : ScriptableObject
     public class AudioEntry
     {
         public SoundType type;
+        public MusicType musicType;
         public AudioClip clip;
         [Range(0f, 1f)] public float volume = 1f;
         [Range(0.1f, 2f)] public float pitch = 1f;
@@ -27,9 +28,18 @@ public class AudioDataBank : ScriptableObject
         return sfxCache.GetValueOrDefault(type);
     }
 
+    public AudioEntry GetMusic(MusicType type)
+    {
+        if (musicCache == null) BuildCache();
+        return musicCache.GetValueOrDefault(type);
+    }
+
     private void BuildCache()
     {
         sfxCache = new Dictionary<SoundType, AudioEntry>();
         foreach (var entry in sfxEntries) sfxCache[entry.type] = entry;
+
+        musicCache = new Dictionary<MusicType, AudioEntry>();
+        foreach (var entry in musicEntries) musicCache[entry.musicType] = entry;
     }
 }

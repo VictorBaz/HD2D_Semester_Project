@@ -22,16 +22,10 @@ public class EnemyWeaponHitbox : BaseHitbox
 
         if (!HasClearLineTo(other)) return;
 
-        if (target.IsInParryWindowPerfect())
+        if (target.IsInParryWindowPerfect() || target.IsInParryWindow())
         {
             SoundManager.Instance?.PlaySfx(SoundType.Parry_Perfect);
-            manager.HandlePerfectParry();
-        }
-        else if (target.IsInParryWindow())
-        {
-            SoundManager.Instance?.PlaySfx(SoundType.Parry_Hit);
-            manager.TakeDamage(damage, -transform.forward);
-            alreadyHitTargets.Add(target);
+            manager.TakeDamage(damage,Vector3.zero);
         }
         else
         {

@@ -49,8 +49,8 @@ MonoBehaviour:
   vatManagers: []
   flaws: []
   entityID: {fileID: 455986538901877867}
-  currentEnergy: 1
-  maxEnergy: 2
+  currentEnergy: 0
+  maxEnergy: 3
   splineRoot: {fileID: 5311562553995763804}
   splineScript: {fileID: 1671786938654654075}
   timerScanMax: 4
@@ -67,6 +67,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EntityID
   id: 1c6e9dd5-a207-48de-81ec-ec4a95752037
+--- !u!1 &5749603255223218595
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6831068288501385446}
+  m_Layer: 0
+  m_Name: Generated_Visual_Branches
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6831068288501385446
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5749603255223218595}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8061055083655807826}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &956480109576651372
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -966,7 +997,10 @@ PrefabInstance:
     - {fileID: -4855050928882249336, guid: 7326052d9961ce54384a884e802d4af2, type: 3}
     - {fileID: 5605137126683674846, guid: 7326052d9961ce54384a884e802d4af2, type: 3}
     - {fileID: 7782198918990561412, guid: 7326052d9961ce54384a884e802d4af2, type: 3}
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 7104577345102692670, guid: 7326052d9961ce54384a884e802d4af2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6831068288501385446}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7326052d9961ce54384a884e802d4af2, type: 3}
 --- !u!114 &1671786938654654075 stripped

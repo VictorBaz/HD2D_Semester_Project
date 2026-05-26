@@ -25,6 +25,12 @@ public class EnemyWeaponHitbox : BaseHitbox
         if (target.IsInParryWindowPerfect() || target.IsInParryWindow())
         {
             SoundManager.Instance?.PlaySfx(SoundType.Parry_Perfect);
+
+            if (target is PlayerManager player)
+            {
+                player.Context?.VfxManagerPlayer.TriggerParryDone();
+            }
+            
             manager.TakeDamage(damage,Vector3.zero);
         }
         else

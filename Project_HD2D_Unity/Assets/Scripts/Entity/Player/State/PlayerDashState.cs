@@ -27,12 +27,13 @@ namespace Player.State
             
             HandleAnimation(psc);
             psc.Controller.RunRoutine(DashRoutine(psc));
+
+            psc.VfxManagerPlayer.TriggerDashVfx();
         }
 
         public override void ExitState(PlayerStateContext psc)
         {
             psc.AnimationManager.SetDashing(false);
-            psc.VfxManagerPlayer.ToggleDashTrail(false);
             psc.Controller.SetGravity(true);
         }
 
@@ -57,7 +58,6 @@ namespace Player.State
 
             CameraEvents.CameraShake();
             SoundManager.Instance?.PlaySfx(SoundType.Dash);
-            psc.VfxManagerPlayer.ToggleDashTrail(true);
 
             while (elapsed < psc.PlayerData.DashDuration)
             {/*
@@ -100,7 +100,6 @@ namespace Player.State
             psc.Rb.linearVelocity = dashVelocityExit;
             
             DetermineState(psc);
-            psc.VfxManagerPlayer.ToggleDashTrail(false);
         }
     }
 }

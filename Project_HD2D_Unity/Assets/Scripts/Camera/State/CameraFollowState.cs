@@ -6,7 +6,7 @@ public class CameraFollowState : CameraBaseState
 
     public override void UpdateState(CameraStateContext context)
     {
-        Vector3 desiredPosition = context.PlayerTransform.position + context.Offset;
+        Vector3 desiredPosition = context.PlayerTransform.position + context.CurrentSettings.RailOffset;
 
         Vector3 rayOrigin = context.PlayerTransform.position + new Vector3(0, 1f, 0);
         

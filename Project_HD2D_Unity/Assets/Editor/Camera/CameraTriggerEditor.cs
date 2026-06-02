@@ -100,7 +100,7 @@ public class CameraTriggerEditor : Editor
                 break;
 
             case CameraPlayerState.FollowPlayer:
-                EditorGUILayout.HelpBox("Retour au mode Follow classique (Offset Manager).", MessageType.Info);
+                EditorGUILayout.PropertyField(railOffsetProp, new GUIContent("Offset", "Décalage de la caméra par rapport au joueur."));
                 break;
         }
 

@@ -70,8 +70,8 @@ public class InputManager : MonoBehaviour
         
         playerInputAction.Player.Dash.started += ReceiveDash;
 
-        playerInputAction.Player.GiveEnergy.started += ReceiveGiveEnergy;
-        playerInputAction.Player.TakeEnergy.started += ReceiveTakeEnergy;
+        playerInputAction.Player.GiveEnergy.performed += ReceiveGiveEnergy;
+        playerInputAction.Player.TakeEnergy.performed += ReceiveTakeEnergy;
         
         playerInputAction.Player.Carry.started += ReceiveCarry;
         
@@ -103,8 +103,8 @@ public class InputManager : MonoBehaviour
         
         playerInputAction.Player.Dash.started -= ReceiveDash;
         
-        playerInputAction.Player.GiveEnergy.started -= ReceiveGiveEnergy;
-        playerInputAction.Player.TakeEnergy.started -= ReceiveTakeEnergy;
+        playerInputAction.Player.GiveEnergy.performed -= ReceiveGiveEnergy;
+        playerInputAction.Player.TakeEnergy.performed -= ReceiveTakeEnergy;
         
         playerInputAction.Player.Carry.started -= ReceiveCarry;
         
@@ -158,12 +158,18 @@ public class InputManager : MonoBehaviour
 
     private void ReceiveGiveEnergy(InputAction.CallbackContext ctx)
     {
-        OnEnergyGive?.Invoke();
+        if (ctx.control.IsPressed())
+        {
+            OnEnergyGive?.Invoke();
+        }
     }
 
     private void ReceiveTakeEnergy(InputAction.CallbackContext ctx)
     {
-        OnEnergyTake?.Invoke();
+        if (ctx.control.IsPressed())
+        {
+            OnEnergyTake?.Invoke();
+        }
     }
 
     private void ReceiveCarry(InputAction.CallbackContext ctx)

@@ -128,9 +128,15 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 targetVelocity = targetDirection * currentSpeed;
 
-        rb.linearVelocity = OnSlope()
-            ? GetSlopeMoveDirection(targetVelocity)
-            : new Vector3(targetVelocity.x, rb.linearVelocity.y, targetVelocity.z);
+        if (OnSlope())
+        {
+            rb.linearVelocity = GetSlopeMoveDirection(targetVelocity);
+        }
+        else
+        {
+            float yVel = isJumping ? rb.linearVelocity.y : 0f;
+            rb.linearVelocity = new Vector3(targetVelocity.x, yVel, targetVelocity.z);
+        }
     }
 
     private void ApplyAirMovement(Vector2 moveInput)
@@ -208,7 +214,7 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
-    private bool OnSlope()
+    public bool OnSlope()
     {
         if (!Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerData.PlayerHeight * 0.5f + 0.2f, playerData.GroundMask))
             return false;

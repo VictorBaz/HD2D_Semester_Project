@@ -69,6 +69,10 @@ public class UiManager : MonoBehaviour
     [SerializeField] private Image spritePopupImage;
     [SerializeField] private float spriteSwitchInterval = 0.3f; 
     
+    [SerializeField] private Slider masterVolumeSlider;
+    [SerializeField] private Slider musicVolumeSlider;
+    [SerializeField] private Slider sfxVolumeSlider;
+    
     private Sequence spritePopupSequence;
     private Tween spriteAnimationTween;
     private List<Sprite> activePopupSprites;
@@ -120,6 +124,33 @@ public class UiManager : MonoBehaviour
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+    }
+    
+    private void Start()
+    {
+        if (masterVolumeSlider && masterVolumeSlider.TryGetComponent<SliderElementHandler>(out var masterHandler))
+        {
+            masterHandler.OnValueChangedAction = (value) => 
+            {
+                if (SoundManager.Instance) SoundManager.Instance.UpdateMasterVolume(value);
+            };
+        }
+
+        if (musicVolumeSlider && musicVolumeSlider.TryGetComponent<SliderElementHandler>(out var musicHandler))
+        {
+            musicHandler.OnValueChangedAction = (value) => 
+            {
+                if (SoundManager.Instance) SoundManager.Instance.UpdateMusicVolume(value);
+            };
+        }
+
+        if (sfxVolumeSlider && sfxVolumeSlider.TryGetComponent<SliderElementHandler>(out var sfxHandler))
+        {
+            sfxHandler.OnValueChangedAction = (value) => 
+            {
+                if (SoundManager.Instance) SoundManager.Instance.UpdateSfxVolume(value);
+            };
+        }
     }
 
     private void OnEnable()
@@ -460,5 +491,31 @@ public class UiManager : MonoBehaviour
             });
     }
 
+    #endregion
+    
+    #region Settings Audio Callbacks
+    public void OnMasterVolumeChanged(float value)
+    {
+        if (SoundManager.Instance)
+        {
+            SoundManager.Instance.UpdateMasterVolume(value);
+        }
+    }
+
+    public void OnMusicVolumeChanged(float value)
+    {
+        if (SoundManager.Instance)
+        {
+            SoundManager.Instance.UpdateMusicVolume(value);
+        }
+    }
+
+    public void OnSfxVolumeChanged(float value)
+    {
+        if (SoundManager.Instance)
+        {
+            SoundManager.Instance.UpdateSfxVolume(value);
+        }
+    }
     #endregion
 }

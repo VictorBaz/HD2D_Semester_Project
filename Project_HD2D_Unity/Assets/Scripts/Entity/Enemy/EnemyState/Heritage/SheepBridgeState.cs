@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 
 public class SheepBridgeState : EnemyBaseState
 {
@@ -39,6 +40,15 @@ public class SheepBridgeState : EnemyBaseState
     {
         UpdateTimer(context);
         ApplyBlinkEffect(context);
+
+        if (!Physics.Raycast(context.Manager.transform.position,
+                Vector3.down,
+                context.Data.GroundCheckDistance,
+                1 << LayerMask.NameToLayer("Water"),
+                QueryTriggerInteraction.Collide))
+        {
+            context.TransitionTo(context.Manager.DropState);
+        }
     }
 
     private void UpdateTimer(EnemyContext context)

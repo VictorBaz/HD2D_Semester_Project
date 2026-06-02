@@ -143,7 +143,7 @@ namespace Player.State
                 if (damageable == null || hitThisCombo.Contains(damageable)) continue;
 
                 if (damageable is IDamageableEnemy enemy)
-                    enemy.TakeDamage(2, psc.PlayerTransform.forward, comboIndex);
+                    enemy.TakeDamageIndex(2, psc.PlayerTransform.forward, comboIndex);
                 else
                     damageable.TakeDamage(2, psc.PlayerTransform.forward);
 

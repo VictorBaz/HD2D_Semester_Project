@@ -58,6 +58,23 @@ public class UiManager : MonoBehaviour
 
     [Header("Pop Up")]
     [SerializeField] private CanvasGroup popupGroup;
+    
+    [Header("Area Notification")]
+    [SerializeField] private CanvasGroup areaPanelGroup;
+    [SerializeField] private TMP_Text areaNameText;
+    [SerializeField] private float areaDisplayDuration = 2f;
+    
+    [Header("Sprite Popup Settings")]
+    [SerializeField] private CanvasGroup spritePopupGroup;
+    [SerializeField] private Image spritePopupImage;
+    [SerializeField] private float spriteSwitchInterval = 0.3f; 
+    
+    private Sequence spritePopupSequence;
+    private Tween spriteAnimationTween;
+    private List<Sprite> activePopupSprites;
+    private int currentSpriteIndex;
+    
+    private Sequence areaSequence;
     private Sequence popupSequence;
 
     private float openLeftPanelX;
@@ -115,6 +132,9 @@ public class UiManager : MonoBehaviour
         EventManager.OnLoadingStarted += HandleLoadingStarted;
         EventManager.OnLoadingFinished += HandleLoadingFinished;
         UiEvents.OnShowPopup += ShowPopup;
+        UiEvents.OnShowArea += ShowAreaNotification;
+        UiEvents.OnShowSpritePopup += HandleShowSpritePopup;
+        UiEvents.OnHideSpritePopup += HandleHideSpritePopup;
     }
 
     private void OnDisable()
@@ -127,6 +147,9 @@ public class UiManager : MonoBehaviour
         EventManager.OnLoadingStarted -= HandleLoadingStarted;
         EventManager.OnLoadingFinished -= HandleLoadingFinished;
         UiEvents.OnShowPopup -= ShowPopup;
+        UiEvents.OnShowArea -= ShowAreaNotification;
+        UiEvents.OnShowSpritePopup -= HandleShowSpritePopup;
+        UiEvents.OnHideSpritePopup -= HandleHideSpritePopup;
     }
 
     private void OnDestroy()
@@ -340,6 +363,30 @@ public class UiManager : MonoBehaviour
         SoundManager.Instance?.PlaySfx(SoundType.Pop_Up);
     }
 
+    private void ShowAreaNotification(string areaName)
+    {
+        if (areaPanelGroup == null || areaNameText == null) return;
+
+        areaSequence?.Kill();
+        areaNameText.text = areaName;
+
+        areaPanelGroup.alpha = 0f;
+        areaNameText.transform.localScale = Vector3.one * 0.9f; 
+        areaPanelGroup.gameObject.SetActive(true);
+
+        areaSequence = DOTween.Sequence();
+
+        areaSequence.Append(areaPanelGroup.DOFade(1f, 1.2f).SetEase(Ease.OutSine))
+            .Join(areaNameText.transform.DOScale(1f, 1.2f).SetEase(Ease.OutSine));
+
+        areaSequence.AppendInterval(areaDisplayDuration);
+
+        areaSequence.Append(areaPanelGroup.DOFade(0f, 1.2f).SetEase(Ease.InSine))
+            .Join(areaNameText.transform.DOScale(0.9f, 1.2f).SetEase(Ease.InSine));
+    
+        areaSequence.OnComplete(() => areaPanelGroup.gameObject.SetActive(false));
+    }
+
     #endregion
 
     #region Life UI
@@ -356,6 +403,61 @@ public class UiManager : MonoBehaviour
     {
         this.UpdateSlider(lifeSlider, value, 0.5f);
         this.UpdateSlider(lifeSliderBackground, value, 0.7f);
+    }
+
+    #endregion
+
+    #region Tutorial UI
+
+    private void HandleShowSpritePopup(List<Sprite> sprites)
+    {
+        if (spritePopupGroup == null || spritePopupImage == null) return;
+
+        activePopupSprites = sprites;
+        currentSpriteIndex = 0;
+
+        spritePopupImage.sprite = activePopupSprites[0];
+        spritePopupGroup.DOKill();
+        spritePopupSequence?.Kill();
+        spriteAnimationTween?.Kill();
+
+        spritePopupGroup.gameObject.SetActive(true);
+
+        spritePopupGroup.alpha = 0f;
+        spritePopupGroup.transform.localScale = Vector3.one * 0.8f;
+
+        spritePopupSequence = DOTween.Sequence()
+            .Append(spritePopupGroup.DOFade(1f, transitionDuration).SetEase(Ease.OutQuad))
+            .Join(spritePopupGroup.transform.DOScale(1f, transitionDuration).SetEase(Ease.OutBack))
+            .OnComplete(StartSpriteAnimation);
+        
+    }
+
+    private void HandleHideSpritePopup()
+    {
+        if (spritePopupGroup == null) return;
+
+        spritePopupGroup.DOKill();
+        spritePopupSequence?.Kill();
+        spriteAnimationTween?.Kill();
+
+        spritePopupSequence = DOTween.Sequence()
+            .Append(spritePopupGroup.DOFade(0f, transitionDuration).SetEase(Ease.InQuad))
+            .Join(spritePopupGroup.transform.DOScale(0.8f, transitionDuration).SetEase(Ease.InQuad))
+            .OnComplete(() => spritePopupGroup.gameObject.SetActive(false));
+    }
+
+    private void StartSpriteAnimation()
+    {
+        if (activePopupSprites == null || activePopupSprites.Count <= 1) return;
+
+        spriteAnimationTween = DOVirtual.Float(0, 1, spriteSwitchInterval, (value) => { })
+            .SetLoops(-1, LoopType.Restart)
+            .OnStepComplete(() =>
+            {
+                currentSpriteIndex = (currentSpriteIndex + 1) % activePopupSprites.Count;
+                spritePopupImage.sprite = activePopupSprites[currentSpriteIndex];
+            });
     }
 
     #endregion

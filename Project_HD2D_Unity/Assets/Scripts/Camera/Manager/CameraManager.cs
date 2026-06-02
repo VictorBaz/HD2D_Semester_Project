@@ -29,6 +29,8 @@ public class CameraManager : MonoBehaviour
 
     private void Awake()
     {
+        CameraEvents.RequestGetCameraTransform = CameraTransform;
+        
         context = new CameraStateContext
         {
             Manager = this,
@@ -40,6 +42,11 @@ public class CameraManager : MonoBehaviour
         };
 
         TransitionTo(ConvertEnumToState(startingState), null);
+    }
+
+    private void OnDestroy()
+    {
+        CameraEvents.RequestGetCameraTransform = null;
     }
 
     private void OnEnable() => CameraEvents.OnCameraTrigger += OnCameraTrigger;
@@ -95,4 +102,5 @@ public class CameraManager : MonoBehaviour
     }
     
     public float RotationSmoothTime => rotationSmoothTime;
+    public Transform CameraTransform() => cameraTransform;
 }

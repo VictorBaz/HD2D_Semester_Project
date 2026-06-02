@@ -15,12 +15,18 @@ public class VfxManagerPlayer : VfxManagerBase
     [SerializeField] private Renderer rendererShield;
     
     [Header("Energy Settings")]
-    [SerializeField] private EnergyTrace energyLink;
+    [SerializeField] private EnergyTrace energyTrace;
+    public EnergyTrace EnergyTrace => energyTrace;
+
+    [Header("Standalone Particles")]
+    [SerializeField] private ParticleSystem psJump;
+    [SerializeField] private ParticleSystem psParry;
 
     private MaterialPropertyBlock _propBlockShield;
     private Coroutine _shieldCoroutine;
     private static readonly int ProgressionId = Shader.PropertyToID("_Progression");
     
+    private Vector3 _localOffsetParry;
 
     private void Awake()
     {
@@ -36,6 +42,17 @@ public class VfxManagerPlayer : VfxManagerBase
         }
         
         LinkVfx(false);
+
+        if (psParry != null)
+        {
+            _localOffsetParry = psParry.transform.localPosition;
+            psParry.transform.SetParent(null);
+        }
+
+        if (psJump != null)
+        {
+            psJump.transform.SetParent(null);
+        }
     }
 
     #region Dash
@@ -51,7 +68,6 @@ public class VfxManagerPlayer : VfxManagerBase
     {
         if (attackComboFxs == null || index < 0 || index >= attackComboFxs.Length)
         {
-            Debug.LogWarning($"[VfxManager] Index de combo invalide : {index}");
             return;
         }
 
@@ -66,7 +82,6 @@ public class VfxManagerPlayer : VfxManagerBase
         }
     }
 
-
     private void ClearAllComboFxs()
     {
         if (attackComboFxs == null) return;
@@ -78,14 +93,13 @@ public class VfxManagerPlayer : VfxManagerBase
             foreach (var ps in attackFx.particleSystems)
             {
                 if (ps != null) 
-                    StopParticleSystem(ps,true);
+                    StopParticleSystem(ps, true);
             }
         }
     }
     #endregion
 
     #region Shield
-    
     public void CancelShield()
     {
         if (_shieldCoroutine != null)
@@ -94,7 +108,6 @@ public class VfxManagerPlayer : VfxManagerBase
         _propBlockShield.SetFloat(ProgressionId, 1f);
         rendererShield.SetPropertyBlock(_propBlockShield);
     }
-
 
     public void PlayParryVfx(float totalDuration, float pivotTime)
     {
@@ -140,25 +153,52 @@ public class VfxManagerPlayer : VfxManagerBase
     #endregion
 
     #region Link Vfx
-
     public void LinkVfx(bool isOn, Transform target = null)
     {
-        if (energyLink == null ) return;
+        if (!energyTrace) return;
 
-        if (target == null)
+        energyTrace.SetStaticEmittersActive(isOn);
+        
+        if (!target)
         {
-            energyLink.gameObject.SetActive(false);
+            energyTrace.line.enabled = false;
             return;
         }
         
-        energyLink.gameObject.SetActive(isOn);
+        energyTrace.line.enabled = isOn;
+        energyTrace.startPoint = isOn ? energyTrace.transform : null;
+        energyTrace.endPoint = isOn ? target : null;
+    }
+    #endregion
+    
+    public void UpdateLinkVisuals(bool parasite) => energyTrace?.SetParasiteMode(parasite);
+    public void EffectAddEnergy() => energyTrace?.TriggerTraceFollow(0.5f, false);
+    public void EffectRemoveEnergy() => energyTrace?.TriggerTraceFollow(0.5f, true);
 
-        energyLink.startPoint = isOn ? energyLink.transform : null;
-        energyLink.endPoint = isOn ? target : null;
+    public void TriggerParticleJump(Vector3 position)
+    {
+        if (psJump == null) return;
+
+        if (psJump.IsAlive())
+            psJump.StopParticleSystem(true);
+        
+        psJump.transform.position = position;
+        psJump.TriggerParticleSystem();
     }
 
-    #endregion
+    public void TriggerParryDone()
+    {
+        if (psParry == null) return;
 
+        if (psParry.IsAlive())
+            psParry.StopParticleSystem(true);
+
+        psParry.transform.position = transform.TransformPoint(_localOffsetParry);
+        float playerYAngle = transform.eulerAngles.y;
+        float angleYOffset = 180f; 
+        psParry.transform.rotation = Quaternion.Euler(0f, playerYAngle + angleYOffset, -90f);
+        psParry.TriggerParticleSystem();
+    }
 }
 
 [Serializable]

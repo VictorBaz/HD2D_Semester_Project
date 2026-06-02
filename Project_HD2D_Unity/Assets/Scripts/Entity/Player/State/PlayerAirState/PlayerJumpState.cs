@@ -23,6 +23,11 @@ public class PlayerJumpState : PlayerInAirBase
 
         psc.AnimationManager.TriggerJump();
         psc.AnimationManager.SetFalling(false);
+
+        Vector3 offsetVfxJump = new Vector3(0, psc.PlayerData.PlayerHeight/2, 0);
+
+        psc.VfxManagerPlayer.TriggerParticleJump(
+            psc.StateMachine.transform.position - offsetVfxJump);
     }
 
     public override void ExitState(PlayerStateContext psc)

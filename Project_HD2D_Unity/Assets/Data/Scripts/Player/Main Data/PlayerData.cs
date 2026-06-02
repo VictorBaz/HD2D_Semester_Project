@@ -42,6 +42,7 @@ public class MovementSettings
     public float GroundCheckDistance = 0.2f;
     public float PlayerHeight = 2f;
     public float MaxSlopeAngle = 45f;
+    public LayerMask PlayerLayer;
 }
 
 [System.Serializable]
@@ -118,7 +119,6 @@ public class ResourceSettings
     public int StartingEnergy = 0;
     public int StartingSap = 0;
     public int MaxSap = 3;
-    public LayerMask SapLayerMask;
 }
 
 [System.Serializable]
@@ -161,6 +161,7 @@ public class PlayerDataInstance
     public float PlayerHeight;
     public float MaxSlopeAngle;
     public float CoyoteTime;
+    public LayerMask PlayerLayer;
     
     public LayerMask LayerEnemy;
     public CombatHitData[] ComboHits;
@@ -196,8 +197,7 @@ public class PlayerDataInstance
     public int MaxLife;
     public int Energy;
     public int MaxEnergy;
-
-    public LayerMask SapLayerMask;
+    
     public int Sap;
     public int MaxSap;
 
@@ -246,6 +246,7 @@ public class PlayerDataInstance
         CarryAngle = data.Abilities.CarryAngle;
         CarryLayer = data.Abilities.CarryLayer;
         EjectionForce = data.Abilities.EjectionForce;
+        PlayerLayer = data.Movement.PlayerLayer;
 
         MaxLife = data.Resources.MaxLife;
         MaxEnergy = data.Resources.MaxEnergy;
@@ -253,7 +254,6 @@ public class PlayerDataInstance
         Energy = data.Resources.StartingEnergy;
         Sap = data.Resources.StartingSap;
         MaxSap = data.Resources.MaxSap;
-        SapLayerMask = data.Resources.SapLayerMask;
     }
 
     public bool IsSapEmpty() => Sap <= 0;

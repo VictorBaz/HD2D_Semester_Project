@@ -251,7 +251,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
 
     #region IDamageable
 
-    public virtual void TakeDamage(int damage, Vector3 hitDirection, int attackType)
+    public virtual void TakeDamageIndex(int damage, Vector3 hitDirection, int attackType)
     {
         if (isInRecover || CurrentState is { CanTakeDamage: false })
         {
@@ -265,9 +265,11 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
 
         bool isHeavyAttack = (attackType == 2); 
 
+        
         if (isHeavyAttack || context.Data.IsKoFull())
         {
             ChangeState(HitState);
+            GamepadVibrationHelper.Vibrate(0.15f,0.5f,0.25f);
             return;
         }
 
@@ -280,6 +282,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
         context.Data.CurrentKo += value;
         OnTakeDamage?.Invoke();
         ChangeState(HitState);
+        VfxManager.PlayHitVfx();
     }
 
     public Transform GetTransform()          => transform;
@@ -294,7 +297,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
 
     public virtual void HandleParry()
     {
-        ChangeState(ExposedState);
+        
     }
 
     public virtual void HandlePerfectParry()

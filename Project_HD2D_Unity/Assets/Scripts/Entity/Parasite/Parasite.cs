@@ -26,7 +26,7 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     
     [Header("Achievement")]
     private SteamAchivementManager ACHManager;
-    [SerializeField] private string normalAchievementId = "ACH_KILLED_PARASITE";
+    private string normalAchievementId = "ACH_KILLED_PARASITE";
     [SerializeField] private string BossAchievementId = "ACH_LVL_0";
     
     [Header("Animation")]

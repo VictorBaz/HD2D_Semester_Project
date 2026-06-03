@@ -1,8 +1,6 @@
 using System;
 using UnityEngine;
 using System.Collections;
-using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
 
 public class Puzzle : MonoBehaviour
 {
@@ -21,24 +19,18 @@ public class Puzzle : MonoBehaviour
     [Header("Visual Evolution")] 
     public PuzzleVisuals visuals = new();
 
-    [Header("Post Process")]
-    [SerializeField] private Volume localVolume;
-    [SerializeField] private float fadeDuration = 0.5f;
+    [Header("Linked Components")]
+    [Tooltip("Le contrôleur externe qui gère le fondu du Post-Process")]
+    [SerializeField] private VolumeFadeController volumeFadeController;
 
     private bool _isAlreadyCompleted = false;
-    private Coroutine _volumeFadeCoroutine;
+    public bool IsAlreadyCompleted => _isAlreadyCompleted;
     #endregion
 
     #region Unity Lifecycle
     private void Awake()
     {
         visuals.Initialize();
-
-        if (localVolume != null)
-        {
-            localVolume.isGlobal = false;
-            localVolume.weight = 0f;
-        }
     }
 
     private void OnEnable()
@@ -56,7 +48,6 @@ public class Puzzle : MonoBehaviour
             bossParasite.OnDeath -= HandleBossDeath;
         }
     }
-    
     #endregion
 
     #region Logic
@@ -68,10 +59,9 @@ public class Puzzle : MonoBehaviour
         {
             visuals.ApplyProgress(0f);
             
-            if (localVolume != null)
+            if (volumeFadeController != null)
             {
-                localVolume.isGlobal = false;
-                localVolume.weight = 0f;
+                volumeFadeController.SetInstantWeight(0f, false);
             }
 
             if (bossParasite != null)
@@ -92,7 +82,10 @@ public class Puzzle : MonoBehaviour
     {
         _isAlreadyCompleted = true;
         
-        TriggerVolumeFade(0f);
+        if (volumeFadeController != null)
+        {
+            volumeFadeController.TriggerVolumeFade(0f);
+        }
 
         StartCoroutine(AnimateEnvironment());
         GameplayEvents.TriggerPuzzleCompleted(puzzleID);
@@ -110,67 +103,16 @@ public class Puzzle : MonoBehaviour
         }
         visuals.ApplyProgress(0f);
     }
-
-    private void TriggerVolumeFade(float targetWeight)
-    {
-        if (localVolume == null) return;
-
-        if (_volumeFadeCoroutine != null)
-        {
-            StopCoroutine(_volumeFadeCoroutine);
-        }
-        _volumeFadeCoroutine = StartCoroutine(FadeVolumeWeightRoutine(targetWeight));
-    }
-
-    private IEnumerator FadeVolumeWeightRoutine(float targetWeight)
-    {
-        float elapsed = 0f;
-        float startWeight = localVolume.weight;
-
-        if (targetWeight > 0f)
-        {
-            localVolume.isGlobal = true;
-        }
-
-        while (elapsed < fadeDuration)
-        {
-            elapsed += Time.deltaTime;
-            localVolume.weight = Mathf.Lerp(startWeight, targetWeight, elapsed / fadeDuration);
-            yield return null;
-        }
-
-        localVolume.weight = targetWeight;
-
-        if (targetWeight <= 0f)
-        {
-            localVolume.isGlobal = false;
-        }
-
-        _volumeFadeCoroutine = null;
-    }
     #endregion
 
-    #region Triggers
-    private void OnTriggerEnter(Collider other)
+    #region Volume Controller Communication
+    public void NotifyPlayerEnter()
     {
-        Debug.Log("A");
-        if (_isAlreadyCompleted) return;
-        Debug.Log("B");
-        if (!other.CompareTag(GameConstants.PLAYER_TAG)) return;
-        Debug.Log("C");
-        
-        TriggerVolumeFade(1f);
-
         GameplayEvents.TriggerPuzzleVisited(puzzleID);
     }
 
-    private void OnTriggerExit(Collider other)
+    public void NotifyPlayerExit()
     {
-        if (_isAlreadyCompleted) return;
-
-        if (!other.CompareTag(GameConstants.PLAYER_TAG)) return;
-
-        TriggerVolumeFade(0f);
     }
     #endregion
 }

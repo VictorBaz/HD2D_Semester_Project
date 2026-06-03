@@ -8,6 +8,7 @@ public class EnemyWeaponHitbox : BaseHitbox
     [SerializeField] private EnemyBaseManager manager;
     [SerializeField] private int    damage    = 10;
     [SerializeField] private string targetTag = "Player";
+    [SerializeField] private int damageParry = 10;
 
     private List<IDamageable> alreadyHitTargets = new();
 
@@ -35,7 +36,7 @@ public class EnemyWeaponHitbox : BaseHitbox
         }
         else
         {
-            target.TakeDamage(damage, transform.forward);
+            target.TakeDamage(damageParry, transform.forward);
             alreadyHitTargets.Add(target);
         }
     }

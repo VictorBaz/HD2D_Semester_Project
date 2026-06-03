@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Script.Manager;
 using UnityEngine;
 using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
 {
@@ -22,6 +23,11 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     
     private PlayerStateContext playerContext;
     private bool isDead;
+    
+    [Header("Achievement")]
+    private SteamAchivementManager ACHManager;
+    [SerializeField] private string normalAchievementId = "ACH_KILLED_PARASITE";
+    [SerializeField] private string BossAchievementId = "ACH_LVL_0";
     
     [Header("Animation")]
     [SerializeField] private Animator animatorParasite;
@@ -44,7 +50,13 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     #endregion
 
     #region Unity Lifecycle
-    private void Start() => Init();
+    
+    private void Start()
+    {
+        Init();
+        
+        ACHManager = Object.FindFirstObjectByType<SteamAchivementManager>();
+    }
     #endregion
 
     #region Initialization
@@ -107,6 +119,7 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
         if (life <= 0)
         {
             if (bossLifeSlider != null) bossLifeSlider.gameObject.SetActive(false);
+            ACH_Unlock();
             Die();
         }
         else
@@ -133,7 +146,7 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     {
         float realDuration = animationClipDeath.length / deathAnimationSpeed;
         float elapsed = 0;
-
+        
         while (elapsed < realDuration)
         {
             elapsed += Time.deltaTime;
@@ -141,7 +154,7 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
             SetDissolve(progress);
             yield return null;
         }
-
+        
         Destroy(gameObject);
     }
     
@@ -152,6 +165,28 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
         _propBlock.SetFloat(DissolveHash, value);
         skinnedRenderer.SetPropertyBlock(_propBlock);
     }
+    
+    void ACH_Unlock()
+    {
+        if (ACHManager == null)
+            return;
+        if (isBoss)
+        {
+            if (!ACHManager.IsThisAchievementUnlocked(BossAchievementId))
+            {
+                ACHManager.UnlockAchivement(BossAchievementId);
+            }
+        }
+        else
+        {
+            if (!ACHManager.IsThisAchievementUnlocked(normalAchievementId))
+            {
+                ACHManager.UnlockAchivement(normalAchievementId);
+            }
+        }
+        
+    }
+    
     #endregion
 
     #region Save

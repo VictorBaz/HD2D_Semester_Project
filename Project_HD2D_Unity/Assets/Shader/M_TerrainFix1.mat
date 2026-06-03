@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_SplattingBase
+  m_Name: M_TerrainFix1
   m_Shader: {fileID: -6465566751694194690, guid: 532d5c034fa4d614d9156a2d130aca91, type: 3}
   m_Parent: {fileID: -876546973899608171, guid: 532d5c034fa4d614d9156a2d130aca91, type: 3}
   m_ModifiedSerializedProperties: 0
@@ -33,7 +33,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _AC_SmoothHeight:
-        m_Texture: {fileID: 2800000, guid: c2eee3b64dba9e344813cdb97f210c66, type: 3}
+        m_Texture: {fileID: 2800000, guid: 25d9142c0ed074d4bac73be8c47c310d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _BC_Diffuse:
@@ -57,7 +57,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _GC_Normal:
-        m_Texture: {fileID: 2800000, guid: 0a4a893a963c8f84593aa3fd8d8d5579, type: 3}
+        m_Texture: {fileID: 2800000, guid: a8f1849520f53c340aeb79e68f166a51, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _GC_SmoothHeight:
@@ -81,22 +81,23 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SplatingMap:
-        m_Texture: {fileID: 2800000, guid: 48d67bc5b7ab17148864aca4c7252108, type: 3}
+        m_Texture: {fileID: 2800000, guid: 09c8a23dd037ca848a1e8f118e18626d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AC_TillingSize: 0.3
-    - _BC_TillingSize: 29.6
-    - _Corupt: -1.95
-    - _GC_TillingSize: 22.8
+    - _AC_TillingSize: 0.2
+    - _BC_TillingSize: 58.6
+    - _Corrupt: 0
+    - _Corupt: 1
+    - _GC_TillingSize: 20
     - _NormalStrengh: 1
     - _QueueControl: 0
-    - _RC_TillingSize: 17.5
+    - _RC_TillingSize: 5.96
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1
---- !u!114 &2150857966629528810
+--- !u!114 &3060190259028785514
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}

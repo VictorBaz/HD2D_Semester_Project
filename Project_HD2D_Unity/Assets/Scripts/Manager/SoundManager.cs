@@ -43,6 +43,8 @@ namespace Script.Manager
             ConfigureSource(musicSource, musicMixerGroup);
         }
         #endregion
+        
+        
 
         private void ConfigureSource(AudioSource source, AudioMixerGroup group)
         {
@@ -188,11 +190,26 @@ namespace Script.Manager
         }
         #endregion
 
+        #region Volume Control
         public void UpdateMasterVolume(float volume)
         {
             masterVolume = volume;
-            if (musicSource != null) musicSource.volume = masterVolume;
-            if (sfxSource != null) sfxSource.volume = masterVolume;
+            if (musicSource) musicSource.volume = masterVolume;
+            if (sfxSource) sfxSource.volume = masterVolume;
         }
+
+        public void UpdateMusicVolume(float volume)
+        {
+            if (musicSource) musicSource.volume = volume * masterVolume;
+        }
+
+        public void UpdateSfxVolume(float volume)
+        {
+            if (sfxSource) sfxSource.volume = volume * masterVolume;
+            
+            foreach (var source in loopingSources.Values)
+                if (source) source.volume = volume * masterVolume;
+        }
+        #endregion
     }
 }

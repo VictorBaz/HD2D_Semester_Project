@@ -244,6 +244,7 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     private IEnumerator PlayerRespawn(bool isDead)
     {
         playerController.enabled = false;
+        
 
         yield return StartCoroutine(UiManager.Instance.FadeBlackScreen(1f, 0.5f));
 

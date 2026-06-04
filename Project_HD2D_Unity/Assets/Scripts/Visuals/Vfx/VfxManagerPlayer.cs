@@ -67,7 +67,7 @@ public class VfxManagerPlayer : VfxManagerBase
         if (psDash == null) return;
 
         float playerYAngle = transform.eulerAngles.y;
-        float angleYOffset = 180f; 
+        float angleYOffset = 0; 
         
         psDash.transform.rotation = Quaternion.Euler(-90f, playerYAngle + angleYOffset, 0);
         

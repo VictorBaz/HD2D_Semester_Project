@@ -13,7 +13,11 @@ public class DestructibleElement : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private float explosionForce = 500f;
     [SerializeField] private float explosionRadius = 2f;
-    [SerializeField] private float dissolutionDuration = 1.0f; 
+    [SerializeField] private float dissolutionDuration = 1.0f;
+    
+    [Header("Achievement")]
+    private SteamAchivementManager ACHManager;
+    private string achievementId = "ACH_WALLBREAK";
     
     [Header("Events")]
     [SerializeField] private UnityEvent onDestructionEvent;
@@ -28,6 +32,8 @@ public class DestructibleElement : MonoBehaviour
         if (intactVisual) intactVisual.SetActive(true);
         if (fracturedParent) fracturedParent.SetActive(false);
         block = new MaterialPropertyBlock();
+        
+        ACHManager = SteamAchivementManager.Instance;
     }
 
     private void TriggerDestruction()
@@ -47,6 +53,8 @@ public class DestructibleElement : MonoBehaviour
 
         onDestructionEvent?.Invoke();
         
+        ACH_Unlock();
+        
         GamepadVibrationHelper.Vibrate(0.15f,0.5f,0.25f);
         
         StartCoroutine(UpdateMpIe(dissolutionDuration));
@@ -60,6 +68,17 @@ public class DestructibleElement : MonoBehaviour
         if (!collision.gameObject.CompareTag("Enemy")) return;
         if (!collision.gameObject.TryGetComponent<EnemyBaseManager>(out var enemy)) return;
         if (enemy.CurrentState is EnemyDropState) TriggerDestruction();
+    }
+    
+    void ACH_Unlock()
+    {
+        if (ACHManager == null)
+            return;
+        
+        if (!ACHManager.IsThisAchievementUnlocked(achievementId))
+        {
+            ACHManager.UnlockAchivement(achievementId);
+        }
     }
 
     private IEnumerator UpdateMpIe(float duration)

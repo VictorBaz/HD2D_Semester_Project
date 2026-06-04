@@ -11,9 +11,16 @@ public class SheepBridgeState : EnemyBaseState
     private const float minFrequency = 1.5f;
     private const float maxFrequency = 25f;
     private const float maxIntensity = 5f; 
+    
+    private SteamAchivementManager ACHManager;
+    private string achievementId = "ACH_SHEEP_IN_WATER";
 
     public override void EnterState(EnemyContext context)
     {
+        
+        ACHManager = SteamAchivementManager.Instance;
+        ACH_Unlock();
+        
         context.VfxManager.StopKoVfx();
         
         if (!sheepManager) sheepManager = context.Manager as EnemySheepManager;
@@ -79,6 +86,17 @@ public class SheepBridgeState : EnemyBaseState
         context.SetVisualParam(GameConstants.PARAM_SHEEP_SHADER_NAME, 0f, GameConstants.INDEX_MATERIAL_PULSE);
         
         sheepManager?.ResetEnemy();
+    }
+    
+    void ACH_Unlock()
+    {
+        if (ACHManager == null)
+            return;
+        
+        if (!ACHManager.IsThisAchievementUnlocked(achievementId))
+        {
+            ACHManager.UnlockAchivement(achievementId);
+        }
     }
 
     public override void ExitState(EnemyContext context)

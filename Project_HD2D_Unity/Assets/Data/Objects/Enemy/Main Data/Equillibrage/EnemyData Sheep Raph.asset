@@ -14,33 +14,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   Navigation:
     PatrolSpeed: 2
-    ChaseSpeed: 4
-    Acceleration: 8
-    StoppingDistance: 1.5
+    ChaseSpeed: 5
+    Acceleration: 9
+    StoppingDistance: 1
     SearchDuration: 10
     SearchRadius: 5
-    RotationSpeed: 10
+    RotationSpeed: 25
     GroundCheckDistance: 1.2
     NavmeshCheckDistance: 0.5
   Attack:
-    AttackCooldown: 1
+    AttackCooldown: 1.2
     HitboxActiveDuration: 0.2
-    AttackDashSpeed: 7
-    AttackDashDuration: 0.25
+    AttackDashSpeed: 9
+    AttackDashDuration: 0.4
     AttackJumpForce: 700
     GroundDetectionDistance: 1.06
     NavMeshSampleMargin: 1
-    LandingStunDuration: 0.3
+    LandingStunDuration: 0
     ShockwaveActiveDuration: 0.3
-    AttackRange: 6
+    AttackRange: 20
     ChargeAnimationClip: {fileID: 7400000, guid: 147aa1aac382cca40b8b97966e9ff0fc, type: 2}
     AttackAnimationClip: {fileID: 7400000, guid: db369a4dd560bb741869d67264f4d613, type: 2}
   Status:
     MaxKo: 12
     KoTimeMax: 10
-    EjectForce: 5
+    EjectForce: 4
     StunDuration: 0.35
-    ExposedTime: 2.5
+    ExposedTime: 1
   Visuals:
     SpriteSearch: {fileID: 21300000, guid: c9ec8811a41c4634aa26eed1a1d8145d, type: 3}
     SpriteAttackStart: {fileID: 21300000, guid: fabf2f4058fb498408b6d6518d6c8e98, type: 3}

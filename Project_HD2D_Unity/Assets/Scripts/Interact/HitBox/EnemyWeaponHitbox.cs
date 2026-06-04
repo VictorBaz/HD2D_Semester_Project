@@ -32,11 +32,11 @@ public class EnemyWeaponHitbox : BaseHitbox
                 player.Context?.VfxManagerPlayer.TriggerParryDone();
             }
             
-            manager.TakeDamage(damage,Vector3.zero);
+            manager.TakeDamage(damageParry,Vector3.zero);
         }
         else
         {
-            target.TakeDamage(damageParry, transform.forward);
+            target.TakeDamage(damage, transform.forward);
             alreadyHitTargets.Add(target);
         }
     }

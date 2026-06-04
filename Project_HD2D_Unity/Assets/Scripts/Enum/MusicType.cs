@@ -1,4 +1,9 @@
 ﻿public enum MusicType
 {
-    None, Menu, Puzzle_Calm, Combat_Dynamic, Level_End, GameOver, Boss_Fight, Tutorial
+    None,
+    Menu,
+    Main,
+    Fight_1,
+    Fight_2,
+    Victory
 }

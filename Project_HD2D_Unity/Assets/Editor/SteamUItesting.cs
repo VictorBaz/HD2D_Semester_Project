@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEngine;
 using System;
 using Steamworks;
@@ -42,3 +43,4 @@ public class SteamManagerEditor : Editor
         }
     }
 }
+#endif

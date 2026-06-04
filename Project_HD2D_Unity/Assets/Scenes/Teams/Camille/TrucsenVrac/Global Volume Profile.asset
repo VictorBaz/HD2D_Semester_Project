@@ -15,13 +15,13 @@ MonoBehaviour:
   active: 1
   shadows:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 0.98021203, z: 0.33582568, w: 0.058091287}
+    m_Value: {x: 0.87292576, y: 0.97725177, z: 1, w: 0.13144092}
   midtones:
     m_OverrideState: 1
-    m_Value: {x: 0.9966353, y: 1, z: 0.9121291, w: 0.00451717}
+    m_Value: {x: 0.9865137, y: 0.96396834, z: 1, w: 0.00451717}
   highlights:
-    m_OverrideState: 1
-    m_Value: {x: 0.9566064, y: 1, z: 0.99432975, w: 0.10788381}
+    m_OverrideState: 0
+    m_Value: {x: 0.9506334, y: 1, z: 0.9671051, w: -0.014365596}
   shadowsStart:
     m_OverrideState: 1
     m_Value: 0
@@ -49,19 +49,19 @@ MonoBehaviour:
   active: 1
   postExposure:
     m_OverrideState: 1
-    m_Value: -0.56
+    m_Value: -1.09
   contrast:
     m_OverrideState: 1
-    m_Value: -40.7
+    m_Value: -37
   colorFilter:
     m_OverrideState: 0
     m_Value: {r: 0.9150943, g: 0.9150943, b: 0.9150943, a: 1}
   hueShift:
-    m_OverrideState: 1
-    m_Value: -0
+    m_OverrideState: 0
+    m_Value: 15
   saturation:
     m_OverrideState: 1
-    m_Value: 22.9
+    m_Value: 59
 --- !u!114 &-6965637757005604261
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -74,7 +74,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b2db86121404754db890f4c8dfe81b2, type: 3}
   m_Name: Bloom
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.Bloom
-  active: 1
+  active: 0
   skipIterations:
     m_OverrideState: 0
     m_Value: 1
@@ -155,10 +155,10 @@ MonoBehaviour:
   active: 1
   temperature:
     m_OverrideState: 1
-    m_Value: -48.3
+    m_Value: 7
   tint:
     m_OverrideState: 1
-    m_Value: -19.2
+    m_Value: 45
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,7 +183,6 @@ MonoBehaviour:
   - {fileID: 2177284050584253366}
   - {fileID: -6965637757005604261}
   - {fileID: 1101847210945414695}
-  - {fileID: 2205947097257458061}
 --- !u!114 &333696743060625789
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -196,7 +195,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97c23e3b12dc18c42a140437e53d3951, type: 3}
   m_Name: Tonemapping
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.Tonemapping
-  active: 1
+  active: 0
   mode:
     m_OverrideState: 1
     m_Value: 2
@@ -261,7 +260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdfbdbb87d3286943a057f7791b43141, type: 3}
   m_Name: ChannelMixer
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.ChannelMixer
-  active: 1
+  active: 0
   redOutRedIn:
     m_OverrideState: 1
     m_Value: 111
@@ -310,53 +309,7 @@ MonoBehaviour:
     m_Value: {r: 0.5454343, g: 0.9716981, b: 0.8413822, a: 1}
   balance:
     m_OverrideState: 1
-    m_Value: 28
---- !u!114 &2205947097257458061
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c01700fd266d6914ababb731e09af2eb, type: 3}
-  m_Name: DepthOfField
-  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.DepthOfField
-  active: 0
-  mode:
-    m_OverrideState: 1
-    m_Value: 1
-  gaussianStart:
-    m_OverrideState: 1
-    m_Value: 3.82
-  gaussianEnd:
-    m_OverrideState: 1
-    m_Value: 30
-  gaussianMaxRadius:
-    m_OverrideState: 1
-    m_Value: 0.63
-  highQualitySampling:
-    m_OverrideState: 0
-    m_Value: 0
-  focusDistance:
-    m_OverrideState: 0
-    m_Value: 10
-  aperture:
-    m_OverrideState: 0
-    m_Value: 5.6
-  focalLength:
-    m_OverrideState: 0
-    m_Value: 50
-  bladeCount:
-    m_OverrideState: 0
-    m_Value: 5
-  bladeCurvature:
-    m_OverrideState: 0
-    m_Value: 1
-  bladeRotation:
-    m_OverrideState: 0
-    m_Value: 0
+    m_Value: 13
 --- !u!114 &5163738791766834239
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -510,7 +463,7 @@ MonoBehaviour:
   hueVsSat:
     m_OverrideState: 1
     m_Value:
-      <length>k__BackingField: 2
+      <length>k__BackingField: 3
       m_Loop: 1
       m_ZeroValue: 0.5
       m_Range: 1
@@ -518,8 +471,8 @@ MonoBehaviour:
         serializedVersion: 2
         m_Curve:
         - serializedVersion: 3
-          time: 0.19952494
-          value: 0.72
+          time: 0.3321918
+          value: 0.51111114
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -527,8 +480,17 @@ MonoBehaviour:
           inWeight: 0
           outWeight: 0
         - serializedVersion: 3
-          time: 0.6698337
-          value: 0.63
+          time: 0.37328768
+          value: 0.9111111
+          inSlope: 0
+          outSlope: 0
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 0.69863015
+          value: 0.6222222
           inSlope: 0
           outSlope: 0
           tangentMode: 0
@@ -579,10 +541,10 @@ MonoBehaviour:
   active: 1
   lift:
     m_OverrideState: 1
-    m_Value: {x: 0.9210125, y: 0.92536896, z: 1, w: -0.012448133}
+    m_Value: {x: 0.9212698, y: 0.8564056, z: 1, w: -0.012448133}
   gamma:
     m_OverrideState: 1
-    m_Value: {x: 0.5333361, y: 0.99293226, z: 1, w: 0.41379094}
+    m_Value: {x: 0.56933296, y: 0.9880029, z: 1, w: -0.02630686}
   gain:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 0.49081498, z: 0.20440894, w: -0.03619758}
+    m_Value: {x: 1, y: 0.7638294, z: 0.5439172, w: -0.03619758}

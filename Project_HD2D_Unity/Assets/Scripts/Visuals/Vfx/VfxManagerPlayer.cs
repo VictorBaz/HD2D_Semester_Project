@@ -33,9 +33,13 @@ public class VfxManagerPlayer : VfxManagerBase
     {
         _propBlockShield = new MaterialPropertyBlock();
         
-        
-        psDash.transform.SetParent(null);
-        _localOffsetDash = psDash.transform.localPosition;
+        if (psDash != null)
+        {
+            _localOffsetDash = psDash.transform.localPosition;
+            
+            var mainModule = psDash.main;
+            mainModule.simulationSpace = ParticleSystemSimulationSpace.World;
+        }
         
         if (rendererShield != null)
         {
@@ -60,13 +64,15 @@ public class VfxManagerPlayer : VfxManagerBase
     #region Dash
     public void TriggerDashVfx()
     {
-        psDash.transform.position = transform.TransformPoint(_localOffsetDash);
-        
+        if (psDash == null) return;
+
         float playerYAngle = transform.eulerAngles.y;
-        float angleYOffset = 180f; 
+        float angleYOffset = 0; 
         
-        psDash.transform.rotation = Quaternion.Euler(0f, playerYAngle + angleYOffset, -90f);
-        psDash.TriggerParticleSystem();
+        psDash.transform.rotation = Quaternion.Euler(-90f, playerYAngle + angleYOffset, 0);
+        
+        psDash.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        psDash.Play(true);
     }
     #endregion
 

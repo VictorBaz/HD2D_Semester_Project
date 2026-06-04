@@ -198,8 +198,10 @@ public class UiManager : MonoBehaviour
         canvasGroupLeftPanel.alpha = on ? 1f : 0f;
         canvasGroupRightPanel.alpha = on ? 1f : 0f;
 
-        canvasGroupLeftPanel.transform.localPosition = new Vector3(on ? openLeftPanelX : openLeftPanelX - hideOffset, 0, 0);
-        canvasGroupRightPanel.transform.localPosition = new Vector3(on ? openRightPanelX : openRightPanelX + hideOffset, 0, 0);
+        canvasGroupLeftPanel.transform.localPosition = 
+            new Vector3(on ? openLeftPanelX : openLeftPanelX - hideOffset, -87.5f, 0);
+        canvasGroupRightPanel.transform.localPosition = 
+            new Vector3(on ? openRightPanelX : openRightPanelX + hideOffset, 0, 0);
     }
 
     public void DisplayPanelInput(bool on)

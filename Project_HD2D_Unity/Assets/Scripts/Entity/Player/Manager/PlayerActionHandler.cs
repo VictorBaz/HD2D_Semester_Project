@@ -235,6 +235,8 @@ public class PlayerActionHandler : MonoBehaviour
         SoundManager.Instance?.PlaySfx(SoundType.Fissure_Energy_In);
         vfxManagerPlayer.EffectAddEnergy();
         GamepadVibrationHelper.Vibrate(0.25f,1f,0.25f);
+        
+        flaw.energyDisplay.Show(flaw.root.CurrentEnergy);
     }
 
     private void TryTakeEnergy()
@@ -249,6 +251,8 @@ public class PlayerActionHandler : MonoBehaviour
         SoundManager.Instance?.PlaySfx(SoundType.Fissure_Energy_Out);
         vfxManagerPlayer.EffectRemoveEnergy();
         GamepadVibrationHelper.Vibrate(0.15f,0.5f,0.25f);
+        
+        flaw.energyDisplay.Show(flaw.root.CurrentEnergy);
     }
 
     private bool TryGetFlawTarget(out Flaw flaw)
@@ -270,5 +274,5 @@ public class PlayerActionHandler : MonoBehaviour
     }
 
     #endregion
-
+    
 }

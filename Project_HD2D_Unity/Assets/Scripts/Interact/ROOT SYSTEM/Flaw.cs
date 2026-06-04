@@ -9,11 +9,12 @@ public class Flaw : MonoBehaviour, IEnergyLockable, IRootLink
 {
     #region Variables
 
-    private Root root;
+    [HideInInspector] public Root root;
 
     [Header("References")]
     [SerializeField] private Transform   pivotPoint;
     [SerializeField] private CanvasGroup feedbackCanvasGroup;
+    public EnergyDisplay energyDisplay;
 
     [Header("Blocking")]
     [SerializeField] private List<Parasite> blockers;

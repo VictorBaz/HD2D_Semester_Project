@@ -79,6 +79,8 @@ public class LockOnSystem : MonoBehaviour
 
         if (CurrentTarget is Flaw flaw)
         {
+            flaw.energyDisplay.Show(flaw.root.CurrentEnergy);
+            
             flaw.OnLockStateChanged(true);
             vfxManagerPlayer.UpdateLinkVisuals(flaw.IsBlocked());
         }
@@ -100,6 +102,8 @@ public class LockOnSystem : MonoBehaviour
 
         if (CurrentTarget is Flaw flaw)
         {
+            flaw.energyDisplay.Hide();
+            
             flaw.OnLockStateChanged(false);
             vfxManagerPlayer.UpdateLinkVisuals(flaw.IsBlocked());
         }

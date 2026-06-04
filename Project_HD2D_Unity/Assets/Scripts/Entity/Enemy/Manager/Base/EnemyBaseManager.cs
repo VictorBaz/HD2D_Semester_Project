@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Interface;
+using Script.Manager;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
@@ -94,6 +95,14 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
         ChangeState(PatrolState);
 
         OnTakeDamage += HandleDamageUI;
+    }
+    
+    protected virtual void OnDisable()
+    {
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.BattleMusic.UnregisterEnemy(this);
+        }
     }
 
     protected virtual void Update()
@@ -198,6 +207,11 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
         if (!other.CompareTag(GameConstants.PLAYER_TAG)) return;
         context.Target              = other.gameObject;
         context.IsPlayerInViewRange = true;
+        
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.BattleMusic.RegisterEnemy(this);
+        }
     }
 
     protected virtual void OnViewRangeExit(Collider other)
@@ -206,6 +220,11 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
         context.LastKnownPosition   = other.transform.position;
         context.Target              = null;
         context.IsPlayerInViewRange = false;
+        
+        if (SoundManager.Instance != null)
+        {
+            SoundManager.Instance.BattleMusic.UnregisterEnemy(this);
+        }
     }
 
     protected virtual void OnAttackRangeEnter(Collider other)

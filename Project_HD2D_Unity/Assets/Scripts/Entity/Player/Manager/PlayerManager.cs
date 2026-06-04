@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Interface;
 using Player.State;
+using Script.Manager;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -52,6 +53,7 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     private float regenAccumulator = 0f;
     
     private PreviewEjectionPlayer  previewEjectionPlayer;
+
 
     #endregion
 
@@ -294,6 +296,7 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     }
 
     private void UpdateCheckPoint(Vector3 pos) => checkPointPos = pos;
+    
     
     #region Gizmos
 

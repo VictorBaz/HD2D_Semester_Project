@@ -149,6 +149,7 @@ namespace Player.State
 
                 hitThisCombo.Add(damageable);
             }
+            
         }
 
         private void ResolveCombo(PlayerStateContext psc)
@@ -171,6 +172,7 @@ namespace Player.State
             2 => SoundType.Combo_Woosh_3,
             _ => SoundType.Combo_Woosh_1
         };
+        
 
         #endregion
     }

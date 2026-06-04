@@ -80,7 +80,14 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     #region IDamageable Implementation
     public void TakeDamage(int value, Vector3 hitDirection)
     {
-        if (isBoss) if(playerContext.PlayerData.Sap < life) return;
+        if (isBoss)
+            if (playerContext.PlayerData.Sap < life)
+            {
+                animatorParasite.SetTrigger(HitHash);
+                vfxHit.TriggerParticleSystem();
+                if (SoundManager.Instance) SoundManager.Instance.PlaySfx(SoundType.Damage_Ineffective);
+                return;
+            }
         
         if (isDead || playerContext == null) return;
         
@@ -112,8 +119,6 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
         }
         
         if (SoundManager.Instance) SoundManager.Instance.PlaySfx(SoundType.Damage_Effective);
-
-        vfxHit.TriggerParticleSystem();
         
         if (life <= 0)
         {

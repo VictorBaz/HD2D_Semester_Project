@@ -156,6 +156,8 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     {
         if (!CurrentPlayerState.CanTakeDamage)     return;
         if (CurrentPlayerState.IsParryWindowActive) return;
+        
+        Debug.Log($"Current Life {Context.PlayerData.Life} \n Life after change {Context.PlayerData.Life - value} ");
 
         timeSinceLastDamage = 0f;
         regenAccumulator    = 0f;

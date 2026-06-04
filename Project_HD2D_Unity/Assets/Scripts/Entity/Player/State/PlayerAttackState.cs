@@ -11,7 +11,7 @@ namespace Player.State
 
         public override string Name    => "Attack Melee";
         public override bool   CanMove => true;
-        public override bool   CanDash => canDash;
+        public override bool   CanDash => true;
         public int             ComboIndex => comboIndex;
 
         private bool      bufferNextAttack;

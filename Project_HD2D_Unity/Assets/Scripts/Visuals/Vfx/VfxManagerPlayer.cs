@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class VfxManagerPlayer : VfxManagerBase
 {
-    [Header("Dash Settings")]
-    [SerializeField] private TrailRenderer trailRendererDash;
+    [Header("Dash Settings")] 
+    [SerializeField] private ParticleSystem psDash;
 
     [Header("Combo Settings")]
     [SerializeField] private AttackComboFx[] attackComboFxs;
@@ -27,13 +27,15 @@ public class VfxManagerPlayer : VfxManagerBase
     private static readonly int ProgressionId = Shader.PropertyToID("_Progression");
     
     private Vector3 _localOffsetParry;
+    private Vector3 _localOffsetDash;
 
     private void Awake()
     {
         _propBlockShield = new MaterialPropertyBlock();
         
-        if (trailRendererDash != null) 
-            ToggleDashTrail(false);
+        
+        psDash.transform.SetParent(null);
+        _localOffsetDash = psDash.transform.localPosition;
         
         if (rendererShield != null)
         {
@@ -56,10 +58,15 @@ public class VfxManagerPlayer : VfxManagerBase
     }
 
     #region Dash
-    public void ToggleDashTrail(bool isOn)
+    public void TriggerDashVfx()
     {
-        if (trailRendererDash != null) 
-            trailRendererDash.enabled = isOn;
+        psDash.transform.position = transform.TransformPoint(_localOffsetDash);
+        
+        float playerYAngle = transform.eulerAngles.y;
+        float angleYOffset = 180f; 
+        
+        psDash.transform.rotation = Quaternion.Euler(0f, playerYAngle + angleYOffset, -90f);
+        psDash.TriggerParticleSystem();
     }
     #endregion
 

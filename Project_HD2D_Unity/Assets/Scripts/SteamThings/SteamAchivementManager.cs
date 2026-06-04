@@ -112,12 +112,11 @@ public class SteamAchivementManager : MonoBehaviour
 
         SteamUserStats.StoreStats();
     }
-    
 
     void OnApplicationQuit()
     {
         #if UNITY_EDITOR
-        ClearEveryAchivements();
+        //ClearEveryAchivements();
         #endif
         
         SteamClient.Shutdown();

@@ -13,12 +13,12 @@ public class SheepBridgeState : EnemyBaseState
     private const float maxIntensity = 5f; 
     
     private SteamAchivementManager ACHManager;
-    [SerializeField] private string achievementId = "ACH_SHEEP_IN_WATER";
+    private string achievementId = "ACH_SHEEP_IN_WATER";
 
     public override void EnterState(EnemyContext context)
     {
         
-        ACHManager = Object.FindFirstObjectByType<SteamAchivementManager>();
+        ACHManager = SteamAchivementManager.Instance;
         ACH_Unlock();
         
         context.VfxManager.StopKoVfx();

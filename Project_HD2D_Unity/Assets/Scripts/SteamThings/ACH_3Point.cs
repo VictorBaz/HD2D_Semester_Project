@@ -6,17 +6,13 @@ public class ACH_Trigger : MonoBehaviour
 {
     
     private SteamAchivementManager ACHManager;
-    [SerializeField] private string achievementId;
+    private string achievementId = "ACH_SHEEP_LAUNCH";
+    private bool noMoreSteamCall = false;
     [SerializeField] private int sheepCounter = 0;
 
     private void Start()
     {
-        ACHManager = Object.FindFirstObjectByType<SteamAchivementManager>();
-    }
-
-    void Update()
-    {
-        ACH_Unlock();
+        ACHManager = SteamAchivementManager.Instance;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -24,6 +20,9 @@ public class ACH_Trigger : MonoBehaviour
         if (other.TryGetComponent<EnemySheepManager>(out EnemySheepManager sheep))
         {
             sheepCounter++;
+            
+            if (sheepCounter == 3)
+                ACH_Unlock();
         }
     }
 
@@ -39,8 +38,13 @@ public class ACH_Trigger : MonoBehaviour
     {
         if (ACHManager == null)
             return;
+        if (ACHManager.IsThisAchievementUnlocked(achievementId))
+        {
+            noMoreSteamCall = true;
+            return;
+        }
         
-        if (sheepCounter == 3 && !ACHManager.IsThisAchievementUnlocked(achievementId))
+        if (!ACHManager.IsThisAchievementUnlocked(achievementId))
         {
             ACHManager.UnlockAchivement(achievementId);
         }

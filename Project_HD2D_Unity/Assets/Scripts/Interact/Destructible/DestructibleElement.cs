@@ -17,7 +17,7 @@ public class DestructibleElement : MonoBehaviour
     
     [Header("Achievement")]
     private SteamAchivementManager ACHManager;
-    [SerializeField] private string achievementId;
+    private string achievementId = "ACH_WALLBREAK";
     
     [Header("Events")]
     [SerializeField] private UnityEvent onDestructionEvent;
@@ -33,7 +33,7 @@ public class DestructibleElement : MonoBehaviour
         if (fracturedParent) fracturedParent.SetActive(false);
         block = new MaterialPropertyBlock();
         
-        ACHManager = Object.FindFirstObjectByType<SteamAchivementManager>();
+        ACHManager = SteamAchivementManager.Instance;
     }
 
     private void TriggerDestruction()

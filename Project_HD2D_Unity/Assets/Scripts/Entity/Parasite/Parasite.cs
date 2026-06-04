@@ -54,8 +54,7 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     private void Start()
     {
         Init();
-        
-        ACHManager = Object.FindFirstObjectByType<SteamAchivementManager>();
+        ACHManager = SteamAchivementManager.Instance;
     }
     #endregion
 

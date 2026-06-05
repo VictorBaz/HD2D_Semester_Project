@@ -14,12 +14,22 @@ public class RootCleanerWindow : EditorWindow
         public bool   wasAlreadyClean;
     }
 
-    private List<Root>        foundRoots   = new List<Root>();
-    private List<CleanReport> lastReport   = new List<CleanReport>();
-    private Vector2           scrollRoots;
-    private Vector2           scrollReport;
-    private bool              hasScanned   = false;
-    private bool              hasRun       = false;
+    private struct DeepCleanReport
+    {
+        public string goName;
+        public string parentName;
+        public string fullPath;
+    }
+
+    private List<Root>            foundRoots      = new List<Root>();
+    private List<CleanReport>     lastReport      = new List<CleanReport>();
+    private List<DeepCleanReport> deepCleanReport = new List<DeepCleanReport>();
+    private Vector2               scrollRoots;
+    private Vector2               scrollReport;
+    private Vector2               scrollDeep;
+    private bool                  hasScanned      = false;
+    private bool                  hasRun          = false;
+    private bool                  hasDeepRun      = false;
 
 
     private GUIStyle styleTitle;
@@ -27,6 +37,7 @@ public class RootCleanerWindow : EditorWindow
     private GUIStyle styleBold;
     private GUIStyle styleClean;
     private GUIStyle styleDirty;
+    private GUIStyle styleRed;
     private bool     stylesInitialized;
 
 
@@ -34,7 +45,7 @@ public class RootCleanerWindow : EditorWindow
     public static void Open()
     {
         RootCleanerWindow win = GetWindow<RootCleanerWindow>("Root Cleaner");
-        win.minSize = new Vector2(420, 520);
+        win.minSize = new Vector2(460, 560);
     }
 
 
@@ -58,6 +69,9 @@ public class RootCleanerWindow : EditorWindow
 
         if (hasRun)
             DrawReport();
+
+        if (hasDeepRun)
+            DrawDeepReport();
     }
 
 
@@ -65,7 +79,6 @@ public class RootCleanerWindow : EditorWindow
     {
         Rect headerRect = EditorGUILayout.GetControlRect(false, 38);
         EditorGUI.DrawRect(headerRect, new Color(0.12f, 0.12f, 0.12f));
-
         GUI.Label(new Rect(headerRect.x + 10, headerRect.y + 8, headerRect.width, 26),
             "ROOT CLEANER", styleTitle);
     }
@@ -73,14 +86,10 @@ public class RootCleanerWindow : EditorWindow
 
     private void DrawScanSection()
     {
-        EditorGUILayout.BeginHorizontal();
-
         GUI.backgroundColor = new Color(0.3f, 0.6f, 1f);
         if (GUILayout.Button("SCAN SCENE", GUILayout.Height(30)))
             ScanScene();
-
         GUI.backgroundColor = Color.white;
-        EditorGUILayout.EndHorizontal();
 
         if (hasScanned)
         {
@@ -107,18 +116,14 @@ public class RootCleanerWindow : EditorWindow
         foreach (Root root in foundRoots)
         {
             EditorGUILayout.BeginHorizontal();
-
-            // Ping button
             GUI.backgroundColor = new Color(0.85f, 0.85f, 0.85f);
             if (GUILayout.Button("►", GUILayout.Width(22), GUILayout.Height(18)))
             {
                 Selection.activeGameObject = root.gameObject;
                 EditorGUIUtility.PingObject(root.gameObject);
             }
-
             GUI.backgroundColor = Color.white;
             EditorGUILayout.LabelField(root.name, GUILayout.Height(18));
-
             EditorGUILayout.EndHorizontal();
         }
 
@@ -133,20 +138,31 @@ public class RootCleanerWindow : EditorWindow
         EditorGUILayout.LabelField("ACTIONS", styleSection);
         DrawSeparator();
 
-        EditorGUILayout.BeginHorizontal();
-
         GUI.backgroundColor = new Color(1f, 0.85f, 0f);
         if (GUILayout.Button("CLEAN ALL DUPLICATES", GUILayout.Height(34)))
             RunCleanAll();
 
-        GUI.backgroundColor = Color.white;
-        EditorGUILayout.EndHorizontal();
+        EditorGUILayout.Space(4);
 
+        GUI.backgroundColor = new Color(1f, 0.35f, 0.35f);
+        if (GUILayout.Button("DEEP CLEAN  —  Toutes les Branch_ sans parent valide", GUILayout.Height(34)))
+        {
+            if (EditorUtility.DisplayDialog(
+                "Deep Clean",
+                "Supprime TOUS les GameObjects dont le nom commence par 'Branch_' " +
+                "et dont le parent ne s'appelle pas 'Generated_Visual_Branches'.\n\nContinuer ?",
+                "Supprimer", "Annuler"))
+            {
+                RunDeepClean();
+            }
+        }
+
+        GUI.backgroundColor = Color.white;
         EditorGUILayout.Space(2);
 
         EditorGUILayout.HelpBox(
-            "Supprime les Generated_Visual_Branches en doublon et les Branch_0 orphelins.\n" +
-            "Le premier container valide et ses branches sont conservés.",
+            "CLEAN ALL DUPLICATES — supprime les containers en doublon et les Branch_ orphelins directs.\n" +
+            "DEEP CLEAN — scan toute la scène, supprime tout Branch_ dont le parent n'est pas 'Generated_Visual_Branches'.",
             MessageType.Info);
     }
 
@@ -154,7 +170,7 @@ public class RootCleanerWindow : EditorWindow
     private void DrawReport()
     {
         EditorGUILayout.Space(4);
-        EditorGUILayout.LabelField("RAPPORT", styleSection);
+        EditorGUILayout.LabelField("RAPPORT — CLEAN ALL", styleSection);
         DrawSeparator();
 
         int totalCleaned = 0;
@@ -162,13 +178,14 @@ public class RootCleanerWindow : EditorWindow
             if (!r.wasAlreadyClean) totalCleaned++;
 
         string summary = totalCleaned == 0
-            ? "  Tout était déjà propre."
-            : $"  {totalCleaned} Root(s) nettoyé(s).";
+            ? "✓  Tout était déjà propre."
+            : $"✓  {totalCleaned} Root(s) nettoyé(s).";
 
         EditorGUILayout.LabelField(summary, styleBold);
         EditorGUILayout.Space(4);
 
-        scrollReport = EditorGUILayout.BeginScrollView(scrollReport);
+        scrollReport = EditorGUILayout.BeginScrollView(scrollReport,
+            GUILayout.MaxHeight(160f));
 
         foreach (var report in lastReport)
         {
@@ -181,7 +198,6 @@ public class RootCleanerWindow : EditorWindow
                 Selection.activeGameObject = report.root.gameObject;
                 EditorGUIUtility.PingObject(report.root.gameObject);
             }
-
             GUI.backgroundColor = Color.white;
 
             if (report.wasAlreadyClean)
@@ -191,15 +207,44 @@ public class RootCleanerWindow : EditorWindow
             }
             else
             {
-                string detail =
+                EditorGUILayout.LabelField(
                     $"{report.rootName}  —  " +
-                    $"{report.duplicateContainers} container(s) supprimé(s), " +
-                    $"{report.orphanBranches} branche(s) orpheline(s) supprimée(s)";
-
-                EditorGUILayout.LabelField(detail, styleDirty);
+                    $"{report.duplicateContainers} container(s), " +
+                    $"{report.orphanBranches} branche(s) supprimé(s)",
+                    styleDirty);
             }
 
             EditorGUILayout.EndHorizontal();
+        }
+
+        EditorGUILayout.EndScrollView();
+    }
+
+
+    private void DrawDeepReport()
+    {
+        EditorGUILayout.Space(4);
+        EditorGUILayout.LabelField("RAPPORT — DEEP CLEAN", styleSection);
+        DrawSeparator();
+
+        if (deepCleanReport.Count == 0)
+        {
+            EditorGUILayout.LabelField("✓  Aucune Branch_ invalide trouvée.", styleBold);
+            return;
+        }
+
+        EditorGUILayout.LabelField(
+            $"⚠  {deepCleanReport.Count} Branch_ supprimée(s) :", styleBold);
+        EditorGUILayout.Space(4);
+
+        scrollDeep = EditorGUILayout.BeginScrollView(scrollDeep,
+            GUILayout.MaxHeight(160f));
+
+        foreach (var entry in deepCleanReport)
+        {
+            EditorGUILayout.LabelField(
+                $"✕  {entry.goName}  (parent : '{entry.parentName}')  [{entry.fullPath}]",
+                styleRed);
         }
 
         EditorGUILayout.EndScrollView();
@@ -210,7 +255,9 @@ public class RootCleanerWindow : EditorWindow
     {
         foundRoots.Clear();
         lastReport.Clear();
-        hasRun    = false;
+        deepCleanReport.Clear();
+        hasRun     = false;
+        hasDeepRun = false;
         hasScanned = true;
 
         Root[] roots = FindObjectsByType<Root>(FindObjectsSortMode.None);
@@ -219,10 +266,12 @@ public class RootCleanerWindow : EditorWindow
         Repaint();
     }
 
+
     private void RunCleanAll()
     {
         lastReport.Clear();
-        hasRun = true;
+        hasRun     = true;
+        hasDeepRun = false;
 
         foreach (Root root in foundRoots)
         {
@@ -240,6 +289,54 @@ public class RootCleanerWindow : EditorWindow
         Repaint();
     }
 
+
+    private void RunDeepClean()
+    {
+        deepCleanReport.Clear();
+        hasDeepRun = true;
+        hasRun     = false;
+
+        GameObject[] allObjects = FindObjectsByType<GameObject>(
+            FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+        List<GameObject> toDelete = new List<GameObject>();
+
+        foreach (GameObject go in allObjects)
+        {
+            if (!go.name.StartsWith("Branch_")) continue;
+
+            string parentName = go.transform.parent != null
+                ? go.transform.parent.name
+                : "(aucun parent)";
+
+            if (parentName != "Generated_Visual_Branches")
+            {
+                deepCleanReport.Add(new DeepCleanReport
+                {
+                    goName   = go.name,
+                    parentName = parentName,
+                    fullPath = GetFullPath(go.transform)
+                });
+                toDelete.Add(go);
+            }
+        }
+        
+        foreach (GameObject go in toDelete)
+        {
+            if (go == null) continue;
+            Undo.DestroyObjectImmediate(go);
+        }
+
+        if (toDelete.Count > 0)
+            EditorUtility.DisplayDialog(
+                "Deep Clean terminé",
+                $"{toDelete.Count} Branch_ invalide(s) supprimée(s).\nVoir le rapport dans la fenêtre.",
+                "OK");
+
+        Repaint();
+    }
+
+
     private CleanReport BuildReport(Root root)
     {
         CleanReport report = new CleanReport
@@ -248,7 +345,8 @@ public class RootCleanerWindow : EditorWindow
             rootName = root.name,
         };
 
-        ArrayCurveSplineMesh splineScript = root.GetComponentInChildren<ArrayCurveSplineMesh>(true);
+        ArrayCurveSplineMesh splineScript =
+            root.GetComponentInChildren<ArrayCurveSplineMesh>(true);
 
         if (splineScript == null)
         {
@@ -260,20 +358,19 @@ public class RootCleanerWindow : EditorWindow
         if (string.IsNullOrEmpty(containerName))
             containerName = "Generated_Visual_Branches";
 
-        Transform splineT = splineScript.transform;
-        bool firstContainer = false;
+        Transform splineT    = splineScript.transform;
+        bool      firstFound = false;
 
         for (int i = 0; i < splineT.childCount; i++)
         {
             Transform child = splineT.GetChild(i);
-            if (child.name == containerName)
-            {
-                if (!firstContainer) firstContainer = true;
-                else report.duplicateContainers++;
-            }
+            if (child.name != containerName) continue;
+
+            if (!firstFound) firstFound = true;
+            else             report.duplicateContainers++;
         }
 
-        ScanForOrphanBranches(root.transform, splineT, ref report);
+        ScanOrphanBranches(root.transform, containerName, ref report);
 
         report.wasAlreadyClean =
             report.duplicateContainers == 0 && report.orphanBranches == 0;
@@ -281,19 +378,31 @@ public class RootCleanerWindow : EditorWindow
         return report;
     }
 
-    private void ScanForOrphanBranches(Transform current, Transform splineTransform, ref CleanReport report)
+    private void ScanOrphanBranches(Transform current, string containerName,
+                                    ref CleanReport report)
     {
         for (int i = 0; i < current.childCount; i++)
         {
             Transform child = current.GetChild(i);
 
-            if (child == splineTransform) continue;
+            if (child.name == containerName)
+                continue;
 
             if (child.name.StartsWith("Branch_"))
+            {
                 report.orphanBranches++;
-            else
-                ScanForOrphanBranches(child, splineTransform, ref report);
+                continue;
+            }
+
+            ScanOrphanBranches(child, containerName, ref report);
         }
+    }
+
+
+    private static string GetFullPath(Transform t)
+    {
+        if (t.parent == null) return t.name;
+        return GetFullPath(t.parent) + "/" + t.name;
     }
 
     private void DrawSeparator()
@@ -333,8 +442,13 @@ public class RootCleanerWindow : EditorWindow
 
         styleDirty = new GUIStyle(EditorStyles.label)
         {
-            normal    = { textColor = new Color(1f, 0.75f, 0.2f) },
-            fontStyle = FontStyle.Bold
+            fontStyle = FontStyle.Bold,
+            normal    = { textColor = new Color(1f, 0.75f, 0.2f) }
+        };
+
+        styleRed = new GUIStyle(EditorStyles.label)
+        {
+            normal = { textColor = new Color(1f, 0.4f, 0.4f) }
         };
 
         stylesInitialized = true;

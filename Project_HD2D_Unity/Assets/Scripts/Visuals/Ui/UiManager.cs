@@ -23,6 +23,9 @@ public class UiManager : MonoBehaviour
     [SerializeField] private CanvasGroup hudPanel;
     [SerializeField] private CanvasGroup creditsPanel;
     [SerializeField] private CanvasGroup settingsPanel;
+    [Header("End Game Credits Settings")]
+    [SerializeField] private CanvasGroup endGameCreditsPanel;
+    [SerializeField] private RectTransform creditsScrollingImage;
 
     [Header("Energy Settings")]
     [SerializeField] private Image energyFillImage;
@@ -80,6 +83,7 @@ public class UiManager : MonoBehaviour
     
     private Sequence areaSequence;
     private Sequence popupSequence;
+    private Tween creditsScrollTween;
 
     private float openLeftPanelX;
     private float openRightPanelX;
@@ -121,6 +125,13 @@ public class UiManager : MonoBehaviour
         };
 
         ForceState(false);
+
+        if (endGameCreditsPanel != null)
+        {
+            endGameCreditsPanel.alpha = 0f;
+            endGameCreditsPanel.blocksRaycasts = false;
+            endGameCreditsPanel.interactable = false;
+        }
 
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -166,6 +177,7 @@ public class UiManager : MonoBehaviour
         UiEvents.OnShowArea += ShowAreaNotification;
         UiEvents.OnShowSpritePopup += HandleShowSpritePopup;
         UiEvents.OnHideSpritePopup += HandleHideSpritePopup;
+        GameplayEvents.OnCredits += StartEndGameCredits;
     }
 
     private void OnDisable()
@@ -181,11 +193,13 @@ public class UiManager : MonoBehaviour
         UiEvents.OnShowArea -= ShowAreaNotification;
         UiEvents.OnShowSpritePopup -= HandleShowSpritePopup;
         UiEvents.OnHideSpritePopup -= HandleHideSpritePopup;
+        GameplayEvents.OnCredits -= StartEndGameCredits;
     }
 
     private void OnDestroy()
     {
         transform.DOKill(true);
+        creditsScrollTween?.Kill();
     }
 
     #endregion
@@ -520,4 +534,30 @@ public class UiManager : MonoBehaviour
         }
     }
     #endregion
+    
+    private void StartEndGameCredits(float duration)
+    {
+        if (endGameCreditsPanel == null || creditsScrollingImage == null) return;
+
+        creditsScrollTween?.Kill();
+        endGameCreditsPanel.DOKill();
+        creditsScrollingImage.DOKill();
+
+        ToggleCanvasGroup(hudPanel, false, transitionDuration);
+
+        float screenHeight = Screen.height;
+        creditsScrollingImage.anchoredPosition = new Vector2(creditsScrollingImage.anchoredPosition.x, -screenHeight);
+
+        ToggleCanvasGroup(endGameCreditsPanel, true, transitionDuration);
+
+        float targetY = creditsScrollingImage.rect.height + 100f;
+
+        creditsScrollTween = creditsScrollingImage.DOAnchorPosY(targetY, duration)
+            .SetEase(Ease.Linear)
+            .SetUpdate(true) // Fonctionne même si le jeu subit un Time.timeScale = 0
+            .OnComplete(() =>
+            {
+                ToggleCanvasGroup(endGameCreditsPanel, false, transitionDuration);
+            });
+    }
 }

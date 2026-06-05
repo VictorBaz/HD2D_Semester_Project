@@ -5,6 +5,6 @@
         Fix,
         FollowPlayer,
         Cinematic,
-        Rail
+        Rail,
     }
 }

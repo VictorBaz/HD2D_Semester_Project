@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public class CameraCinematicState : CameraBaseState
 {
@@ -15,6 +16,8 @@ public class CameraCinematicState : CameraBaseState
 
         targetPosition = context.CurrentSettings.targetCinematic ? 
             context.CurrentSettings.targetCinematic.position : context.PlayerTransform.position;
+
+        if (context.CurrentSettings.isCredit) CreditsLogic(context);
     }
 
     public override void UpdateState(CameraStateContext context)
@@ -50,4 +53,12 @@ public class CameraCinematicState : CameraBaseState
     {
         isHolding = false;
     }
+
+    private void CreditsLogic(CameraStateContext context)
+    {
+        float duration =  context.CurrentSettings.holdDuration + 10f;
+        
+        GameplayEvents.TriggerCredits(duration);
+    }
+    
 }

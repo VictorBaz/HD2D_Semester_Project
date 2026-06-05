@@ -217,5 +217,6 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         ChangeState(GameState.Menu);
+        LoadMenu();
     }
 }

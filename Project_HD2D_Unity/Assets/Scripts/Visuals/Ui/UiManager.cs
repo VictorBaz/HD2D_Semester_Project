@@ -554,7 +554,7 @@ public class UiManager : MonoBehaviour
 
         creditsScrollTween = creditsScrollingImage.DOAnchorPosY(targetY, duration)
             .SetEase(Ease.Linear)
-            .SetUpdate(true) // Fonctionne même si le jeu subit un Time.timeScale = 0
+            .SetUpdate(true)
             .OnComplete(() =>
             {
                 ToggleCanvasGroup(endGameCreditsPanel, false, transitionDuration);

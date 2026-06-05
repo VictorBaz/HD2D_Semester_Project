@@ -184,7 +184,9 @@ public class Root : MonoBehaviour, IDataPersistence
     {
         if (splineRoot == null) return;
 
-        ClearAllKnots();
+        ClearAllKnots(); 
+
+        splineScript.ForceCleanContainers();
 
         Vector3 localOrigin = splineRoot.transform.InverseTransformPoint(transform.position);
 
@@ -221,10 +223,16 @@ public class Root : MonoBehaviour, IDataPersistence
     {
         while (splineRoot.Splines.Count != 0)
             splineRoot.RemoveSplineAt(0);
-
-        splineScript.Rebuild();
     }
 
+    public void CleanDuplicates()
+    {
+        if (splineScript == null) return;
+        splineScript.CleanDuplicateContainers(); 
+        splineScript.CleanOrphanBranchesInParents(); 
+        RefreshChildRenderers();
+    }
+    
     #endregion
 
     #region Save

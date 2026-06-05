@@ -27,10 +27,24 @@ public class ArrayCurveSplineMesh : MonoBehaviour
 
     private SplineContainer splineContainer;
     private List<Mesh> meshesRootsVisual = new List<Mesh>();
+    
+    public string SubContainerName => subContainerName;
 
     public enum Axis { X, Y, Z }
 
-    private void OnEnable() { Cache(); Rebuild(); }
+    private void OnEnable()
+    {
+        Cache();
+#if UNITY_EDITOR
+        if (!Application.isPlaying)
+        {
+            UnityEditor.EditorApplication.delayCall -= SafeRebuild;
+            UnityEditor.EditorApplication.delayCall += SafeRebuild;
+            return;
+        }
+#endif
+        Rebuild();
+    }
 
     private void OnValidate()
     {
@@ -247,17 +261,23 @@ public class ArrayCurveSplineMesh : MonoBehaviour
 
     private Transform GetOrCreateContainer()
     {
-        Transform container = transform.Find(subContainerName);
-
-        if (container == null)
+        Transform found = null;
+        for (int i = transform.childCount - 1; i >= 0; i--)
         {
-            GameObject go = new GameObject(subContainerName);
-            go.transform.SetParent(transform);
-            go.transform.localPosition = Vector3.zero;
-            go.transform.localRotation = Quaternion.identity;
-            container = go.transform;
+            Transform child = transform.GetChild(i);
+            if (child.name != subContainerName) continue;
+
+            if (found == null) found = child; 
+            else DestroyImmediate(child.gameObject);
         }
-        return container;
+
+        if (found != null) return found;
+
+        GameObject go = new GameObject(subContainerName);
+        go.transform.SetParent(transform);
+        go.transform.localPosition = Vector3.zero;
+        go.transform.localRotation = Quaternion.identity;
+        return go.transform;
     }
 
     private void CreateMeshObject(Transform parent,int index,Vector3[] verts, int[] tris,Vector2[] uvs,
@@ -378,5 +398,65 @@ public class ArrayCurveSplineMesh : MonoBehaviour
             default:
                 return new Vector2(v.z, v.y);
         }
+    }
+    
+    public void ForceCleanContainers()
+    {
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            Transform child = transform.GetChild(i);
+            if (child.name == subContainerName)
+                DestroyImmediate(child.gameObject);
+        }
+        meshesRootsVisual.Clear();
+    }
+    
+    public void CleanDuplicateContainers()
+    {
+        bool previousRebuild = rebuildInEditor;
+        rebuildInEditor = false;
+
+        Transform firstContainer = null;
+
+        for (int i = transform.childCount - 1; i >= 0; i--)
+        {
+            Transform child = transform.GetChild(i);
+
+            if (child.name.StartsWith("Branch_"))
+            {
+                DestroyImmediate(child.gameObject);
+                continue;
+            }
+
+            if (child.name == subContainerName)
+            {
+                if (firstContainer == null)
+                    firstContainer = child; 
+                else
+                    DestroyImmediate(child.gameObject);
+            }
+        }
+
+        rebuildInEditor = previousRebuild;
+    }
+    
+    public void CleanOrphanBranchesInParents()
+    {
+        bool previousRebuild = rebuildInEditor;
+        rebuildInEditor = false;
+
+        Transform current = transform.parent;
+        while (current != null)
+        {
+            for (int i = current.childCount - 1; i >= 0; i--)
+            {
+                Transform child = current.GetChild(i);
+                if (child.name.StartsWith("Branch_"))
+                    DestroyImmediate(child.gameObject);
+            }
+            current = current.parent;
+        }
+
+        rebuildInEditor = previousRebuild;
     }
 }

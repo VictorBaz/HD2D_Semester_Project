@@ -10,7 +10,7 @@ public class RootEditor : Editor
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("ROOT VISUAL GENERATION", EditorStyles.boldLabel);
-        
+
         EditorGUILayout.BeginHorizontal();
 
         GUI.backgroundColor = Color.green;
@@ -20,7 +20,7 @@ public class RootEditor : Editor
             rootScript.BakeVisuals();
         }
 
-        GUI.backgroundColor = new Color(1f, 0.4f, 0.4f); 
+        GUI.backgroundColor = new Color(1f, 0.4f, 0.4f);
         if (GUILayout.Button("CLEAR ALL", GUILayout.Height(35)))
         {
             Undo.RecordObject(rootScript, "Clear Root Visuals");
@@ -28,17 +28,22 @@ public class RootEditor : Editor
         }
 
         EditorGUILayout.EndHorizontal();
-        
+
+        GUI.backgroundColor = new Color(1f, 0.85f, 0f); 
+        if (GUILayout.Button("CLEAN DUPLICATES", GUILayout.Height(28)))
+        {
+            rootScript.CleanDuplicates();
+            EditorUtility.SetDirty(rootScript);
+        }
+
         GUI.backgroundColor = Color.white;
         EditorGUILayout.Space();
-        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider); 
+        EditorGUILayout.LabelField("", GUI.skin.horizontalSlider);
         EditorGUILayout.Space();
 
         DrawDefaultInspector();
 
         if (GUI.changed)
-        {
             EditorUtility.SetDirty(rootScript);
-        }
     }
 }

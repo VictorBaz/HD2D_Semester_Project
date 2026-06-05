@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class EnergyDisplay : MonoBehaviour
 {
-    [SerializeField] private ParticleSystem[] fullParticles;
-    [SerializeField] private ParticleSystem[] emptyParticles;
+    private static readonly int IsFull = Shader.PropertyToID("IsFull");
+    
+    [SerializeField] private ParticleSystemRenderer[] particles;
 
     private void Start()
     {
@@ -13,27 +14,26 @@ public class EnergyDisplay : MonoBehaviour
 
     public void Show(int energyLevel)
     {
-        for (int i = 0; i < fullParticles.Length; i++)
+        for (int i = 0; i < particles.Length; i++)
         {
+            particles[i].gameObject.SetActive(true);
+            
             if (i + 1 <= energyLevel)
             {
-                fullParticles[i].Play();
-                emptyParticles[i].Stop();
+                particles[i].material.SetFloat(IsFull, 1.0f);
             }
             else
             {
-                fullParticles[i].Stop();
-                emptyParticles[i].Play();
+                particles[i].material.SetFloat(IsFull, 0.0f);
             }
         }
     }
 
     public void Hide()
     {
-        for (int i = 0; i < fullParticles.Length; i++)
+        for (int i = 0; i < particles.Length; i++)
         {
-            fullParticles[i].Stop();
-            emptyParticles[i].Stop();
+            particles[i].gameObject.SetActive(false);
         }
     }
 }

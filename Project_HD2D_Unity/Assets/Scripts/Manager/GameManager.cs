@@ -84,7 +84,7 @@ public class GameManager : MonoBehaviour
                 PlayMusic(MusicType.Menu);
                 break;
             case GameState.Game:
-                PlayMusic(MusicType.Puzzle_Calm);
+                PlayMusic(MusicType.Main);
                 break;
         }
     }

@@ -1,3 +1,4 @@
+using Script.Manager;
 using UnityEngine;
 
 public class EnemyChaseState : EnemyBaseState
@@ -16,6 +17,7 @@ public class EnemyChaseState : EnemyBaseState
         actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_RUN);
         actx.VfxManager.PlayDust(true);
         actx.AnimManager.ToggleRepulsiveCollider(true);
+        
     }
 
     public override void UpdateState(EnemyContext actx)

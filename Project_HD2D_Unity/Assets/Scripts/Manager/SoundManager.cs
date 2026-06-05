@@ -23,8 +23,11 @@ namespace Script.Manager
         [Header("Data")]
         [SerializeField] private AudioDataBank dataBank;
 
+        public BattleMusicTracker BattleMusic { get; private set; }
+        
         private readonly Dictionary<SoundType, AudioSource> loopingSources = new Dictionary<SoundType, AudioSource>();
         private Coroutine musicFadeCoroutine;
+
         #endregion
 
         #region Singleton
@@ -36,6 +39,7 @@ namespace Script.Manager
             {
                 Instance = this;
                 DontDestroyOnLoad(gameObject);
+                BattleMusic = new BattleMusicTracker(this);
             }
             else Destroy(gameObject);
 

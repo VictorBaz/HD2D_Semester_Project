@@ -27,24 +27,10 @@ public class ArrayCurveSplineMesh : MonoBehaviour
 
     private SplineContainer splineContainer;
     private List<Mesh> meshesRootsVisual = new List<Mesh>();
-    
-    public string SubContainerName => subContainerName;
 
     public enum Axis { X, Y, Z }
 
-    private void OnEnable()
-    {
-        Cache();
-#if UNITY_EDITOR
-        if (!Application.isPlaying)
-        {
-            UnityEditor.EditorApplication.delayCall -= SafeRebuild;
-            UnityEditor.EditorApplication.delayCall += SafeRebuild;
-            return;
-        }
-#endif
-        Rebuild();
-    }
+    private void OnEnable() { Cache(); Rebuild(); }
 
     private void OnValidate()
     {
@@ -69,7 +55,7 @@ public class ArrayCurveSplineMesh : MonoBehaviour
 
     private void Cache()
     {
-        if (this == null) return; // for build
+        if (this == null) return; 
 
         if (splineContainer == null)
             splineContainer = GetComponent<SplineContainer>();
@@ -261,23 +247,17 @@ public class ArrayCurveSplineMesh : MonoBehaviour
 
     private Transform GetOrCreateContainer()
     {
-        Transform found = null;
-        for (int i = transform.childCount - 1; i >= 0; i--)
+        Transform container = transform.Find(subContainerName);
+
+        if (container == null)
         {
-            Transform child = transform.GetChild(i);
-            if (child.name != subContainerName) continue;
-
-            if (found == null) found = child; 
-            else DestroyImmediate(child.gameObject);
+            GameObject go = new GameObject(subContainerName);
+            go.transform.SetParent(transform);
+            go.transform.localPosition = Vector3.zero;
+            go.transform.localRotation = Quaternion.identity;
+            container = go.transform;
         }
-
-        if (found != null) return found;
-
-        GameObject go = new GameObject(subContainerName);
-        go.transform.SetParent(transform);
-        go.transform.localPosition = Vector3.zero;
-        go.transform.localRotation = Quaternion.identity;
-        return go.transform;
+        return container;
     }
 
     private void CreateMeshObject(Transform parent,int index,Vector3[] verts, int[] tris,Vector2[] uvs,
@@ -287,6 +267,12 @@ public class ArrayCurveSplineMesh : MonoBehaviour
         GameObject go = new GameObject($"Branch_{index}");
         go.transform.SetParent(parent);
         go.transform.SetLocalPositionAndRotation(Vector3.zero, Quaternion.identity);
+
+        int vatLayer = LayerMask.NameToLayer("VAT");
+        if (vatLayer != -1)
+            go.layer = vatLayer;
+        else
+            Debug.LogWarning("ArrayCurveSplineMesh : layer 'VAT' introuvable. Vérifie qu'il est bien créé dans Project Settings > Tags & Layers.", this);
         Mesh mesh = new Mesh
         {
             name = $"Mesh_Branch_{index}",
@@ -399,21 +385,49 @@ public class ArrayCurveSplineMesh : MonoBehaviour
                 return new Vector2(v.z, v.y);
         }
     }
-    
+
+
+    public string SubContainerName => subContainerName;
+
     public void ForceCleanContainers()
     {
+        bool prev = rebuildInEditor;
+        rebuildInEditor = false;
+
         for (int i = transform.childCount - 1; i >= 0; i--)
         {
             Transform child = transform.GetChild(i);
             if (child.name == subContainerName)
                 DestroyImmediate(child.gameObject);
         }
+
         meshesRootsVisual.Clear();
+        rebuildInEditor = prev;
     }
-    
+
+    public void CleanOrphanBranchesInParents()
+    {
+        bool prev = rebuildInEditor;
+        rebuildInEditor = false;
+
+        Transform current = transform.parent;
+        while (current != null)
+        {
+            for (int i = current.childCount - 1; i >= 0; i--)
+            {
+                Transform child = current.GetChild(i);
+                if (child.name.StartsWith("Branch_"))
+                    DestroyImmediate(child.gameObject);
+            }
+            current = current.parent;
+        }
+
+        rebuildInEditor = prev;
+    }
+
     public void CleanDuplicateContainers()
     {
-        bool previousRebuild = rebuildInEditor;
+        bool prev = rebuildInEditor;
         rebuildInEditor = false;
 
         Transform firstContainer = null;
@@ -431,32 +445,12 @@ public class ArrayCurveSplineMesh : MonoBehaviour
             if (child.name == subContainerName)
             {
                 if (firstContainer == null)
-                    firstContainer = child; 
+                    firstContainer = child;
                 else
                     DestroyImmediate(child.gameObject);
             }
         }
 
-        rebuildInEditor = previousRebuild;
-    }
-    
-    public void CleanOrphanBranchesInParents()
-    {
-        bool previousRebuild = rebuildInEditor;
-        rebuildInEditor = false;
-
-        Transform current = transform.parent;
-        while (current != null)
-        {
-            for (int i = current.childCount - 1; i >= 0; i--)
-            {
-                Transform child = current.GetChild(i);
-                if (child.name.StartsWith("Branch_"))
-                    DestroyImmediate(child.gameObject);
-            }
-            current = current.parent;
-        }
-
-        rebuildInEditor = previousRebuild;
+        rebuildInEditor = prev;
     }
 }

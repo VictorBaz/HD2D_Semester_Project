@@ -38,6 +38,8 @@ public class PlayerController : MonoBehaviour
     private float currentSpeed;
     private bool isJumping;
     private bool isInLockMode;
+    
+    public bool Blocked { get;  set; }
 
     #endregion
 
@@ -50,12 +52,15 @@ public class PlayerController : MonoBehaviour
 
     private void Start() => targetRotation = transform.rotation;
 
+
     #endregion
 
     #region Public Methods
 
     public void UpdatePlayerController(Transform cam, Vector2 moveInput)
     {
+        if (Blocked) return;
+        
         CheckGround();
         CheckWall();
         HandleRotation(cam, moveInput);
@@ -63,6 +68,13 @@ public class PlayerController : MonoBehaviour
 
     public void UpdatePlayerControllerPhysics(Vector3 targetDirection, Vector2 moveInput, float speedMultiplier)
     {
+        
+        if (Blocked)
+        {
+            rb.linearVelocity = Vector3.zero;
+            return;
+        }
+        
         ApplyMovement(targetDirection, moveInput, speedMultiplier);
 
         if (targetRotation != Quaternion.identity)

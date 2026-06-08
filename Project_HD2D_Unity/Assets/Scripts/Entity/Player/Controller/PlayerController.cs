@@ -185,7 +185,7 @@ public class PlayerController : MonoBehaviour
     private void CheckGround()
     {
         Vector3 rayStart = transform.position - new Vector3(0f, (playerData.PlayerHeight / 2f) - GameConstants.CHECK_GROUND_RADIUS, 0f);
-        IsGrounded = Physics.SphereCast(rayStart, GameConstants.CHECK_GROUND_RADIUS, Vector3.down, out _, playerData.GroundCheckDistance, playerData.GroundMask);
+        IsGrounded = Physics.SphereCast(rayStart, GameConstants.CHECK_GROUND_RADIUS, Vector3.down, out _, playerData.GroundCheckDistance, playerData.GroundMask,QueryTriggerInteraction.Ignore);
     }
 
     private void CheckWall()
@@ -196,7 +196,7 @@ public class PlayerController : MonoBehaviour
         {
             Vector3 worldDir = transform.TransformDirection(localDir);
 
-            if (!Physics.Raycast(transform.position, worldDir, out RaycastHit hit, wallCheckDistance, playerData.GroundMask))
+            if (!Physics.Raycast(transform.position, worldDir, out RaycastHit hit, wallCheckDistance, playerData.GroundMask,QueryTriggerInteraction.Ignore))
                 continue;
 
             if (Mathf.Abs(hit.normal.y) < 0.3f)
@@ -217,7 +217,7 @@ public class PlayerController : MonoBehaviour
         {
             Vector3 worldDir = transform.TransformDirection(localDir);
 
-            if (!Physics.Raycast(transform.position, worldDir, wallCheckDistance, playerData.GroundMask))
+            if (!Physics.Raycast(transform.position, worldDir, wallCheckDistance, playerData.GroundMask,QueryTriggerInteraction.Ignore))
                 continue;
 
             return true;
@@ -228,7 +228,7 @@ public class PlayerController : MonoBehaviour
 
     public bool OnSlope()
     {
-        if (!Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerData.PlayerHeight * 0.5f + 0.2f, playerData.GroundMask))
+        if (!Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerData.PlayerHeight * 0.5f + 0.2f, playerData.GroundMask,QueryTriggerInteraction.Ignore))
             return false;
 
         float angle = Vector3.Angle(Vector3.up, slopeHit.normal);

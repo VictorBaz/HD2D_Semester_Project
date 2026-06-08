@@ -30,10 +30,6 @@ public class AreaPopupTriggerTuto : MonoBehaviour
             }
            
         }
-        else
-        {
-            shown = true;
-        }
     }
 
     private void CancelTuto()

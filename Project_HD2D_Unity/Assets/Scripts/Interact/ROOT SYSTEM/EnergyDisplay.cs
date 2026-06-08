@@ -5,7 +5,8 @@ public class EnergyDisplay : MonoBehaviour
 {
     private static readonly int IsFull = Shader.PropertyToID("IsFull");
     
-    [SerializeField] private ParticleSystemRenderer[] particles;
+    [SerializeField] private ParticleSystem[] fullParticles;
+    [SerializeField] private ParticleSystem[] emptyParticles;
 
     private void Start()
     {
@@ -14,26 +15,27 @@ public class EnergyDisplay : MonoBehaviour
 
     public void Show(int energyLevel)
     {
-        for (int i = 0; i < particles.Length; i++)
+        for (int i = 0; i < fullParticles.Length; i++)
         {
-            particles[i].gameObject.SetActive(true);
-            
             if (i + 1 <= energyLevel)
             {
-                particles[i].material.SetFloat(IsFull, 1.0f);
+                fullParticles[i].gameObject.SetActive(true);
+                emptyParticles[i].gameObject.SetActive(false);
             }
             else
             {
-                particles[i].material.SetFloat(IsFull, 0.0f);
+                fullParticles[i].gameObject.SetActive(false);
+                emptyParticles[i].gameObject.SetActive(true);
             }
         }
     }
 
     public void Hide()
     {
-        for (int i = 0; i < particles.Length; i++)
+        for (int i = 0; i < emptyParticles.Length; i++)
         {
-            particles[i].gameObject.SetActive(false);
+            emptyParticles[i].gameObject.SetActive(false);
+            fullParticles[i].gameObject.SetActive(false);
         }
     }
 }

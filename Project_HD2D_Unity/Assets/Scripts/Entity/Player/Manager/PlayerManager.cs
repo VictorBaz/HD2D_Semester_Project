@@ -54,6 +54,7 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     
     private PreviewEjectionPlayer  previewEjectionPlayer;
 
+    
 
     #endregion
 
@@ -62,12 +63,6 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     private void Awake()
     {
         InitStates();
-
-        previewEjectionPlayer = new PreviewEjectionPlayer(
-            previewElement,
-            trajectoryLineRenderer,
-            trajectoryStartTransform
-        );
         
         playerData = playerDataRaw.Init();
 
@@ -100,6 +95,14 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         originPos = transform.position;
 
         GameplayEvents.OnCredits += CreditsState;
+        
+        
+        previewEjectionPlayer = new PreviewEjectionPlayer(
+            previewElement,
+            trajectoryLineRenderer,
+            trajectoryStartTransform,
+            Context.PlayerData.GroundMask
+        );
     }
 
     private void Start()

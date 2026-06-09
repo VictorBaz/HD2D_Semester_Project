@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class CameraTriggerCinematic : CameraTriggerBase
 {
-    [SerializeField] private Transform cameraTransform;
-    [SerializeField] private float holdDuration = 2f;
+    [SerializeField] protected Transform cameraTransform;
+    [SerializeField] protected float holdDuration = 2f;
 
     private bool enter = false;
     

@@ -174,7 +174,7 @@ public class LockOnSystem : MonoBehaviour
         Vector3   direction       = (targetTransform.position - origin).normalized;
         float     distance        = Vector3.Distance(origin, targetTransform.position);
 
-        return Physics.Raycast(origin, direction, distance, _obstaclesMask,QueryTriggerInteraction.Collide);
+        return Physics.Raycast(origin, direction, distance, _obstaclesMask,QueryTriggerInteraction.Ignore);
     }
 
     #endregion

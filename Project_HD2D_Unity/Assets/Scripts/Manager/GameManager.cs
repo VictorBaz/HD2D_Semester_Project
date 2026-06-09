@@ -37,11 +37,19 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        
     }
 
     private void Start()
     {
         ChangeState(initialState);
+        GameplayEvents.OnCredits += HandleCredits;
+    }
+
+    private void OnDestroy()
+    {
+        GameplayEvents.OnCredits -= HandleCredits;
     }
 
     public void ChangeState(GameState newState)
@@ -199,4 +207,16 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion
+
+    private void HandleCredits(float time)
+    {
+        StartCoroutine(HandleCreditsIe(time));
+    }
+
+    private IEnumerator HandleCreditsIe(float time)
+    {
+        yield return new WaitForSeconds(time);
+        ChangeState(GameState.Menu);
+        LoadMenu();
+    }
 }

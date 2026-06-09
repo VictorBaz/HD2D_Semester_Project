@@ -11,7 +11,7 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 {
     #region Variables
 
-    [SerializeField] private PlayerController      playerController;
+    [SerializeField] private PlayerController playerController;
     [SerializeField] private PlayerAnimationManager animationManager;
     [SerializeField] private InputManager          inputManager;
     [SerializeField] private LockOnSystem          lockOnSystem;
@@ -54,6 +54,7 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     
     private PreviewEjectionPlayer  previewEjectionPlayer;
 
+    
 
     #endregion
 
@@ -62,15 +63,16 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     private void Awake()
     {
         InitStates();
+        
+        playerData = playerDataRaw.Init();
 
         previewEjectionPlayer = new PreviewEjectionPlayer(
             previewElement,
             trajectoryLineRenderer,
-            trajectoryStartTransform
+            trajectoryStartTransform,
+            playerData.GroundMask
         );
         
-        playerData = playerDataRaw.Init();
-
         Context = new PlayerStateContext
         {
             Controller          = playerController,
@@ -98,6 +100,8 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         PlayerEvents.OnRequestPlayerContext   = GetContext;
 
         originPos = transform.position;
+
+        GameplayEvents.OnCredits += CreditsState;
     }
 
     private void Start()
@@ -120,10 +124,12 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         PlayerEvents.OnRequestPlayerTransform   = null;
         PlayerEvents.OnRequestPlayerContext     = null;
         PlayerEvents.OnRequestCurrentLockTarget = null;
+        GameplayEvents.OnCredits -= CreditsState;
     }
 
     private void OnEnable()  => GameplayEvents.OnCheckpoint += UpdateCheckPoint;
     private void OnDisable() => GameplayEvents.OnCheckpoint -= UpdateCheckPoint;
+    
 
     #endregion
 
@@ -158,8 +164,6 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     {
         if (!CurrentPlayerState.CanTakeDamage)     return;
         if (CurrentPlayerState.IsParryWindowActive) return;
-        
-        Debug.Log($"Current Life {Context.PlayerData.Life} \n Life after change {Context.PlayerData.Life - value} ");
 
         timeSinceLastDamage = 0f;
         regenAccumulator    = 0f;
@@ -345,6 +349,19 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
             Gizmos.DrawLine(prev, next);
             prev = next;
         }
+    }
+
+    #endregion
+
+    #region Helper
+
+    public void ToggleMovement(bool on) => playerController.Blocked = on;
+
+    public InputManager GetInputManager() => inputManager;
+
+    public void CreditsState(float time)
+    {
+        ToggleMovement(true);
     }
 
     #endregion

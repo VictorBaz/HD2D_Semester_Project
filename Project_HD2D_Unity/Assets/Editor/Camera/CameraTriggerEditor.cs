@@ -27,6 +27,7 @@ public class CameraTriggerEditor : Editor
         SerializedProperty smoothProp = settings.FindPropertyRelative("transitionSmoothTime");
         SerializedProperty holdProp = settings.FindPropertyRelative("holdDuration");
         SerializedProperty targetCinematicProp = settings.FindPropertyRelative("targetCinematic");
+        SerializedProperty isCreditProp = settings.FindPropertyRelative("isCredit");
         SerializedProperty railOffsetProp = settings.FindPropertyRelative("RailOffset");
 
         if (stateProp == null)
@@ -66,6 +67,7 @@ public class CameraTriggerEditor : Editor
                     {
                         if (holdProp != null) EditorGUILayout.PropertyField(holdProp, new GUIContent("Durée (sec)"));
                         if (targetCinematicProp != null) EditorGUILayout.PropertyField(targetCinematicProp, new GUIContent("Cible Regardée"));
+                        if (isCreditProp != null) EditorGUILayout.PropertyField(isCreditProp, new GUIContent("Is Credit"));
                     }
 
                     if (camTransProp.objectReferenceValue != null)

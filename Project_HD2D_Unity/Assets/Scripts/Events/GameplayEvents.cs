@@ -13,4 +13,7 @@ public static class GameplayEvents
     
     public static Action<Vector3> OnCheckpoint;
     public static void TriggerCheckpoint(Vector3 checkpoint) => OnCheckpoint?.Invoke(checkpoint);
+
+    public static event Action<float> OnCredits;
+    public static void TriggerCredits(float credits) => OnCredits?.Invoke(credits);
 }

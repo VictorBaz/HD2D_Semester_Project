@@ -33,11 +33,6 @@ public abstract class EnemyAttackState : EnemyBaseState
     {
         if (!actx.Manager.IsGrounded(actx.Data.GroundDetectionDistance,actx.Data.NavMeshSampleMargin)) return;
         
-        if (actx.Target == null)
-        {
-            actx.TransitionTo(actx.Manager.SearchState);
-            return;
-        }
 
         if (isCooldown || attackRoutine == null || isAnticipationTime)
             RotateTowardsTarget(actx);
@@ -71,8 +66,24 @@ public abstract class EnemyAttackState : EnemyBaseState
 
     public override void ExitState(EnemyContext actx)
     {
-        if (attackRoutine != null) actx.Manager.StopCoroutine(attackRoutine);
+        if (attackRoutine != null) 
+        {
+            actx.Manager.StopCoroutine(attackRoutine);
+            attackRoutine = null;
+        }
+        
+        if (shaderRoutine != null) 
+        {
+            actx.Manager.StopCoroutine(shaderRoutine);
+            shaderRoutine = null;
+        }
+
+        actx.AnimManager.Animator.speed = 1f;
+        actx.AnimManager.ToggleAttackCollider(false);
+        actx.Manager.ApplyMovementMode(true); 
+        
         canTakeDamage = true;
+        CanBeParry = false;
     }
     
     protected IEnumerator ShaderPulseOn(EnemyContext actx) => ShaderSheepUpdateIe

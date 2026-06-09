@@ -6,7 +6,7 @@ public class EnergyTrace : MonoBehaviour
 {
     [Header("References")]
     public Transform startPoint;
-    public Transform endPoint;
+    public Transform endPoint {get; set;}
     public LineRenderer line;
 
     [Header("Line Settings")]
@@ -103,6 +103,8 @@ public class EnergyTrace : MonoBehaviour
             staticEmitters[i]         = Instantiate(particlePrefab, transform);
             staticEmitterRenderers[i] = staticEmitters[i].GetComponent<Renderer>();
         }
+        
+        SetStaticEmittersActive(false);
     }
 
     private void UpdateStaticEmitters()

@@ -552,7 +552,7 @@ public class UiManager : MonoBehaviour
 
         float targetY = creditsScrollingImage.rect.height + 100f;
 
-        creditsScrollTween = creditsScrollingImage.DOAnchorPosY(targetY, duration)
+        creditsScrollTween = creditsScrollingImage.DOAnchorPosY(targetY, 20f)
             .SetEase(Ease.Linear)
             .SetUpdate(true)
             .OnComplete(() =>

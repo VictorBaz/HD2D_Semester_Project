@@ -56,7 +56,7 @@ public class CameraCinematicState : CameraBaseState
 
     private void CreditsLogic(CameraStateContext context)
     {
-        float duration =  context.CurrentSettings.holdDuration + 10f;
+        float duration =  context.CurrentSettings.holdDuration + 20f;
         
         GameplayEvents.TriggerCredits(duration);
     }

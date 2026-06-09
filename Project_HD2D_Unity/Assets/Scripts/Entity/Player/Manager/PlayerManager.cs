@@ -66,6 +66,13 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         
         playerData = playerDataRaw.Init();
 
+        previewEjectionPlayer = new PreviewEjectionPlayer(
+            previewElement,
+            trajectoryLineRenderer,
+            trajectoryStartTransform,
+            playerData.GroundMask
+        );
+        
         Context = new PlayerStateContext
         {
             Controller          = playerController,
@@ -95,14 +102,6 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         originPos = transform.position;
 
         GameplayEvents.OnCredits += CreditsState;
-        
-        
-        previewEjectionPlayer = new PreviewEjectionPlayer(
-            previewElement,
-            trajectoryLineRenderer,
-            trajectoryStartTransform,
-            Context.PlayerData.GroundMask
-        );
     }
 
     private void Start()

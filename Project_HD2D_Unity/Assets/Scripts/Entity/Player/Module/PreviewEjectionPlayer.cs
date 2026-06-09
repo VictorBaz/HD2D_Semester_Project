@@ -9,11 +9,12 @@ public class PreviewEjectionPlayer
     private const int   TrajectoryResolution = 300;
     private const float TimeStep            = 0.05f;
     private Vector3 normalPreviewElement;
+    private LayerMask layerPreview;
 
     public PreviewEjectionPlayer(
         GameObject previewElement,
         LineRenderer trajectoryLineRenderer,
-        Transform trajectoryStartTransform)
+        Transform trajectoryStartTransform,LayerMask layerPreview)
     {
         PreviewElement            = previewElement;
         TrajectoryLineRenderer    = trajectoryLineRenderer;
@@ -22,6 +23,7 @@ public class PreviewEjectionPlayer
         TrajectoryLineRenderer.positionCount = TrajectoryResolution;
         previewElement.transform.SetParent(null);
         TogglePreview(false);
+        this.layerPreview = layerPreview;
     }
 
     public void TogglePreview(bool on)
@@ -54,7 +56,7 @@ public class PreviewEjectionPlayer
                 Vector3 dir  = point - prev;
                 float   dist = dir.magnitude;
 
-                if (Physics.Raycast(prev, dir.normalized, out RaycastHit hit, dist))
+                if (Physics.Raycast(prev, dir.normalized, out RaycastHit hit,1f,layerPreview,QueryTriggerInteraction.Ignore))
                 {
                     TrajectoryLineRenderer.positionCount = i;
                     normalPreviewElement = hit.normal;

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Script.Manager;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
@@ -46,6 +47,9 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
 
     [Header("Boss UI Direct Link")] 
     [SerializeField] private Slider bossLifeSlider;
+    
+    [Header("Events")]
+    [SerializeField] private UnityEvent onDeath;
     
     #endregion
 
@@ -125,6 +129,7 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
             if (bossLifeSlider != null) bossLifeSlider.gameObject.SetActive(false);
             ACH_Unlock();
             Die();
+            onDeath.Invoke();
         }
         else
         {

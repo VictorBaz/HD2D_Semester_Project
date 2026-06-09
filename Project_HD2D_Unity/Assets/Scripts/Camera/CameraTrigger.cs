@@ -99,4 +99,13 @@ public class CameraTrigger : MonoBehaviour
             Gizmos.DrawWireSphere(firstNode + settings.RailOffset, 0.5f);
         }
     }
+
+    public void ManualTrigger()
+    {
+        if (settings == null || hasTriggered || (triggerOnlyOnce && wasPlayedPermanently)) return;
+        
+        hasTriggered = true;
+        wasPlayedPermanently = true;
+        CameraEvents.TriggerCamera(settings);
+    }
 }

@@ -54,6 +54,7 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     
     private PreviewEjectionPlayer  previewEjectionPlayer;
 
+    
 
     #endregion
 
@@ -62,15 +63,16 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     private void Awake()
     {
         InitStates();
+        
+        playerData = playerDataRaw.Init();
 
         previewEjectionPlayer = new PreviewEjectionPlayer(
             previewElement,
             trajectoryLineRenderer,
-            trajectoryStartTransform
+            trajectoryStartTransform,
+            playerData.GroundMask
         );
         
-        playerData = playerDataRaw.Init();
-
         Context = new PlayerStateContext
         {
             Controller          = playerController,

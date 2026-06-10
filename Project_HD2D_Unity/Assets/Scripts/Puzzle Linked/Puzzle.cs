@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Puzzle : MonoBehaviour
 {
@@ -22,6 +23,8 @@ public class Puzzle : MonoBehaviour
     [Header("Linked Components")]
     [Tooltip("Le contrôleur externe qui gère le fondu du Post-Process")]
     [SerializeField] private VolumeFadeController volumeFadeController;
+    
+    
 
     private bool _isAlreadyCompleted = false;
     public bool IsAlreadyCompleted => _isAlreadyCompleted;
@@ -87,6 +90,11 @@ public class Puzzle : MonoBehaviour
             volumeFadeController.TriggerVolumeFade(0f);
         }
 
+        foreach (EnemyBaseManager enemy in visuals.Enemies)
+        {
+            enemy.ChangeState(enemy.FriendlyState);
+        }
+        
         StartCoroutine(AnimateEnvironment());
         GameplayEvents.TriggerPuzzleCompleted(puzzleID);
     }

@@ -6,7 +6,8 @@ public class PuzzleVisuals
 {
     [SerializeField] private string shaderProperty = "_Corrupt";
     public List<Renderer> affectedRenderers = new();
-
+    public List<EnemyBaseManager> Enemies;
+    
     private MaterialPropertyBlock _propBlock;
 
     public void Initialize()
@@ -49,5 +50,15 @@ public class PuzzleVisuals
 
             if (hasProperty) affectedRenderers.Add(r);
         }
+        
+        Enemies.Clear();
+        
+        EnemyBaseManager[] enemies = root.GetComponentsInChildren<EnemyBaseManager>(true);
+
+        foreach (var e in enemies)
+        {
+            Enemies.Add(e);
+        }
     }
+    
 }

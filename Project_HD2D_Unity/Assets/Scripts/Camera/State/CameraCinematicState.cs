@@ -10,14 +10,22 @@ public class CameraCinematicState : CameraBaseState
 
     public override void EnterState(CameraStateContext context)
     {
-        timer = context.CurrentSettings.holdDuration;
+        // 1. SI c'est les crédits, on calcule d'abord la logique des crédits 
+        // pour surcharger le timer de la caméra avec le bon timing global.
+        if (context.CurrentSettings.isCredit)
+        {
+            CreditsLogic(context);
+        }
+        else
+        {
+            timer = context.CurrentSettings.holdDuration;
+        }
+
         isHolding = false;
         transition = false;
 
         targetPosition = context.CurrentSettings.targetCinematic ? 
             context.CurrentSettings.targetCinematic.position : context.PlayerTransform.position;
-
-        if (context.CurrentSettings.isCredit) CreditsLogic(context);
     }
 
     public override void UpdateState(CameraStateContext context)
@@ -56,9 +64,10 @@ public class CameraCinematicState : CameraBaseState
 
     private void CreditsLogic(CameraStateContext context)
     {
-        float duration =  context.CurrentSettings.holdDuration + 20f;
+        float scrollDuration = 20f;
         
-        GameplayEvents.TriggerCredits(duration);
+        timer = context.CurrentSettings.holdDuration + scrollDuration;
+        
+        GameplayEvents.TriggerCredits(scrollDuration);
     }
-    
 }

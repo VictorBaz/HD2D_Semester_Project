@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using Script.Manager;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class UiManager : MonoBehaviour
 {
@@ -122,6 +123,7 @@ public class UiManager : MonoBehaviour
             { GameState.Settings, settingsPanel  },
             { GameState.Pause,    pauseMenuPanel },
             { GameState.Game,     hudPanel       },
+            { GameState.FinalCredits, endGameCreditsPanel}
         };
 
         ForceState(false);
@@ -178,6 +180,8 @@ public class UiManager : MonoBehaviour
         UiEvents.OnShowSpritePopup += HandleShowSpritePopup;
         UiEvents.OnHideSpritePopup += HandleHideSpritePopup;
         GameplayEvents.OnCredits += StartEndGameCredits;
+
+        SceneManager.sceneLoaded += HandleUiStatePatchForUnity;
     }
 
     private void OnDisable()
@@ -194,6 +198,8 @@ public class UiManager : MonoBehaviour
         UiEvents.OnShowSpritePopup -= HandleShowSpritePopup;
         UiEvents.OnHideSpritePopup -= HandleHideSpritePopup;
         GameplayEvents.OnCredits -= StartEndGameCredits;
+        
+        SceneManager.sceneLoaded -= HandleUiStatePatchForUnity;
     }
 
     private void OnDestroy()
@@ -321,13 +327,27 @@ public class UiManager : MonoBehaviour
 
     #region Handle State
 
+    //Deguelasse mais nécessaire pour le moment c'est okay
+    //TEST and work fin de projet donc acceptable mais dans le futur il faudrait revoir complètement le system
+    private void HandleUiStatePatchForUnity(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == GameManager.Instance.GameName)
+        {
+            foreach (var kvp in panelMap)
+                ToggleCanvasGroup(kvp.Value, kvp.Key == GameState.Game, transitionDuration);
+        }
+    }
+
     private void HandleUiState(GameState state)
     {
         if (focusRetryCoroutine != null) StopCoroutine(focusRetryCoroutine);
 
-        foreach (var kvp in panelMap)
-            ToggleCanvasGroup(kvp.Value, kvp.Key == state, transitionDuration);
-
+        if (state != GameState.Game)
+        {
+            foreach (var kvp in panelMap)
+                ToggleCanvasGroup(kvp.Value, kvp.Key == state, transitionDuration);
+        }
+        
         if (state == GameState.Pause)
             ToggleCanvasGroup(hudPanel, true, transitionDuration, 0.4f);
 
@@ -534,6 +554,9 @@ public class UiManager : MonoBehaviour
         }
     }
     #endregion
+
+    [SerializeField] private float startingYCredits;
+    [SerializeField] private float endingYCredits;
     
     private void StartEndGameCredits(float duration)
     {
@@ -544,20 +567,18 @@ public class UiManager : MonoBehaviour
         creditsScrollingImage.DOKill();
 
         ToggleCanvasGroup(hudPanel, false, transitionDuration);
-
-        float screenHeight = Screen.height;
-        creditsScrollingImage.anchoredPosition = new Vector2(creditsScrollingImage.anchoredPosition.x, -screenHeight);
-
         ToggleCanvasGroup(endGameCreditsPanel, true, transitionDuration);
+        
+        creditsScrollingImage.anchoredPosition = new Vector2(creditsScrollingImage.anchoredPosition.x, startingYCredits);
 
-        float targetY = creditsScrollingImage.rect.height + 100f;
+        float targetY = endingYCredits;
 
-        creditsScrollTween = creditsScrollingImage.DOAnchorPosY(targetY, 20f)
+        creditsScrollTween = creditsScrollingImage.DOAnchorPosY(targetY, duration)
             .SetEase(Ease.Linear)
             .SetUpdate(true)
             .OnComplete(() =>
             {
-                ToggleCanvasGroup(endGameCreditsPanel, false, transitionDuration);
+                //ToggleCanvasGroup(endGameCreditsPanel, false, transitionDuration);
             });
     }
 }

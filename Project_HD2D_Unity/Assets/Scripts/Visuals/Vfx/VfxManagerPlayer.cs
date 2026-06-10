@@ -37,6 +37,8 @@ public class VfxManagerPlayer : VfxManagerBase
         {
             _localOffsetDash = psDash.transform.localPosition;
             
+            psDash.transform.SetParent(null);
+            
             var mainModule = psDash.main;
             mainModule.simulationSpace = ParticleSystemSimulationSpace.World;
         }
@@ -66,8 +68,10 @@ public class VfxManagerPlayer : VfxManagerBase
     {
         if (psDash == null) return;
 
+        psDash.transform.position = transform.TransformPoint(_localOffsetDash);
+
         float playerYAngle = transform.eulerAngles.y;
-        float angleYOffset = 0; 
+        float angleYOffset = 0f; 
         
         psDash.transform.rotation = Quaternion.Euler(-90f, playerYAngle + angleYOffset, 0);
         

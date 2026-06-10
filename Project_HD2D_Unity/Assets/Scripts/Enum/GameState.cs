@@ -6,5 +6,6 @@
     Credits,
     Dead,
     Settings,
+    FinalCredits,
     Null,
 }

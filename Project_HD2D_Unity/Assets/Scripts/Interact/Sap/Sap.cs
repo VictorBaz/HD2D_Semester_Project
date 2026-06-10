@@ -69,6 +69,7 @@ public class Sap : MonoBehaviour, ISapLockable, IDataPersistence
         player?.PlayerData.AddSap();
         UiEvents.TriggerSapChanged(player?.PlayerData.Sap ?? 0);
         particleSap.TriggerParticleSystem();
+        GamepadVibrationHelper.Vibrate(0.25f,1f,0.20f);
     }
     
     private void TickTimer()

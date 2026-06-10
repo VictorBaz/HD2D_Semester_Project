@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
 
     private bool isLoading = false;
     
+    public string GameName =>  GameSceneName;
     #endregion
 
     private void Awake()
@@ -215,7 +216,7 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator HandleCreditsIe(float time)
     {
-        yield return new WaitForSeconds(time);
+        yield return new WaitForSeconds(time + 5f);
         ChangeState(GameState.Menu);
         LoadMenu();
     }

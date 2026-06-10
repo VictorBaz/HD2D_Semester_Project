@@ -44,7 +44,7 @@ namespace Player.State
             if (psc.Controller.IsFacingWall())
             {
                 float yStock = psc.Rb.linearVelocity.y;
-                psc.Rb.linearVelocity = Vector3.zero + new Vector3(0, yStock, 0);
+                psc.Rb.linearVelocity = Vector3.zero;
                 DetermineState(psc);
             }
         }

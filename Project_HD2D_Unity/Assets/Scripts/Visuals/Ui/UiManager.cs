@@ -59,6 +59,7 @@ public class UiManager : MonoBehaviour
     [SerializeField] private RectTransform loadingIcon;
     [SerializeField] private float rotationSpeed = 200f;
     [SerializeField] private CanvasGroup blackScreenGroup;
+    [SerializeField] private float loadingFadeDuration = 0.4f;
 
     [Header("Pop Up")]
     [SerializeField] private CanvasGroup popupGroup;
@@ -305,7 +306,19 @@ public class UiManager : MonoBehaviour
 
     private void HandleLoadingStarted()
     {
-        ToggleCanvasGroup(loadingPanel, true, transitionDuration);
+        if (blackScreenGroup != null)
+        {
+            blackScreenGroup.DOKill();
+            blackScreenGroup.blocksRaycasts = true;
+            blackScreenGroup.DOFade(1f, loadingFadeDuration).SetUpdate(true).OnComplete(() =>
+            {
+                ToggleCanvasGroup(loadingPanel, true, transitionDuration);
+            });
+        }
+        else
+        {
+            ToggleCanvasGroup(loadingPanel, true, transitionDuration);
+        }
 
         rotationTween?.Kill();
         rotationTween = loadingIcon
@@ -314,6 +327,8 @@ public class UiManager : MonoBehaviour
             .SetEase(Ease.Linear)
             .SetUpdate(true);
     }
+    
+    
 
     private void HandleLoadingFinished()
     {
@@ -321,6 +336,15 @@ public class UiManager : MonoBehaviour
 
         rotationTween?.Kill();
         rotationTween = null;
+
+        if (blackScreenGroup != null)
+        {
+            blackScreenGroup.DOKill();
+            blackScreenGroup.DOFade(0f, loadingFadeDuration).SetUpdate(true).OnComplete(() =>
+            {
+                blackScreenGroup.blocksRaycasts = false;
+            });
+        }
     }
 
     #endregion
@@ -356,7 +380,11 @@ public class UiManager : MonoBehaviour
             : null;
 
         if (state == GameState.Game)
+        {
             EventSystem.current.SetSelectedGameObject(null);
+            //TODO CHECK IF DANGEROUS MANIPULATION
+            ToggleCanvasGroup(mainMenuPanel,false,0.1f,0f);
+        }
     }
 
     private GameObject GetFocusTarget(GameState state)

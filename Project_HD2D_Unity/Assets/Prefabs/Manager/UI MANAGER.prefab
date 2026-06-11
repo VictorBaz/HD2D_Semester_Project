@@ -2100,12 +2100,12 @@ Transform:
   m_Children:
   - {fileID: 2626971446859457239}
   - {fileID: 2084533353397797450}
-  - {fileID: 3835566896492550820}
   - {fileID: 713559460012919859}
   - {fileID: 40377760686689954}
   - {fileID: 6537206483878870727}
   - {fileID: 6654144265414850578}
   - {fileID: 251560488093765204}
+  - {fileID: 3835566896492550820}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1692062497272967646
@@ -2144,6 +2144,7 @@ MonoBehaviour:
   loadingIcon: {fileID: 708651982404050841}
   rotationSpeed: 200
   blackScreenGroup: {fileID: 4140952667397222668}
+  loadingFadeDuration: 0.4
   popupGroup: {fileID: 7311758514629942401}
   areaPanelGroup: {fileID: 6547454088676920154}
   areaNameText: {fileID: 5440798702118611668}
@@ -2368,7 +2369,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 0
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 5
+  m_SortingOrder: 0
   m_TargetDisplay: 0
 --- !u!114 &3339846209354286879
 MonoBehaviour:
@@ -4437,7 +4438,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8400615446964523625, guid: 506ac6d761910aa4db414dc8cddeed15, type: 3}
       propertyPath: m_Alpha
-      value: 0.97
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8467117698960542609, guid: 506ac6d761910aa4db414dc8cddeed15, type: 3}
       propertyPath: m_Sprite

@@ -54,7 +54,17 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     
     private PreviewEjectionPlayer  previewEjectionPlayer;
 
-    public bool Enable { get; private set; } = true;
+    private bool enable = true;
+
+    private bool Enable
+    {
+        get => enable;
+        set
+        {
+            enable = value;
+            playerController.Rb.isKinematic = !value;
+        }
+    }
 
     #endregion
 

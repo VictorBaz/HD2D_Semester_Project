@@ -6,55 +6,40 @@ public class AreaPopupTriggerTuto : MonoBehaviour
 {
     [Header("Popup Settings")]
     [SerializeField] private List<Sprite> popupSprites = new();
-    [SerializeField] private bool blockPlayer = false;
-    
-    private bool shown = false;
     private PlayerManager player;
+    private bool visited = false;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (shown || popupSprites.Count == 0) return;
+        if (popupSprites.Count == 0 || visited) return;
 
         if (!other.CompareTag(GameConstants.PLAYER_TAG)) return;
         
         UiEvents.TriggerShowSpritePopup(popupSprites);
 
-        if (blockPlayer)
+        player = other.GetComponentInParent<PlayerManager>();
+        
+        if (player)
         {
-            player = other.GetComponentInParent<PlayerManager>();
-            if (player)
-            {
-                player.TogglePlayer(true);
-                player.GetInputManager().OnParry -= CancelTuto;
-                player.GetInputManager().OnParry += CancelTuto;
-            }
-           
+            player.TogglePlayer(false);
+            player.GetInputManager().OnAttackMelee -= CancelTuto;
+            player.GetInputManager().OnAttackMelee += CancelTuto;
         }
+        
+        visited = true;
     }
 
     private void CancelTuto()
     {
         UiEvents.TriggerHideSpritePopup();
-        shown = true;
 
         if (!player) return;
         
-        player.TogglePlayer(false);
+        player.TogglePlayer(true);
             
         if (player.GetInputManager())
         {
-            player.GetInputManager().OnParry -= CancelTuto;
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        if (shown) return; 
-        
-        if (other.CompareTag(GameConstants.PLAYER_TAG))
-        {
-            UiEvents.TriggerHideSpritePopup();
-            shown = true; 
+            player.GetInputManager().OnAttackMelee -= CancelTuto;
         }
     }
 
@@ -62,7 +47,7 @@ public class AreaPopupTriggerTuto : MonoBehaviour
     {
         if (player && player.GetInputManager())
         {
-            player.GetInputManager().OnParry -= CancelTuto;
+            player.GetInputManager().OnAttackMelee -= CancelTuto;
         }
     }
 }

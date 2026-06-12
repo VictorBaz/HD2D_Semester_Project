@@ -9,6 +9,9 @@ public class PlayerJumpState : PlayerInAirBase
 
     public override void EnterState(PlayerStateContext psc)
     {
+        
+        Debug.Log("Entered Jump State");
+        
         jumpStartTime = Time.time;
         psc.JumpReleased = false;
         psc.Controller.SetGravity(false);

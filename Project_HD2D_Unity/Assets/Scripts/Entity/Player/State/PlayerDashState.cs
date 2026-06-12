@@ -12,6 +12,8 @@ namespace Player.State
 
         public override bool CanMove => false;
         public override bool CanAttack => false;
+        
+        private bool hitAWall = false;
 
         public override void EnterState(PlayerStateContext psc)
         {
@@ -29,22 +31,31 @@ namespace Player.State
             psc.Controller.RunRoutine(DashRoutine(psc));
 
             psc.VfxManagerPlayer.TriggerDashVfx();
+
+            hitAWall = false;
         }
 
         public override void ExitState(PlayerStateContext psc)
         {
             psc.AnimationManager.SetDashing(false);
             psc.Controller.SetGravity(true);
+
+            if (hitAWall)
+            {
+                psc.Rb.linearVelocity = Vector3.zero;
+                psc.Rb.angularVelocity = Vector3.zero;
+            }
         }
 
         public override void UpdateState(PlayerStateContext psc)
         {
             HandleAnimation(psc);
             
-            if (psc.Controller.IsFacingWall())
+            if (psc.Controller.IsFacingWall() ||  IsHeadingIntoSteepSlope(psc))
             {
-                float yStock = psc.Rb.linearVelocity.y;
                 psc.Rb.linearVelocity = Vector3.zero;
+                psc.Rb.angularVelocity = Vector3.zero;
+                hitAWall = true;
                 DetermineState(psc);
             }
         }
@@ -60,13 +71,10 @@ namespace Player.State
             SoundManager.Instance?.PlaySfx(SoundType.Dash);
 
             while (elapsed < psc.PlayerData.DashDuration)
-            {/*
-                float t = elapsed / psc.PlayerData.DashDuration;*/
+            {
 
-                psc.Rb.linearVelocity = dashDirection * psc.PlayerData.DashSpeed;/*Vector3.Lerp(
-                    dashDirection * psc.PlayerData.DashSpeed,
-                    dashDirection * (psc.PlayerData.DashSpeed * 0.08f),
-                    t);*/
+                psc.Rb.linearVelocity = dashDirection * psc.PlayerData.DashSpeed;
+        
                 
                 psc.Rb.linearVelocity = new Vector3(
                     psc.Rb.linearVelocity.x,
@@ -101,5 +109,27 @@ namespace Player.State
             
             DetermineState(psc);
         }
+        
+         
+        private bool IsHeadingIntoSteepSlope(PlayerStateContext psc)
+        {
+            Vector3 dashDir = psc.PlayerTransform.forward;
+            float checkDist = 0.5f;
+
+            
+            Vector3 feetPos = psc.PlayerTransform.position 
+                              - Vector3.up * (psc.PlayerData.PlayerHeight / 2f - 0.1f);
+            
+            #if UNITY_EDITOR
+            Debug.DrawRay(feetPos,dashDir*checkDist,Color.coral);
+            #endif
+            
+            if (!Physics.Raycast(feetPos, dashDir, out RaycastHit hit, checkDist, psc.PlayerData.GroundMask))
+                return false;
+
+            float slopeAngle = Vector3.Angle(Vector3.up, hit.normal);
+            return slopeAngle > psc.PlayerData.MaxSlopeAngle;  
+        }
     }
+   
 }

@@ -116,7 +116,7 @@ public class SteamAchivementManager : MonoBehaviour
     void OnApplicationQuit()
     {
         #if UNITY_EDITOR
-        //ClearEveryAchivements();
+        ClearEveryAchivements();
         #endif
         
         SteamClient.Shutdown();

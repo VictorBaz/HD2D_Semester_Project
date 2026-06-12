@@ -24,7 +24,7 @@ public class AreaPopupTriggerTuto : MonoBehaviour
             player = other.GetComponentInParent<PlayerManager>();
             if (player)
             {
-                player.ToggleMovement(true);
+                player.TogglePlayer(true);
                 player.GetInputManager().OnParry -= CancelTuto;
                 player.GetInputManager().OnParry += CancelTuto;
             }
@@ -39,7 +39,7 @@ public class AreaPopupTriggerTuto : MonoBehaviour
 
         if (!player) return;
         
-        player.ToggleMovement(false);
+        player.TogglePlayer(false);
             
         if (player.GetInputManager())
         {

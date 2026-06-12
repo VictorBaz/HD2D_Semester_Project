@@ -39,8 +39,6 @@ public class PlayerController : MonoBehaviour
     private bool isJumping;
     private bool isInLockMode;
     
-    public bool Blocked { get;  set; }
-
     #endregion
 
     #region Unity Lifecycle
@@ -59,8 +57,6 @@ public class PlayerController : MonoBehaviour
 
     public void UpdatePlayerController(Transform cam, Vector2 moveInput)
     {
-        if (Blocked) return;
-        
         CheckGround();
         CheckWall();
         HandleRotation(cam, moveInput);
@@ -68,12 +64,6 @@ public class PlayerController : MonoBehaviour
 
     public void UpdatePlayerControllerPhysics(Vector3 targetDirection, Vector2 moveInput, float speedMultiplier)
     {
-        
-        if (Blocked)
-        {
-            rb.linearVelocity = Vector3.zero;
-            return;
-        }
         
         ApplyMovement(targetDirection, moveInput, speedMultiplier);
 

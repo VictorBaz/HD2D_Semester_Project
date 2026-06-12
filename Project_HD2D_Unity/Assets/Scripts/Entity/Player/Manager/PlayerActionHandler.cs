@@ -23,6 +23,8 @@ public class PlayerActionHandler : MonoBehaviour
     [SerializeField] private bool unlockParry = false;
 
     private PlayerDataInstance Data => pm.Context.PlayerData;
+    
+    public bool Enable { get; private set; } = true;
 
     #endregion
 
@@ -54,6 +56,7 @@ public class PlayerActionHandler : MonoBehaviour
             inputManager.OnPausePressed += GameManager.Instance.TogglePause;
 
         PlayerEvents.OnRequestCurrentLockTarget = GetCurrentTargetLock;
+        GameplayEvents.OnPlayerBlocked += ToggleInput;
     }
 
     private void OnDisable()
@@ -75,10 +78,13 @@ public class PlayerActionHandler : MonoBehaviour
 
         if (GameManager.Instance != null)
             inputManager.OnPausePressed -= GameManager.Instance.TogglePause;
+        GameplayEvents.OnPlayerBlocked -= ToggleInput;
     }
 
     private void Update()
     {
+        if(!Enable) return;
+        
         TickTimers();
         playerController.SetJumping(jumpCooldownTimer > 0 || pm.CurrentPlayerState is PlayerBumpState);
     }
@@ -100,6 +106,8 @@ public class PlayerActionHandler : MonoBehaviour
 
     private void TryJump()
     {
+        if(!Enable) return;
+        
         if (!pm.CurrentPlayerState.CanJump(pm.Context)) return;
         if (jumpCooldownTimer > 0f) return;
 
@@ -139,6 +147,8 @@ public class PlayerActionHandler : MonoBehaviour
 
     private void TryDash()
     {
+        if(!Enable) return;
+        
         if (pm.Context.LockOnSystem.IsLocked) return;
         if (!pm.CurrentPlayerState.CanDash) return;
         if (dashCooldownTimer > 0f) return;
@@ -157,6 +167,8 @@ public class PlayerActionHandler : MonoBehaviour
 
     private void TryCarry()
     {
+        if(!Enable) return;
+        
         if (pm.Context.CurrentTargetCarry != null)
         {
             Vector3 forceMondiale = transform.TransformDirection(Data.EjectionForce);
@@ -185,6 +197,8 @@ public class PlayerActionHandler : MonoBehaviour
 
     private void TryParry()
     {
+        if(!Enable) return;
+        
         if (!unlockParry) return;
         if (parryCooldownTimer > 0f) return;
         if (lockOnSystem.IsLocked) return;
@@ -206,12 +220,16 @@ public class PlayerActionHandler : MonoBehaviour
 
     private void OnLockToggle()
     {
+        if(!Enable) return;
+        
         lockOnSystem.TryLock();
         UiEvents.TriggerLockStateChanged(lockOnSystem.IsLocked);
     }
 
     private void OnLockRelease()
     {
+        if(!Enable) return;
+        
         lockOnSystem.Unlock();
         UiEvents.TriggerLockStateChanged(false);
     }
@@ -225,6 +243,8 @@ public class PlayerActionHandler : MonoBehaviour
 
     private void TryGiveEnergy()
     {
+        if(!Enable) return;
+        
         if (!TryGetFlawTarget(out Flaw flaw)) return;
         
         if (Data.IsEnergyEmpty() || flaw.IsAtMaximumEnergy() || !flaw.IsLockable()) return;
@@ -241,6 +261,9 @@ public class PlayerActionHandler : MonoBehaviour
 
     private void TryTakeEnergy()
     {
+        
+        if(!Enable) return;
+        
         if (!TryGetFlawTarget(out Flaw flaw)) return;
         
         if (Data.Energy >= Data.MaxEnergy || !flaw.IsContainingEnergy()) return;
@@ -274,5 +297,7 @@ public class PlayerActionHandler : MonoBehaviour
     }
 
     #endregion
-    
+
+    private void ToggleInput(bool on) => Enable = on;
+
 }

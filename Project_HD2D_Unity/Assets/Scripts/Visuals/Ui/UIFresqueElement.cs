@@ -6,8 +6,10 @@ using DG.Tweening; // AJOUT : Indispensable pour utiliser DOAnchorPosX
 
 public class UIFresqueElement : MonoBehaviour
 {
+    [SerializeField] private CanvasGroup fresqueCanvasGroup;
     [SerializeField] private RectTransform rectTransformFresque;
     [SerializeField] private List<FresqueData> fresqueDatas;
+    [SerializeField] private bool StopFresque;
     
     [Serializable]
     struct FresqueData
@@ -19,19 +21,22 @@ public class UIFresqueElement : MonoBehaviour
     }
 
     private Tween _fresqueTween;
-
-    private void Awake() 
-    {
-        GameplayEvents.TriggerPlayerBlocked(true);
-    }
+    
 
     private void Start() => FresqueLogic();
 
     private void FresqueLogic()
     {
-        if (rectTransformFresque == null || fresqueDatas == null || fresqueDatas.Count == 0)
+        if (rectTransformFresque == null || fresqueDatas == null || fresqueDatas.Count == 0) 
         {
-            GameplayEvents.TriggerPlayerBlocked(false);
+            GameplayEvents.TriggerPlayerEnable(true);
+            return;
+        }
+
+        if (StopFresque && fresqueCanvasGroup != null)
+        {
+            fresqueCanvasGroup.DOFade(0f,1f).SetEase(Ease.InOutCubic);
+            GameplayEvents.TriggerPlayerEnable(true);
             return;
         }
 
@@ -40,6 +45,8 @@ public class UIFresqueElement : MonoBehaviour
 
     private IEnumerator FresqueLogicIe()
     {
+        GameplayEvents.TriggerPlayerEnable(false);
+        
         yield return null;
 
         foreach (var data in fresqueDatas)
@@ -55,8 +62,10 @@ public class UIFresqueElement : MonoBehaviour
 
             if (data.HoldDuration > 0f) yield return new WaitForSecondsRealtime(data.HoldDuration);
         }
+        
+        fresqueCanvasGroup.DOFade(0f,1f).SetEase(Ease.InOutCubic);
 
-        GameplayEvents.TriggerPlayerBlocked(false);
+        GameplayEvents.TriggerPlayerEnable(true);
     }
 
     private void OnDestroy() => _fresqueTween?.Kill();

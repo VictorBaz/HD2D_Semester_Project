@@ -54,7 +54,7 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     
     private PreviewEjectionPlayer  previewEjectionPlayer;
 
-    
+    public bool Enable { get; private set; } = true;
 
     #endregion
 
@@ -113,21 +113,16 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 
     private void Update()
     {
+        if(!Enable) return;
         CurrentPlayerState.UpdateState(Context);
         HandlePassiveRegen();
-        
-        Vector3 dashDir = Context.PlayerTransform.forward;
-        float checkDist = 0.5f;
-
-            
-        Vector3 feetPos = Context.PlayerTransform.position 
-                          - Vector3.up * (Context.PlayerData.PlayerHeight / 2f - 0.1f);
-            
-        Debug.DrawRay(feetPos,dashDir*checkDist,Color.coral);
-        
     }
 
-    private void FixedUpdate() => CurrentPlayerState.FixedUpdateState(Context);
+    private void FixedUpdate()
+    {
+        if(!Enable) return;
+        CurrentPlayerState.FixedUpdateState(Context);
+    }
 
     private void OnDestroy()
     {
@@ -137,8 +132,17 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         GameplayEvents.OnCredits -= CreditsState;
     }
 
-    private void OnEnable()  => GameplayEvents.OnCheckpoint += UpdateCheckPoint;
-    private void OnDisable() => GameplayEvents.OnCheckpoint -= UpdateCheckPoint;
+    private void OnEnable()
+    { 
+        GameplayEvents.OnCheckpoint += UpdateCheckPoint;
+        GameplayEvents.OnPlayerBlocked += TogglePlayer;
+    }
+
+    private void OnDisable()
+    {
+        GameplayEvents.OnCheckpoint -= UpdateCheckPoint;
+        GameplayEvents.OnPlayerBlocked -= TogglePlayer;
+    }
     
 
     #endregion
@@ -161,6 +165,8 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 
     public void TransitionTo(PlayerBaseState newState)
     {
+        if(!Enable) return;
+        
         CurrentPlayerState?.ExitState(Context);
         CurrentPlayerState = newState;
         CurrentPlayerState.EnterState(Context);
@@ -315,13 +321,13 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 
     #region Helper
 
-    public void ToggleMovement(bool on) => playerController.Blocked = on;
+    public void TogglePlayer(bool on) => Enable = on;
 
     public InputManager GetInputManager() => inputManager;
 
     public void CreditsState(float time)
     {
-        ToggleMovement(true);
+        TogglePlayer(true);
     }
 
     #endregion

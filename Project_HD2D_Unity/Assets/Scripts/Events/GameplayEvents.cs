@@ -16,4 +16,7 @@ public static class GameplayEvents
 
     public static event Action<float> OnCredits;
     public static void TriggerCredits(float credits) => OnCredits?.Invoke(credits);
+    
+    public static event Action <bool> OnPlayerBlocked;
+    public static void TriggerPlayerBlocked(bool block) => OnPlayerBlocked?.Invoke(block);
 }

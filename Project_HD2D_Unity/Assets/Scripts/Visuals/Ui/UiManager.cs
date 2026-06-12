@@ -46,14 +46,6 @@ public class UiManager : MonoBehaviour
     [SerializeField] private float hideOffset = 200f;
     [SerializeField] private float transitionDuration = 0.25f;
 
-    [Header("X Button Images")]
-    [SerializeField] private Image playerLockXButtonImage;
-    [SerializeField] private Image playerNotLockXButtonImage;
-
-    [Header("A Button Images")]
-    [SerializeField] private Image playerLockAButtonImage;
-    [SerializeField] private Image playerNotLockAButtonImage;
-
     [Header("Loading Settings")]
     [SerializeField] private CanvasGroup loadingPanel;
     [SerializeField] private RectTransform loadingIcon;
@@ -172,7 +164,6 @@ public class UiManager : MonoBehaviour
         EventManager.OnGameStateChanged += HandleUiState;
         UiEvents.OnEnergyChanged += HandleEnergyUpdate;
         UiEvents.OnSapChanged += HandleSapUpdate;
-        UiEvents.OnLockStateChanged += HandleLockUpdate;
         UiEvents.OnToggleInputPanel += DisplayPanelInput;
         EventManager.OnLoadingStarted += HandleLoadingStarted;
         EventManager.OnLoadingFinished += HandleLoadingFinished;
@@ -190,7 +181,6 @@ public class UiManager : MonoBehaviour
         EventManager.OnGameStateChanged -= HandleUiState;
         UiEvents.OnEnergyChanged -= HandleEnergyUpdate;
         UiEvents.OnSapChanged -= HandleSapUpdate;
-        UiEvents.OnLockStateChanged -= HandleLockUpdate;
         UiEvents.OnToggleInputPanel -= DisplayPanelInput;
         EventManager.OnLoadingStarted -= HandleLoadingStarted;
         EventManager.OnLoadingFinished -= HandleLoadingFinished;
@@ -292,17 +282,7 @@ public class UiManager : MonoBehaviour
             sapCountText.text = curr.ToString();
     }
 
-    private void HandleLockUpdate(bool isLocked)
-    {
-        if (isLocked == lastPlayerLock && Time.time > 0.1f) return;
-        lastPlayerLock = isLocked;
-
-        float lockAlpha   = isLocked ? 1f : 0f;
-        float unlockAlpha = isLocked ? 0f : 1f;
-
-        AnimateButtonSwap(playerLockXButtonImage,    playerNotLockXButtonImage,    lockAlpha, unlockAlpha);
-        AnimateButtonSwap(playerLockAButtonImage,    playerNotLockAButtonImage,    lockAlpha, unlockAlpha);
-    }
+    
 
     private void HandleLoadingStarted()
     {
@@ -606,7 +586,7 @@ public class UiManager : MonoBehaviour
             .SetUpdate(true)
             .OnComplete(() =>
             {
-                //ToggleCanvasGroup(endGameCreditsPanel, false, transitionDuration);
+                
             });
     }
 }

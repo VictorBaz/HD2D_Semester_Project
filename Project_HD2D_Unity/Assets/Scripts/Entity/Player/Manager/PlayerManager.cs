@@ -115,6 +115,16 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     {
         CurrentPlayerState.UpdateState(Context);
         HandlePassiveRegen();
+        
+        Vector3 dashDir = Context.PlayerTransform.forward;
+        float checkDist = 0.5f;
+
+            
+        Vector3 feetPos = Context.PlayerTransform.position 
+                          - Vector3.up * (Context.PlayerData.PlayerHeight / 2f - 0.1f);
+            
+        Debug.DrawRay(feetPos,dashDir*checkDist,Color.coral);
+        
     }
 
     private void FixedUpdate() => CurrentPlayerState.FixedUpdateState(Context);
@@ -302,56 +312,6 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 
     private void UpdateCheckPoint(Vector3 pos) => checkPointPos = pos;
     
-    
-    #region Gizmos
-
-    private void OnDrawGizmos()
-    {
-        bool isRuntime = Application.isPlaying && playerData != null;
-
-        Gizmos.color = isRuntime
-            ? (playerController.IsGrounded ? Color.green : Color.red)
-            : Color.yellow;
-
-        float height    = isRuntime ? playerData.PlayerHeight        : playerDataRaw.Movement.PlayerHeight;
-        float checkDist = isRuntime ? playerData.GroundCheckDistance : playerDataRaw.Movement.GroundCheckDistance;
-        float radius    = 0.2f;
-
-        Vector3 rayStart = transform.position - new Vector3(0, (height / 2) - radius, 0);
-        Vector3 rayEnd   = rayStart + Vector3.down * checkDist;
-
-        Gizmos.DrawWireSphere(rayStart, radius);
-        Gizmos.DrawLine(rayStart, rayEnd);
-        Gizmos.DrawWireSphere(rayEnd, radius);
-
-        Gizmos.color = Color.blue;
-        float carryRange = isRuntime ? playerData.CarryRange : playerDataRaw.Abilities.CarryRange;
-        float carryAngle = isRuntime ? playerData.CarryAngle : playerDataRaw.Abilities.CarryAngle;
-
-        DrawWireArc(transform.position, transform.forward, carryAngle, carryRange);
-    }
-
-    private void DrawWireArc(Vector3 center, Vector3 forward, float angle, float radius)
-    {
-        Vector3 left  = Quaternion.AngleAxis(-angle, Vector3.up) * forward;
-        Vector3 right = Quaternion.AngleAxis( angle, Vector3.up) * forward;
-
-        Gizmos.DrawLine(center, center + left  * radius);
-        Gizmos.DrawLine(center, center + right * radius);
-
-        int     segments = 10;
-        Vector3 prev     = center + left * radius;
-
-        for (int i = 1; i <= segments; i++)
-        {
-            float   a    = Mathf.Lerp(-angle, angle, (float)i / segments);
-            Vector3 next = center + (Quaternion.AngleAxis(a, Vector3.up) * forward) * radius;
-            Gizmos.DrawLine(prev, next);
-            prev = next;
-        }
-    }
-
-    #endregion
 
     #region Helper
 

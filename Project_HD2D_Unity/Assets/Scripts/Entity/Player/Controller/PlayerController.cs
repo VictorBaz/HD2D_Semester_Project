@@ -268,22 +268,5 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
-    #region Gizmos
-
-    private void OnDrawGizmos()
-    {
-        Vector3 attackPos = transform.TransformPoint(attackColliderLocalOffset);
-
-        Gizmos.color = new Color(1f, 0.2f, 0.2f, 0.4f);
-        Gizmos.DrawSphere(attackPos, attackRadius);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(attackPos, attackRadius);
-
-        if (!Application.isPlaying || !IsOnWall) return;
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawRay(transform.position, wallNormal);
-    }
-
-    #endregion
+    
 }

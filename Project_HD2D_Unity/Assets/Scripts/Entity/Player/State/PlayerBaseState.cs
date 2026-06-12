@@ -106,9 +106,9 @@ public abstract class PlayerBaseState
             return;
         }
 
-        if (psc.Rb.linearVelocity.y > psc.PlayerData.FallAndJumpThreshold)
-            psc.StateMachine.TransitionTo(psc.StateMachine.JumpState);
-        else
+        /*if (psc.Rb.linearVelocity.y > psc.PlayerData.FallAndJumpThreshold)
+            psc.StateMachine.TransitionTo(psc.StateMachine.JumpState); //issue here
+        else*/
             psc.StateMachine.TransitionTo(psc.StateMachine.FallState);
     }
 }

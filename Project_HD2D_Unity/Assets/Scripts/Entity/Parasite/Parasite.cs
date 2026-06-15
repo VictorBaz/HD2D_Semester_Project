@@ -64,8 +64,12 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     #region Initialization
     private void Init()
     {
-        if (ACHManager != null)
-            ACHManager = SteamAchivementManager.Instance;
+        ACHManager = SteamAchivementManager.Instance;
+        
+        if (ACHManager == null)
+        {
+            Debug.LogError("Steam manager is NULL !");
+        }
         
         life = lifeMax;
         

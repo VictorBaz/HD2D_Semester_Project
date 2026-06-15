@@ -33,8 +33,12 @@ public class DestructibleElement : MonoBehaviour
         if (fracturedParent) fracturedParent.SetActive(false);
         block = new MaterialPropertyBlock();
         
-        if (ACHManager != null)
-            ACHManager = SteamAchivementManager.Instance;
+        ACHManager = SteamAchivementManager.Instance;
+        
+        if (ACHManager == null)
+        {
+            Debug.LogError("Steam manager is NULL !");
+        }
     }
 
     private void TriggerDestruction()

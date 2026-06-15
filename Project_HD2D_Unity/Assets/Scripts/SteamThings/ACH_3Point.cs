@@ -12,8 +12,12 @@ public class ACH_Trigger : MonoBehaviour
 
     private void Start()
     {
-        if (ACHManager != null)
-            ACHManager = SteamAchivementManager.Instance;
+        ACHManager = SteamAchivementManager.Instance;
+        
+        if (ACHManager == null)
+        {
+            Debug.LogError("Steam manager is NULL !");
+        }
     }
 
     private void OnTriggerEnter(Collider other)

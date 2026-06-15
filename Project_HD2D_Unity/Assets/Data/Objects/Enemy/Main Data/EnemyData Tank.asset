@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: EnemyData Tank
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   Navigation:
-    PatrolSpeed: 2
-    ChaseSpeed: 3
+    PatrolSpeed: 1
+    ChaseSpeed: 3.5
     Acceleration: 8
     StoppingDistance: 1.2
     SearchDuration: 10
     SearchRadius: 5
-    RotationSpeed: 10
+    RotationSpeed: 25
     GroundCheckDistance: 2
     NavmeshCheckDistance: 1
   Attack:
@@ -36,11 +36,11 @@ MonoBehaviour:
     ChargeAnimationClip: {fileID: 7400000, guid: d28ad66b920163b4b9dd516e84317901, type: 2}
     AttackAnimationClip: {fileID: 7400000, guid: a06173b43eb12734785f2880027fdc38, type: 2}
   Status:
-    MaxKo: 10
-    KoTimeMax: 5
+    MaxKo: 22
+    KoTimeMax: 7.5
     EjectForce: 5
     StunDuration: 0.35
-    ExposedTime: 3.5
+    ExposedTime: 2
   Visuals:
     SpriteSearch: {fileID: 21300000, guid: c9ec8811a41c4634aa26eed1a1d8145d, type: 3}
     SpriteAttackStart: {fileID: 21300000, guid: fabf2f4058fb498408b6d6518d6c8e98, type: 3}

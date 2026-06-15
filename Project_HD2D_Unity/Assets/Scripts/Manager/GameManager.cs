@@ -38,8 +38,6 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        
     }
 
     private void Start()
@@ -114,8 +112,17 @@ public class GameManager : MonoBehaviour
 
     public void TogglePause()
     {
-        if (currentState == GameState.Game) ChangeState(GameState.Pause);
-        else if (currentState == GameState.Pause) ChangeState(GameState.Game);
+        switch (currentState)
+        {
+            case GameState.Game:
+                ChangeState(GameState.Pause);
+                break;
+            case GameState.Pause:
+                ChangeState(GameState.Game);
+                break;
+        }
+        
+        if (SoundManager.Instance)SoundManager.Instance.PlaySfx(SoundType.UI_Game_Paused);
     }
 
     #region Loading Scene

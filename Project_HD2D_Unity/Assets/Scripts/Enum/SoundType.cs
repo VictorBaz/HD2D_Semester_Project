@@ -22,5 +22,7 @@
     
     Pop_Up,
     
+    UI_Switch, UI_Select, UI_Game_Paused,
+    
     None
 }

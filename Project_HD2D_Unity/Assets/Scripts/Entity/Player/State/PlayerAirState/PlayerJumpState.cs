@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Script.Manager;
+using UnityEngine;
 
 public class PlayerJumpState : PlayerInAirBase
 {
@@ -9,7 +10,6 @@ public class PlayerJumpState : PlayerInAirBase
 
     public override void EnterState(PlayerStateContext psc)
     {
-        
         jumpStartTime = Time.time;
         psc.JumpReleased = false;
         psc.Controller.SetGravity(false);
@@ -29,6 +29,8 @@ public class PlayerJumpState : PlayerInAirBase
 
         psc.VfxManagerPlayer.TriggerParticleJump(
             psc.StateMachine.transform.position - offsetVfxJump);
+        
+        if (SoundManager.Instance)SoundManager.Instance.PlaySfx(SoundType.Jump_Hop);
     }
 
     public override void ExitState(PlayerStateContext psc)

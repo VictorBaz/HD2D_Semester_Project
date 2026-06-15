@@ -353,17 +353,22 @@ public class UiManager : MonoBehaviour
         }
         
         if (state == GameState.Pause)
-            ToggleCanvasGroup(hudPanel, true, transitionDuration, 0.4f);
+        {
+            ToggleCanvasGroup(hudPanel, false, transitionDuration, 0f);
+        }
 
         focusRetryCoroutine = GetFocusTarget(state) is GameObject target
             ? StartCoroutine(EnsureFocusRoutine(target))
             : null;
 
+        //ugly ass patch no time to understand issue
         if (state == GameState.Game)
         {
             EventSystem.current.SetSelectedGameObject(null);
             //TODO CHECK IF DANGEROUS MANIPULATION
             ToggleCanvasGroup(mainMenuPanel,false,0.1f,0f);
+            ToggleCanvasGroup(pauseMenuPanel,false,0.1f,0f);
+            ToggleCanvasGroup(hudPanel,true,0.1f);
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using DG.Tweening;
 using Enum;
+using Script.Manager;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -27,6 +28,7 @@ public class ButtonPauseHandler : MonoBehaviour,
     {
         canvasGroupSelectedButton?.DOKill();
         canvasGroupSelectedButton?.DOFade(0f, fadeDuration).SetUpdate(true);
+        if (SoundManager.Instance)SoundManager.Instance.PlaySfx(SoundType.UI_Switch);
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -42,7 +44,7 @@ public class ButtonPauseHandler : MonoBehaviour,
     private void ExecuteAction()
     {
         GameManager.Instance.ExecuteButtonAction(action);
-        
+        if (SoundManager.Instance)SoundManager.Instance.PlaySfx(SoundType.UI_Select);
         transform.DOPunchScale(Vector3.one * 0.1f, 0.2f).SetUpdate(true);
     }
 

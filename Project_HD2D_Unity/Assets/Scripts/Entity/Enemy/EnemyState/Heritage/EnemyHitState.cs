@@ -1,3 +1,4 @@
+using Script.Manager;
 using UnityEngine;
 
 public class EnemyHitState : EnemyBaseState
@@ -27,6 +28,7 @@ public class EnemyHitState : EnemyBaseState
         if (actx.Data.IsKoFull())
         {
             actx.TransitionTo(actx.Manager.KoState);
+            if (SoundManager.Instance)SoundManager.Instance.PlaySfx(SoundType.Enemy_Ko_Full);
             return;
         }
 

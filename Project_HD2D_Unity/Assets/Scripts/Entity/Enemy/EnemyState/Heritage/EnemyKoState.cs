@@ -1,3 +1,4 @@
+using Script.Manager;
 using UnityEngine;
 
 public class EnemyKoState : EnemyBaseState
@@ -54,6 +55,7 @@ public class EnemyKoState : EnemyBaseState
             actx.Data.ResetKo();
             DetermineNextState(actx);
             actx.VfxManager.StopKoVfx();
+            if (SoundManager.Instance)SoundManager.Instance.PlaySfx(SoundType.Enemy_Recovery);
         }
     }
 

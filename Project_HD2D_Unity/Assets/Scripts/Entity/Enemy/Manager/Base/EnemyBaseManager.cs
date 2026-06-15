@@ -376,6 +376,7 @@ public abstract class EnemyBaseManager : MonoBehaviour, IDamageableEnemy, ICarry
         isCarried = false;
         ChangeState(DropState);
         enemyAnimationManager.ToggleRepulsiveCollider(true);
+        if (SoundManager.Instance)SoundManager.Instance.PlaySfx(SoundType.Enemy_Drop_Throw);
     }
 
     public bool IsCarry() => isCarried;

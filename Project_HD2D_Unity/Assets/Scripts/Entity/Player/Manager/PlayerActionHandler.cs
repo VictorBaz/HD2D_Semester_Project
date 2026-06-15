@@ -188,7 +188,10 @@ public class PlayerActionHandler : MonoBehaviour
         pm.Context.CurrentTargetCarry = DetectionHelper.GetBestTarget(transform, targets);
 
         if (pm.Context.CurrentTargetCarry != null)
+        {
             pm.TransitionTo(pm.CarryState);
+            if (SoundManager.Instance)SoundManager.Instance.PlaySfx(SoundType.Enemy_Carry);
+        }
     }
 
     #endregion

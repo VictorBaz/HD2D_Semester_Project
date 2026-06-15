@@ -1,5 +1,6 @@
 using DG.Tweening;
 using Enum;
+using Script.Manager;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -33,6 +34,7 @@ public class ButtonMenuHandler : MonoBehaviour,
     {
         transform.DOScale(originalScale, scaleDuration).SetEase(Ease.OutQuad);
         visualCanvasGroup?.DOFade(0f, scaleDuration);
+        if (SoundManager.Instance)SoundManager.Instance.PlaySfx(SoundType.UI_Switch);
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -48,7 +50,7 @@ public class ButtonMenuHandler : MonoBehaviour,
     private void ExecuteAction()
     {
         GameManager.Instance.ExecuteButtonAction(action);
-        
+        if (SoundManager.Instance)SoundManager.Instance.PlaySfx(SoundType.UI_Select);
         transform.DOKill();
         transform.DOPunchScale(Vector3.one * 0.1f, 0.2f).SetUpdate(true);
     }

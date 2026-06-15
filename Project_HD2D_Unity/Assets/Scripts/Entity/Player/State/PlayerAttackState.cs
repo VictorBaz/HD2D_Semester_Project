@@ -149,6 +149,11 @@ namespace Player.State
 
                 hitThisCombo.Add(damageable);
             }
+
+            if (count > 0)
+            {
+                if (SoundManager.Instance)SoundManager.Instance.PlaySfx(SoundType.Combo_Hit_1_2);
+            }
             
         }
 

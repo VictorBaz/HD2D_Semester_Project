@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Script.Manager;
+using UnityEngine;
 
 namespace Player.State
 {
@@ -11,6 +12,8 @@ namespace Player.State
             psc.Controller.SetGravity(true);
             
             psc.Rb.linearVelocity = Vector3.zero;
+
+            if (SoundManager.Instance)SoundManager.Instance.PlaySfx(SoundType.Jump_Land);
         }
 
         public override void ExitState(PlayerStateContext psc)

@@ -58,13 +58,15 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     private void Start()
     {
         Init();
-        ACHManager = SteamAchivementManager.Instance;
     }
     #endregion
 
     #region Initialization
     private void Init()
     {
+        if (ACHManager != null)
+            ACHManager = SteamAchivementManager.Instance;
+        
         life = lifeMax;
         
         if (PlayerEvents.OnRequestPlayerContext != null)

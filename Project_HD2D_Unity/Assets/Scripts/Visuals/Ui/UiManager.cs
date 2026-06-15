@@ -70,6 +70,8 @@ public class UiManager : MonoBehaviour
     [SerializeField] private Slider musicVolumeSlider;
     [SerializeField] private Slider sfxVolumeSlider;
     
+    private List<Tween> activeTweens = new List<Tween>();
+    
     private Sequence spritePopupSequence;
     private Tween spriteAnimationTween;
     private List<Sprite> activePopupSprites;
@@ -87,6 +89,8 @@ public class UiManager : MonoBehaviour
 
     private Tween rotationTween;
     private Coroutine focusRetryCoroutine;
+    
+    private bool isEventsSubscribed = false;
 
     private Dictionary<GameState, CanvasGroup> panelMap;
 
@@ -136,31 +140,24 @@ public class UiManager : MonoBehaviour
     {
         if (masterVolumeSlider && masterVolumeSlider.TryGetComponent<SliderElementHandler>(out var masterHandler))
         {
-            masterHandler.OnValueChangedAction = (value) => 
-            {
-                if (SoundManager.Instance) SoundManager.Instance.UpdateMasterVolume(value);
-            };
+            masterHandler.OnValueChangedAction = OnMasterVolumeChanged;
         }
 
         if (musicVolumeSlider && musicVolumeSlider.TryGetComponent<SliderElementHandler>(out var musicHandler))
         {
-            musicHandler.OnValueChangedAction = (value) => 
-            {
-                if (SoundManager.Instance) SoundManager.Instance.UpdateMusicVolume(value);
-            };
+            musicHandler.OnValueChangedAction = OnMusicVolumeChanged;
         }
 
         if (sfxVolumeSlider && sfxVolumeSlider.TryGetComponent<SliderElementHandler>(out var sfxHandler))
         {
-            sfxHandler.OnValueChangedAction = (value) => 
-            {
-                if (SoundManager.Instance) SoundManager.Instance.UpdateSfxVolume(value);
-            };
+            sfxHandler.OnValueChangedAction = OnSfxVolumeChanged;
         }
     }
 
     private void OnEnable()
     {
+        if (isEventsSubscribed) return;
+        
         EventManager.OnGameStateChanged += HandleUiState;
         UiEvents.OnEnergyChanged += HandleEnergyUpdate;
         UiEvents.OnSapChanged += HandleSapUpdate;
@@ -174,10 +171,14 @@ public class UiManager : MonoBehaviour
         GameplayEvents.OnCredits += StartEndGameCredits;
 
         SceneManager.sceneLoaded += HandleUiStatePatchForUnity;
+        
+        isEventsSubscribed = true;
     }
 
     private void OnDisable()
     {
+        if (!isEventsSubscribed) return;
+        
         EventManager.OnGameStateChanged -= HandleUiState;
         UiEvents.OnEnergyChanged -= HandleEnergyUpdate;
         UiEvents.OnSapChanged -= HandleSapUpdate;
@@ -191,12 +192,52 @@ public class UiManager : MonoBehaviour
         GameplayEvents.OnCredits -= StartEndGameCredits;
         
         SceneManager.sceneLoaded -= HandleUiStatePatchForUnity;
+        
+        StopFocusRoutine();
+        
+        isEventsSubscribed = false;
     }
 
     private void OnDestroy()
     {
+        KillAllTweens();
+        
+        StopFocusRoutine();
+    }
+
+    #endregion
+
+    #region Dangerous: Tween Lifecycle Management
+
+    private T RegisterTween<T>(T tween) where T : Tween
+    {
+        if (tween == null) return null;
+        activeTweens.Add(tween);
+        return tween;
+    }
+    
+    private void KillAllTweens()
+    {
+        foreach (var tween in activeTweens)
+        {
+            tween?.Kill();
+        }
+        activeTweens.Clear();
+        
         transform.DOKill(true);
-        creditsScrollTween?.Kill();
+    }
+
+    #endregion
+
+    #region Dangerous: Coroutine Lifecycle Management
+
+    private void StopFocusRoutine()
+    {
+        if (focusRetryCoroutine != null)
+        {
+            StopCoroutine(focusRetryCoroutine);
+            focusRetryCoroutine = null;
+        }
     }
 
     #endregion
@@ -229,11 +270,11 @@ public class UiManager : MonoBehaviour
         canvasGroupLeftPanel.transform.DOKill();
         canvasGroupRightPanel.transform.DOKill();
 
-        canvasGroupLeftPanel.DOFade(targetAlpha, transitionDuration);
-        canvasGroupRightPanel.DOFade(targetAlpha, transitionDuration);
+        RegisterTween(canvasGroupLeftPanel.DOFade(targetAlpha, transitionDuration));
+        RegisterTween(canvasGroupRightPanel.DOFade(targetAlpha, transitionDuration));
 
-        canvasGroupLeftPanel.transform.DOLocalMoveX(leftX, transitionDuration).SetEase(Ease.OutCubic);
-        canvasGroupRightPanel.transform.DOLocalMoveX(rightX, transitionDuration).SetEase(Ease.OutCubic);
+        RegisterTween(canvasGroupLeftPanel.transform.DOLocalMoveX(leftX, transitionDuration).SetEase(Ease.OutCubic));
+        RegisterTween(canvasGroupRightPanel.transform.DOLocalMoveX(rightX, transitionDuration).SetEase(Ease.OutCubic));
     }
 
     private void AnimateButtonSwap(Image lockImg, Image unlockImg, float lockTarget, float unlockTarget)
@@ -241,8 +282,8 @@ public class UiManager : MonoBehaviour
         lockImg.DOKill();
         unlockImg.DOKill();
 
-        lockImg.DOFade(lockTarget, transitionDuration).SetEase(Ease.InOutQuad);
-        unlockImg.DOFade(unlockTarget, transitionDuration).SetEase(Ease.InOutQuad);
+        RegisterTween(lockImg.DOFade(lockTarget, transitionDuration).SetEase(Ease.InOutQuad));
+        RegisterTween(unlockImg.DOFade(unlockTarget, transitionDuration).SetEase(Ease.InOutQuad));
     }
 
     #endregion
@@ -251,29 +292,28 @@ public class UiManager : MonoBehaviour
 
     private void HandleEnergyUpdate(int curr, int max)
     {
-        if (energyFillImage == null) return;
+        if (energyFillImage == null || energyFillImageBackground == null) 
+            return;
 
         float targetFill = (max > 0) ? (MaxEnergyShaderValue / max) * curr : 0f;
         bool isDecreasing = targetFill < currentEnergyFill;
 
         energyFillTween?.Kill();
-        energyFillTween = DOTween.To(
+        energyFillTween = RegisterTween(DOTween.To(
                 () => currentEnergyFill,
                 x => { currentEnergyFill = x; energyFillImage.materialForRendering.SetFloat("_fillAmount", x); },
                 targetFill,
                 0.7f)
-            .SetEase(Ease.InOutCubic);
-
-        if (energyFillImageBackground == null) return;
+            .SetEase(Ease.InOutCubic));
 
         energyFillBackgroundTween?.Kill();
-        energyFillBackgroundTween = DOTween.To(
+        energyFillBackgroundTween = RegisterTween(DOTween.To(
                 () => currentEnergyFillBackground,
                 x => { currentEnergyFillBackground = x; energyFillImageBackground.materialForRendering.SetFloat("_fillAmount", x); },
                 targetFill,
                 isDecreasing ? 0.8f : 0.6f)
             .SetDelay(isDecreasing ? 0.3f : 0f)
-            .SetEase(isDecreasing ? Ease.OutCubic : Ease.InOutCubic);
+            .SetEase(isDecreasing ? Ease.OutCubic : Ease.InOutCubic));
     }
 
     private void HandleSapUpdate(int curr)
@@ -282,18 +322,21 @@ public class UiManager : MonoBehaviour
             sapCountText.text = curr.ToString();
     }
 
-    
-
     private void HandleLoadingStarted()
     {
+        if (loadingIcon == null || loadingPanel == null) 
+            return;
+
         if (blackScreenGroup != null)
         {
             blackScreenGroup.DOKill();
             blackScreenGroup.blocksRaycasts = true;
-            blackScreenGroup.DOFade(1f, loadingFadeDuration).SetUpdate(true).OnComplete(() =>
-            {
-                ToggleCanvasGroup(loadingPanel, true, transitionDuration);
-            });
+            RegisterTween(blackScreenGroup.DOFade(1f, loadingFadeDuration)
+                .SetUpdate(true)
+                .OnComplete(() =>
+                {
+                    ToggleCanvasGroup(loadingPanel, true, transitionDuration);
+                }));
         }
         else
         {
@@ -301,17 +344,20 @@ public class UiManager : MonoBehaviour
         }
 
         rotationTween?.Kill();
-        rotationTween = loadingIcon
+        rotationTween = null;
+        
+        rotationTween = RegisterTween(loadingIcon
             .DORotate(new Vector3(0, 0, -360), 360f / rotationSpeed, RotateMode.FastBeyond360)
             .SetLoops(-1, LoopType.Restart)
             .SetEase(Ease.Linear)
-            .SetUpdate(true);
+            .SetUpdate(true));
     }
-    
-    
 
     private void HandleLoadingFinished()
     {
+        if (loadingPanel == null) 
+            return;
+
         ToggleCanvasGroup(loadingPanel, false, transitionDuration);
 
         rotationTween?.Kill();
@@ -320,10 +366,13 @@ public class UiManager : MonoBehaviour
         if (blackScreenGroup != null)
         {
             blackScreenGroup.DOKill();
-            blackScreenGroup.DOFade(0f, loadingFadeDuration).SetUpdate(true).OnComplete(() =>
-            {
-                blackScreenGroup.blocksRaycasts = false;
-            });
+            RegisterTween(blackScreenGroup.DOFade(0f, loadingFadeDuration)
+                .SetUpdate(true)
+                .OnComplete(() =>
+                {
+                    if (blackScreenGroup != null)
+                        blackScreenGroup.blocksRaycasts = false;
+                }));
         }
     }
 
@@ -331,8 +380,6 @@ public class UiManager : MonoBehaviour
 
     #region Handle State
 
-    //Deguelasse mais nécessaire pour le moment c'est okay
-    //TEST and work fin de projet donc acceptable mais dans le futur il faudrait revoir complètement le system
     private void HandleUiStatePatchForUnity(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == GameManager.Instance.GameName)
@@ -344,7 +391,7 @@ public class UiManager : MonoBehaviour
 
     private void HandleUiState(GameState state)
     {
-        if (focusRetryCoroutine != null) StopCoroutine(focusRetryCoroutine);
+        StopFocusRoutine();
 
         if (state != GameState.Game)
         {
@@ -353,17 +400,22 @@ public class UiManager : MonoBehaviour
         }
         
         if (state == GameState.Pause)
-            ToggleCanvasGroup(hudPanel, true, transitionDuration, 0.4f);
+        {
+            ToggleCanvasGroup(hudPanel, false, transitionDuration, 0f);
+        }
 
-        focusRetryCoroutine = GetFocusTarget(state) is GameObject target
-            ? StartCoroutine(EnsureFocusRoutine(target))
-            : null;
+        GameObject target = GetFocusTarget(state);
+        if (target != null)
+        {
+            focusRetryCoroutine = StartCoroutine(EnsureFocusRoutine(target));
+        }
 
         if (state == GameState.Game)
         {
             EventSystem.current.SetSelectedGameObject(null);
-            //TODO CHECK IF DANGEROUS MANIPULATION
-            ToggleCanvasGroup(mainMenuPanel,false,0.1f,0f);
+            ToggleCanvasGroup(mainMenuPanel, false, 0.1f, 0f);
+            ToggleCanvasGroup(pauseMenuPanel, false, 0.1f, 0f);
+            ToggleCanvasGroup(hudPanel, true, 0.1f);
         }
     }
 
@@ -371,8 +423,8 @@ public class UiManager : MonoBehaviour
     {
         return state switch
         {
-            GameState.Menu     => mainMenuPanel.GetComponentInChildren<ButtonMenuHandler>().gameObject,
-            GameState.Pause    => pauseMenuPanel.GetComponentInChildren<ButtonPauseHandler>().gameObject,
+            GameState.Menu     => mainMenuPanel.GetComponentInChildren<ButtonMenuHandler>()?.gameObject,
+            GameState.Pause    => pauseMenuPanel.GetComponentInChildren<ButtonPauseHandler>()?.gameObject,
             GameState.Credits  => creditsPanel.GetComponentInChildren<Selectable>()?.gameObject,
             GameState.Settings => settingsPanel.GetComponentInChildren<Selectable>()?.gameObject,
             _                  => null
@@ -381,7 +433,10 @@ public class UiManager : MonoBehaviour
 
     private IEnumerator EnsureFocusRoutine(GameObject target)
     {
-        while (EventSystem.current.currentSelectedGameObject != target)
+        if (target == null)
+            yield break;
+
+        while (target != null && EventSystem.current.currentSelectedGameObject != target)
         {
             EventSystem.current.SetSelectedGameObject(null);
             EventSystem.current.SetSelectedGameObject(target);
@@ -395,10 +450,12 @@ public class UiManager : MonoBehaviour
 
     private void ToggleCanvasGroup(CanvasGroup group, bool show, float duration, float targetAlpha = 1f)
     {
+        if (group == null) return;
+        
         group.DOKill();
         group.blocksRaycasts = show;
         group.interactable   = show;
-        group.DOFade(show ? targetAlpha : 0f, duration).SetUpdate(true);
+        RegisterTween(group.DOFade(show ? targetAlpha : 0f, duration).SetUpdate(true));
     }
 
     #endregion
@@ -407,21 +464,28 @@ public class UiManager : MonoBehaviour
 
     public IEnumerator FadeBlackScreen(float targetAlpha, float duration)
     {
+        if (blackScreenGroup == null)
+            yield break;
+
         float startAlpha = blackScreenGroup.alpha;
         float elapsed    = 0f;
 
-        while (elapsed < duration)
+        while (elapsed < duration && blackScreenGroup != null)
         {
             elapsed += Time.deltaTime;
             blackScreenGroup.alpha = Mathf.Lerp(startAlpha, targetAlpha, elapsed / duration);
             yield return null;
         }
 
-        blackScreenGroup.alpha = targetAlpha;
+        if (blackScreenGroup != null)
+            blackScreenGroup.alpha = targetAlpha;
     }
 
     private void ShowPopup()
     {
+        if (popupGroup == null)
+            return;
+
         float duration = 1.5f;
 
         popupSequence?.Kill();
@@ -429,18 +493,22 @@ public class UiManager : MonoBehaviour
         popupGroup.alpha = 0f;
         popupGroup.gameObject.SetActive(true);
 
-        popupSequence = DOTween.Sequence()
+        popupSequence = RegisterTween(DOTween.Sequence()
             .Append(popupGroup.DOFade(1f, 0.4f))
             .AppendInterval(duration)
             .Append(popupGroup.DOFade(0f, 0.4f))
-            .OnComplete(() => popupGroup.gameObject.SetActive(false));
+            .OnComplete(() => {
+                if (popupGroup != null)
+                    popupGroup.gameObject.SetActive(false);
+            }));
 
         SoundManager.Instance?.PlaySfx(SoundType.Pop_Up);
     }
 
     private void ShowAreaNotification(string areaName)
     {
-        if (areaPanelGroup == null || areaNameText == null) return;
+        if (areaPanelGroup == null || areaNameText == null) 
+            return;
 
         areaSequence?.Kill();
         areaNameText.text = areaName;
@@ -449,7 +517,7 @@ public class UiManager : MonoBehaviour
         areaNameText.transform.localScale = Vector3.one * 0.9f; 
         areaPanelGroup.gameObject.SetActive(true);
 
-        areaSequence = DOTween.Sequence();
+        areaSequence = RegisterTween(DOTween.Sequence());
 
         areaSequence.Append(areaPanelGroup.DOFade(1f, 1.2f).SetEase(Ease.OutSine))
             .Join(areaNameText.transform.DOScale(1f, 1.2f).SetEase(Ease.OutSine));
@@ -459,7 +527,10 @@ public class UiManager : MonoBehaviour
         areaSequence.Append(areaPanelGroup.DOFade(0f, 1.2f).SetEase(Ease.InSine))
             .Join(areaNameText.transform.DOScale(0.9f, 1.2f).SetEase(Ease.InSine));
     
-        areaSequence.OnComplete(() => areaPanelGroup.gameObject.SetActive(false));
+        areaSequence.OnComplete(() => {
+            if (areaPanelGroup != null)
+                areaPanelGroup.gameObject.SetActive(false);
+        });
     }
 
     #endregion
@@ -486,7 +557,8 @@ public class UiManager : MonoBehaviour
 
     private void HandleShowSpritePopup(List<Sprite> sprites)
     {
-        if (spritePopupGroup == null || spritePopupImage == null) return;
+        if (spritePopupGroup == null || spritePopupImage == null) 
+            return;
 
         activePopupSprites = sprites;
         currentSpriteIndex = 0;
@@ -501,38 +573,46 @@ public class UiManager : MonoBehaviour
         spritePopupGroup.alpha = 0f;
         spritePopupGroup.transform.localScale = Vector3.one * 0.8f;
 
-        spritePopupSequence = DOTween.Sequence()
+        spritePopupSequence = RegisterTween(DOTween.Sequence()
             .Append(spritePopupGroup.DOFade(1f, transitionDuration).SetEase(Ease.OutQuad))
             .Join(spritePopupGroup.transform.DOScale(1f, transitionDuration).SetEase(Ease.OutBack))
-            .OnComplete(StartSpriteAnimation);
+            .OnComplete(StartSpriteAnimation));
         
     }
 
     private void HandleHideSpritePopup()
     {
-        if (spritePopupGroup == null) return;
+        if (spritePopupGroup == null) 
+            return;
 
         spritePopupGroup.DOKill();
         spritePopupSequence?.Kill();
         spriteAnimationTween?.Kill();
 
-        spritePopupSequence = DOTween.Sequence()
+        spritePopupSequence = RegisterTween(DOTween.Sequence()
             .Append(spritePopupGroup.DOFade(0f, transitionDuration).SetEase(Ease.InQuad))
             .Join(spritePopupGroup.transform.DOScale(0.8f, transitionDuration).SetEase(Ease.InQuad))
-            .OnComplete(() => spritePopupGroup.gameObject.SetActive(false));
+            .OnComplete(() => {
+                if (spritePopupGroup != null)
+                    spritePopupGroup.gameObject.SetActive(false);
+            }));
     }
 
     private void StartSpriteAnimation()
     {
-        if (activePopupSprites == null || activePopupSprites.Count <= 1) return;
+        if (activePopupSprites == null || activePopupSprites.Count <= 1) 
+            return;
 
-        spriteAnimationTween = DOVirtual.Float(0, 1, spriteSwitchInterval, (value) => { })
+        spriteAnimationTween = RegisterTween(DOVirtual.Float(0, 1, spriteSwitchInterval, (value) => { })
             .SetLoops(-1, LoopType.Restart)
             .OnStepComplete(() =>
             {
+                if (activePopupSprites == null || spritePopupImage == null)
+                    return;
+
                 currentSpriteIndex = (currentSpriteIndex + 1) % activePopupSprites.Count;
                 spritePopupImage.sprite = activePopupSprites[currentSpriteIndex];
-            });
+            }));
     }
 
     #endregion
@@ -568,7 +648,8 @@ public class UiManager : MonoBehaviour
     
     private void StartEndGameCredits(float duration)
     {
-        if (endGameCreditsPanel == null || creditsScrollingImage == null) return;
+        if (endGameCreditsPanel == null || creditsScrollingImage == null) 
+            return;
 
         creditsScrollTween?.Kill();
         endGameCreditsPanel.DOKill();
@@ -581,12 +662,8 @@ public class UiManager : MonoBehaviour
 
         float targetY = endingYCredits;
 
-        creditsScrollTween = creditsScrollingImage.DOAnchorPosY(targetY, duration)
+        creditsScrollTween = RegisterTween(creditsScrollingImage.DOAnchorPosY(targetY, duration)
             .SetEase(Ease.Linear)
-            .SetUpdate(true)
-            .OnComplete(() =>
-            {
-                
-            });
+            .SetUpdate(true));
     }
 }

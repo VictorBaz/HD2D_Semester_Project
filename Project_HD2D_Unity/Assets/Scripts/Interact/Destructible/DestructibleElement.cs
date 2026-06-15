@@ -60,19 +60,21 @@ public class DestructibleElement : MonoBehaviour
         
         ACH_Unlock();
         
-        GamepadVibrationHelper.Vibrate(0.15f,0.5f,0.25f);
+        GamepadVibrationHelper.Vibrate(0.15f, 0.5f, 0.25f);
         
         StartCoroutine(UpdateMpIe(dissolutionDuration));
-        
-        Destroy(gameObject, dissolutionDuration);
     }
     
-
     private void OnCollisionEnter(Collision collision)
     {
-        if (!collision.gameObject.CompareTag("Enemy")) return;
-        if (!collision.gameObject.TryGetComponent<EnemyBaseManager>(out var enemy)) return;
-        if (enemy.CurrentState is EnemyDropState) TriggerDestruction();
+        if (isDestroyed) return;
+
+        EnemyBaseManager enemy = collision.gameObject.GetComponentInParent<EnemyBaseManager>();
+
+        if (enemy != null && enemy.CompareTag("Enemy") && enemy.CurrentState is EnemyDropState)
+        {
+            TriggerDestruction();
+        }
     }
     
     void ACH_Unlock()
@@ -106,5 +108,7 @@ public class DestructibleElement : MonoBehaviour
             
             yield return null;
         }
+        
+        Destroy(gameObject);
     }
 }

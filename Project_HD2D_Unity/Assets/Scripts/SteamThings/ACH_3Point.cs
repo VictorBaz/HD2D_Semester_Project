@@ -12,7 +12,8 @@ public class ACH_Trigger : MonoBehaviour
 
     private void Start()
     {
-        ACHManager = SteamAchivementManager.Instance;
+        if (ACHManager != null)
+            ACHManager = SteamAchivementManager.Instance;
     }
 
     private void OnTriggerEnter(Collider other)

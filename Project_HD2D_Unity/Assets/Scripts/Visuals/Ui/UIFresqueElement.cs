@@ -2,14 +2,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening; // AJOUT : Indispensable pour utiliser DOAnchorPosX
+using DG.Tweening; 
 
 public class UIFresqueElement : MonoBehaviour
 {
     [SerializeField] private CanvasGroup fresqueCanvasGroup;
     [SerializeField] private RectTransform rectTransformFresque;
+    [SerializeField] private RectTransform rectTransformTop;
+    [SerializeField] private RectTransform rectTransformBot;
     [SerializeField] private List<FresqueData> fresqueDatas;
     [SerializeField] private bool StopFresque;
+
+    private float yPositionTop;
+    private float yPositionBot;
     
     [Serializable]
     struct FresqueData
@@ -21,9 +26,18 @@ public class UIFresqueElement : MonoBehaviour
     }
 
     private Tween _fresqueTween;
-    
 
-    private void Start() => FresqueLogic();
+    private void Awake()
+    {
+        fresqueCanvasGroup.alpha = 0f;
+    }
+
+    private void Start()
+    {
+        FresqueLogic();
+        yPositionBot =  rectTransformBot.anchoredPosition.y;
+        yPositionTop =  rectTransformTop.anchoredPosition.y;
+    }
 
     private void FresqueLogic()
     {
@@ -45,28 +59,52 @@ public class UIFresqueElement : MonoBehaviour
 
     private IEnumerator FresqueLogicIe()
     {
+        yield return UiManager.Instance.FadeBlackScreen(1f, 0.5f);
+        
+        yield return fresqueCanvasGroup.DOFade(1f,1f).SetEase(Ease.InOutCubic);
+            
         GameplayEvents.TriggerPlayerEnable(false);
         
         yield return null;
 
-        foreach (var data in fresqueDatas)
+        CinematicEffect();
+
+        int count = fresqueDatas.Count;
+        
+        for (int i = 0; i < count; i++)
         {
             bool isMovementDone = false;
 
-            _fresqueTween = rectTransformFresque.DOAnchorPosX(data.TargetX, data.DurationScroll)
+            _fresqueTween = rectTransformFresque.DOAnchorPosX(fresqueDatas[i].TargetX, fresqueDatas[i].DurationScroll)
                 .SetEase(Ease.InOutCubic) 
                 .SetUpdate(true)          
                 .OnComplete(() => isMovementDone = true);
 
             yield return new WaitUntil(() => isMovementDone);
 
-            if (data.HoldDuration > 0f) yield return new WaitForSecondsRealtime(data.HoldDuration);
+            if (i == count - 1)
+            {
+                CinematicEffect(3f);
+                
+            }
+            
+            if (fresqueDatas[i].HoldDuration > 0f) yield return new WaitForSecondsRealtime(fresqueDatas[i].HoldDuration);
         }
         
-        fresqueCanvasGroup.DOFade(0f,1f).SetEase(Ease.InOutCubic);
+        yield return fresqueCanvasGroup.DOFade(0f,1f).SetEase(Ease.InOutCubic);
 
         GameplayEvents.TriggerPlayerEnable(true);
+        
+        yield return UiManager.Instance.FadeBlackScreen(0f, 1.5f);
     }
 
+    private void CinematicEffect(float duration = 2.5f)
+    {
+        rectTransformTop.DOAnchorPosY(-yPositionTop, duration).SetEase(Ease.InOutCubic);
+        yPositionTop = -yPositionTop;
+        rectTransformBot.DOAnchorPosY(-yPositionBot, duration).SetEase(Ease.InOutCubic);
+        yPositionBot = -yPositionBot;
+    }
+    
     private void OnDestroy() => _fresqueTween?.Kill();
 }

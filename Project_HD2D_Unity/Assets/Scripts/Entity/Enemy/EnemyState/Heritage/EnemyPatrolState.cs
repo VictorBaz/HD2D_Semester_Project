@@ -14,7 +14,7 @@ public class EnemyPatrolState : EnemyBaseState
     {
         actx.Manager.ApplyMovementMode(false);
         actx.ResumeAgent();
-        actx.UpdateAgentSpeed(actx.Data.PatrolSpeed, actx.Data.Acceleration, actx.Data.StoppingDistance);
+        actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_WALK);
 
         if (actx.Manager.patrolPoints.Length > 0)
             actx.SetDestination(actx.Manager.patrolPoints[currentPointIndex].position);

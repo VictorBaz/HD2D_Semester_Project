@@ -51,11 +51,12 @@ public class SteamAchivementManager : MonoBehaviour
 
     private void SteamCheckToDestroy()
     { 
-        #if UNITY_EDITOR
+        /*#if UNITY_EDITOR
             Destroy(gameObject);
         #else
             Application.Quit();
-        #endif
+        #endif*/
+        Destroy(gameObject);
     }
 
     void Update()

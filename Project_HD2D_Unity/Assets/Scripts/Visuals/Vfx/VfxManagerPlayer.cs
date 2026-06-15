@@ -22,12 +22,16 @@ public class VfxManagerPlayer : VfxManagerBase
     [SerializeField] private ParticleSystem psJump;
     [SerializeField] private ParticleSystem psParry;
 
+    [Header("Splash Settings")]
+    [SerializeField] private ParticleSystem psSplash;
+    
     private MaterialPropertyBlock _propBlockShield;
     private Coroutine _shieldCoroutine;
     private static readonly int ProgressionId = Shader.PropertyToID("_Progression");
     
     private Vector3 _localOffsetParry;
     private Vector3 _localOffsetDash;
+    private Vector3 _localOffsetSplash;
 
     private void Awake()
     {
@@ -60,6 +64,12 @@ public class VfxManagerPlayer : VfxManagerBase
         if (psJump != null)
         {
             psJump.transform.SetParent(null);
+        }
+
+        if (psSplash != null)
+        {
+            _localOffsetSplash = psSplash.transform.localPosition;
+            psSplash.transform.SetParent(null);
         }
     }
 
@@ -215,6 +225,12 @@ public class VfxManagerPlayer : VfxManagerBase
         float angleYOffset = 180f; 
         psParry.transform.rotation = Quaternion.Euler(0f, playerYAngle + angleYOffset, -90f);
         psParry.TriggerParticleSystem();
+    }
+
+    public void TriggerSplash()
+    {
+        psSplash.TriggerParticleSystem();
+        psSplash.transform.position = transform.TransformPoint(_localOffsetSplash);
     }
 }
 

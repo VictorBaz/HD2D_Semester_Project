@@ -30,14 +30,6 @@ public class SheepBridgeState : EnemyBaseState
         
         ACHManager = SteamAchivementManager.Instance;
         
-        if (ACHManager == null)
-        {
-            Debug.LogError("Steam manager is NULL !");
-        }
-        else
-        {
-            ACH_Unlock();
-        }
         
         context.VfxManager.StopKoVfx();
         

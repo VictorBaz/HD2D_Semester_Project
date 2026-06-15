@@ -23,7 +23,7 @@ public class PreviewEjectionPlayer
         TrajectoryLineRenderer.positionCount = TrajectoryResolution;
         previewElement.transform.SetParent(null);
         TogglePreview(false);
-        this.layerPreview = layerPreview;
+        this.layerPreview = layerPreview | (1 << LayerMask.NameToLayer("Water"));
     }
 
     public void TogglePreview(bool on)
@@ -62,6 +62,8 @@ public class PreviewEjectionPlayer
                     normalPreviewElement = hit.normal;
                     return hit.point;
                 }
+                
+                
             }
 
             TrajectoryLineRenderer.SetPosition(i, point);

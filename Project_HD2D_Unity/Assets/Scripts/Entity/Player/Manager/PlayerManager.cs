@@ -274,7 +274,8 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     private IEnumerator PlayerRespawn(bool isDead)
     {
         playerController.enabled = false;
-        
+
+        if (!isDead) vfxManagerPlayer.TriggerSplash();
 
         yield return StartCoroutine(UiManager.Instance.FadeBlackScreen(1f, 0.5f));
 
@@ -331,7 +332,15 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 
     #region Helper
 
-    public void TogglePlayer(bool on) => Enable = on;
+    public void TogglePlayer(bool on)
+    {
+        Enable = on;
+
+        if (on)
+        {
+            TransitionTo(LocomotionState);
+        }
+    }   
 
     public InputManager GetInputManager() => inputManager;
 

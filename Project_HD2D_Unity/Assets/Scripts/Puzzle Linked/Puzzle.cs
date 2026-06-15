@@ -24,7 +24,6 @@ public class Puzzle : MonoBehaviour
     [Tooltip("Le contrôleur externe qui gère le fondu du Post-Process")]
     [SerializeField] private VolumeFadeController volumeFadeController;
     
-    
 
     private bool _isAlreadyCompleted = false;
     public bool IsAlreadyCompleted => _isAlreadyCompleted;
@@ -117,6 +116,11 @@ public class Puzzle : MonoBehaviour
     public void NotifyPlayerEnter()
     {
         GameplayEvents.TriggerPuzzleVisited(puzzleID);
+    }
+
+    public void ChangeSpawnPoint(Transform spawnPoint)
+    {
+        this.spawnPoint = spawnPoint;
     }
 
     public void NotifyPlayerExit()

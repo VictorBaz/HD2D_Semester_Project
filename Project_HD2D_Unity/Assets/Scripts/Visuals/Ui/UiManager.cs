@@ -55,6 +55,8 @@ public class UiManager : MonoBehaviour
 
     [Header("Pop Up")]
     [SerializeField] private CanvasGroup popupGroup;
+
+    [SerializeField] private Image pressX;
     
     [Header("Area Notification")]
     [SerializeField] private CanvasGroup areaPanelGroup;
@@ -73,6 +75,7 @@ public class UiManager : MonoBehaviour
     private List<Tween> activeTweens = new List<Tween>();
     
     private Sequence spritePopupSequence;
+    private Sequence spritePressXSequence;
     private Tween spriteAnimationTween;
     private List<Sprite> activePopupSprites;
     private int currentSpriteIndex;
@@ -572,7 +575,11 @@ public class UiManager : MonoBehaviour
 
         spritePopupGroup.alpha = 0f;
         spritePopupGroup.transform.localScale = Vector3.one * 0.8f;
-
+        
+        spritePressXSequence = RegisterTween(DOTween.Sequence()
+            .Append(pressX.rectTransform.DOScaleX(1.05f, 0.5f).SetEase(Ease.InOutQuad))
+            .SetLoops(-1, LoopType.Yoyo));
+        
         spritePopupSequence = RegisterTween(DOTween.Sequence()
             .Append(spritePopupGroup.DOFade(1f, transitionDuration).SetEase(Ease.OutQuad))
             .Join(spritePopupGroup.transform.DOScale(1f, transitionDuration).SetEase(Ease.OutBack))

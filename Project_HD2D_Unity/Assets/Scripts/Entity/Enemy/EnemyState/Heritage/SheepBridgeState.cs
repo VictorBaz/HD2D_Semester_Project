@@ -43,6 +43,8 @@ public class SheepBridgeState : EnemyBaseState
         {
             sheepAnimationManager.SetBridgeOn();
         }
+        
+        context.AnimManager.ToggleRepulsiveCollider(false);
     }
 
     public override void UpdateState(EnemyContext context)
@@ -105,5 +107,6 @@ public class SheepBridgeState : EnemyBaseState
     {
         sheepManager?.DeactivateBridge();
         sheepAnimationManager?.SetBridgeOff();
+        context.AnimManager.ToggleRepulsiveCollider(true);
     }
 }

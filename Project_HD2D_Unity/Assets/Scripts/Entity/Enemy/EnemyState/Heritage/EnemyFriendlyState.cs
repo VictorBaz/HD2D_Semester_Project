@@ -21,6 +21,7 @@ public class EnemyFriendlyState : EnemyBaseState
         waitTimer    = 0f;
         MoveToRandomPoint(actx);
         actx.AnimManager.ToggleRepulsiveCollider(true);
+        actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_WALK);
     }
 
     public override void UpdateState(EnemyContext actx)

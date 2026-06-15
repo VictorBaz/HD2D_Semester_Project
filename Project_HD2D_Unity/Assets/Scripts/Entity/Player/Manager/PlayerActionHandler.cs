@@ -42,7 +42,7 @@ public class PlayerActionHandler : MonoBehaviour
 
         inputManager.OnJumpPressed  += TryJump;
         inputManager.OnJumpReleased += TryJumpReleased;
-        playerController.OnJump     += animationManager.TriggerJump;
+        playerController.OnJump     += TriggerJump;
 
         inputManager.OnAttackMelee  += TryAttack;
         inputManager.OnDash         += TryDash;
@@ -66,7 +66,7 @@ public class PlayerActionHandler : MonoBehaviour
 
         inputManager.OnJumpPressed  -= TryJump;
         inputManager.OnJumpReleased -= TryJumpReleased;
-        playerController.OnJump     -= animationManager.TriggerJump;
+        playerController.OnJump     -= TriggerJump;
 
         inputManager.OnAttackMelee  -= TryAttack;
         inputManager.OnDash         -= TryDash;
@@ -116,8 +116,16 @@ public class PlayerActionHandler : MonoBehaviour
         pm.TransitionTo(pm.JumpState);
     }
 
+    private void TriggerJump()
+    {
+        if (!Enable) return;
+        animationManager.TriggerJump();
+    }
+
     private void TryJumpReleased()
     {
+        if (!Enable) return;
+        
         if (pm.CurrentPlayerState is PlayerJumpState)
             pm.Context.JumpReleased = true;
     }
@@ -128,6 +136,8 @@ public class PlayerActionHandler : MonoBehaviour
 
     private void TryAttack()
     {
+        if (!Enable) return;
+        
         if (lockOnSystem.IsLocked) return;
 
         if (pm.CurrentPlayerState is PlayerAttackState meleeState)

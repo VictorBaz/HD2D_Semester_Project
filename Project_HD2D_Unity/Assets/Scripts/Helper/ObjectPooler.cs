@@ -23,11 +23,12 @@ public static class ObjectPooler
     /// <param name="name">Le nom du pool</param>
     public static void EnqueueObject<T>(T item, string name) where T : Component
     {
-        if (!item.gameObject.activeSelf) return;
+        if (item == null) return;
 
         item.transform.position = Vector3.zero;
-        PoolDictionary[name].Enqueue(item);
         item.gameObject.SetActive(false);
+        
+        PoolDictionary[name].Enqueue(item);
     }
     
     /// <summary>
@@ -42,12 +43,22 @@ public static class ObjectPooler
             return null;
         }
         
-        if (PoolDictionary[key].TryDequeue(out var item))
+        while (PoolDictionary[key].Count > 0)
         {
-            return (T)item;
+            if (PoolDictionary[key].TryDequeue(out var item) && item != null)
+            {
+                return (T)item;
+            }
         }
 
-        return (T)EnqueueNewInstance(PoolLookUp[key], key);
+        return CreateNewInstance((T)PoolLookUp[key]);
+    }
+    
+    private static T CreateNewInstance<T>(T prefab) where T : Component
+    {
+        T newInstance = Object.Instantiate(prefab);
+        newInstance.gameObject.SetActive(false);
+        return newInstance;
     }
 
     /// <summary>
@@ -70,10 +81,16 @@ public static class ObjectPooler
     /// <param name="dictionaryEntry">Le nom du pool</param>
     public static void SetupPool<T>(T pooledItemPrefab, int poolSize, string dictionaryEntry) where T : Component
     {
-        if (PoolDictionary.ContainsKey(dictionaryEntry)) return; 
-
-        PoolDictionary.Add(dictionaryEntry, new Queue<Component>());
-        PoolLookUp.Add(dictionaryEntry, pooledItemPrefab);
+        if (PoolDictionary.ContainsKey(dictionaryEntry))
+        {
+            PoolDictionary[dictionaryEntry].Clear();
+            PoolLookUp[dictionaryEntry] = pooledItemPrefab;
+        }
+        else
+        {
+            PoolDictionary.Add(dictionaryEntry, new Queue<Component>());
+            PoolLookUp.Add(dictionaryEntry, pooledItemPrefab);
+        }
         
         for (int i = 0; i < poolSize; i++)
         {

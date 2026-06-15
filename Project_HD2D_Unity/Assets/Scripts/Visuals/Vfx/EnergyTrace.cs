@@ -176,7 +176,6 @@ public class EnergyTrace : MonoBehaviour
         if (ps == null) return;
 
         ps.Stop();
-        ps.gameObject.SetActive(false); 
         ObjectPooler.EnqueueObject(ps, POOL_KEY);
     }
 

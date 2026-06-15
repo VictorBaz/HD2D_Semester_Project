@@ -17,9 +17,25 @@ public class SheepBridgeState : EnemyBaseState
 
     public override void EnterState(EnemyContext context)
     {
-        if (ACHManager != null)
+        ACHManager = SteamAchivementManager.Instance;
+        
+        if (ACHManager == null)
         {
-            ACHManager = SteamAchivementManager.Instance;
+            Debug.LogWarning("Steam manager is NULL !");
+        }
+        else
+        {
+            ACH_Unlock();
+        }
+        
+        ACHManager = SteamAchivementManager.Instance;
+        
+        if (ACHManager == null)
+        {
+            Debug.LogError("Steam manager is NULL !");
+        }
+        else
+        {
             ACH_Unlock();
         }
         

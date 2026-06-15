@@ -32,7 +32,6 @@ public class SteamAchivementManager : MonoBehaviour
 
     private void SteamStart()
     {
-
         if (SteamGameID != 4782970)
         {
             SteamCheckToDestroy();
@@ -41,6 +40,7 @@ public class SteamAchivementManager : MonoBehaviour
         try
         {
             SteamClient.Init(SteamGameID);
+            Debug.Log("Steam Client initialized");
         }
         catch (Exception e)
         {

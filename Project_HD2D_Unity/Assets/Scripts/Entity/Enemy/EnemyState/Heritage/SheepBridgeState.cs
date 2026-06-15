@@ -17,9 +17,11 @@ public class SheepBridgeState : EnemyBaseState
 
     public override void EnterState(EnemyContext context)
     {
-        
-        ACHManager = SteamAchivementManager.Instance;
-        ACH_Unlock();
+        if (ACHManager != null)
+        {
+            ACHManager = SteamAchivementManager.Instance;
+            ACH_Unlock();
+        }
         
         context.VfxManager.StopKoVfx();
         

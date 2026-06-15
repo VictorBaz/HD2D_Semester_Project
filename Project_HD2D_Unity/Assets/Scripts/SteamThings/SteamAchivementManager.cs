@@ -7,6 +7,7 @@ public class SteamAchivementManager : MonoBehaviour
 {
     
     private const string PLATINUM_ID = "ACH_100_PRCT";
+    private const int SteamGameID = 4782970;
     
     #region Singleton
     
@@ -32,8 +33,36 @@ public class SteamAchivementManager : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.LogError(e);
+            Debug.Log(e);
         }
+    }
+
+    private void SteamStart()
+    {
+
+        if (SteamGameID != 4782970)
+        {
+            SteamCheckToDestroy();
+        }
+        
+        try
+        {
+            SteamClient.Init(SteamGameID);
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+            SteamCheckToDestroy();
+        }
+    }
+
+    private void SteamCheckToDestroy()
+    { 
+        #if UNITY_EDITOR
+            Destroy(gameObject);
+        #else
+            Application.Quit();
+        #endif
     }
 
     void Update()

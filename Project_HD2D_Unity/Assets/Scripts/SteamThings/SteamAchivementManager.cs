@@ -27,14 +27,7 @@ public class SteamAchivementManager : MonoBehaviour
 
     private void Start()
     {
-        try
-        {
-            SteamClient.Init(4782970);
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e);
-        }
+        SteamStart();
     }
 
     private void SteamStart()

@@ -72,6 +72,8 @@ public class UIFresqueElement : MonoBehaviour
         if (introOn) PlayFresque("intro");
     }
 
+
+
     public void PlayFresque(string sequenceID)
     {
         if (string.IsNullOrEmpty(sequenceID)) return;
@@ -97,7 +99,7 @@ public class UIFresqueElement : MonoBehaviour
             rectTransformFresque.anchoredPosition = localPos;
         }
 
-        _fresqueCoroutine = StartCoroutine(FresqueLogicIe(targetSequence.Steps,targetSequence.containAdeptes));
+        _fresqueCoroutine = StartCoroutine(FresqueLogicIe(targetSequence.Steps,targetSequence.containAdeptes, sequenceID));
     }
 
     public void StopCurrentFresque()
@@ -122,8 +124,14 @@ public class UIFresqueElement : MonoBehaviour
         GameplayEvents.TriggerPlayerEnable(true);
     }
 
-    private IEnumerator FresqueLogicIe(List<FresqueData> steps, bool adeptes)
+    private IEnumerator FresqueLogicIe(List<FresqueData> steps, bool adeptes, string id)
     {
+        if ("outro" == id)
+        {
+            yield return new WaitForSecondsRealtime(5f);
+        }
+        
+        
         yield return UiManager.Instance.FadeBlackScreen(1f, 0.5f);
         
         yield return fresqueCanvasGroup.DOFade(1f, 1f).SetEase(Ease.InOutCubic);
@@ -171,8 +179,19 @@ public class UIFresqueElement : MonoBehaviour
             _activeVisual = null;
         }
 
-        GameplayEvents.TriggerPlayerEnable(true);
+        if ("intro" == id)
+        {
+            GameplayEvents.TriggerPlayerEnable(true);
+        }
+        
         yield return UiManager.Instance.FadeBlackScreen(0f, 1.5f);
+
+        if ("outro" == id)
+        {
+            //TODO FIX HARD CODED
+            GameplayEvents.TriggerCredits(20f);
+        }
+        
     }
 
     private IEnumerator VignetteNoiseRoutine()

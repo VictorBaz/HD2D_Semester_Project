@@ -68,6 +68,5 @@ public class CameraCinematicState : CameraBaseState
         
         timer = context.CurrentSettings.holdDuration + scrollDuration;
         
-        GameplayEvents.TriggerCredits(scrollDuration);
     }
 }

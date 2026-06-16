@@ -151,7 +151,9 @@ public class Parasite : MonoBehaviour, IDamageable, IDataPersistence
     
         animatorParasite.SetTrigger(DeathHash);
         isDead = true;
+        
         OnDeath?.Invoke(this);
+        
     
         GamepadVibrationHelper.Vibrate(0.25f,1f,0.10f);
         if (deathCoroutine != null) StopCoroutine(deathCoroutine);

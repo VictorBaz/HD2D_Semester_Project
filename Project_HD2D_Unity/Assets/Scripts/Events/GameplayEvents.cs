@@ -19,4 +19,5 @@ public static class GameplayEvents
     
     public static event Action <bool> OnPlayerBlocked;
     public static void TriggerPlayerEnable(bool block) => OnPlayerBlocked?.Invoke(block);
+    
 }

@@ -12,7 +12,7 @@ public class CheckPoint : MonoBehaviour
     {
         if (other.CompareTag(GameConstants.PLAYER_TAG))
         {
-            PlayerManager player = other.GetComponent<PlayerManager>();
+            PlayerManager player = other.GetComponentInParent<PlayerManager>();
             if (player &&  !player.IsPlayerRespawning) ActivateCheckpoint();
         }           
     }

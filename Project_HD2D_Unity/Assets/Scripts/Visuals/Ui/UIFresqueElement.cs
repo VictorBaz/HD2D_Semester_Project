@@ -2,10 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using DG.Tweening; 
+using DG.Tweening;
+using UnityEngine.UI;
 
 public class UIFresqueElement : MonoBehaviour
 {
+    public enum FresqueType { Intro, Outro }
+
     [System.Serializable]
     public struct FresqueData
     {
@@ -18,8 +21,9 @@ public class UIFresqueElement : MonoBehaviour
     [System.Serializable]
     public struct FresqueSequence
     {
-        public string SequenceID; 
-        public GameObject FresqueVisual; 
+        public string SequenceID;
+        public FresqueType FresqueType;
+        public GameObject FresqueVisual;
         public List<FresqueData> Steps;
         public bool containAdeptes;
     }
@@ -34,22 +38,30 @@ public class UIFresqueElement : MonoBehaviour
     [SerializeField] private RectTransform rectTransformBot;
     [SerializeField] private RectTransform rectTransfVignette;
     [SerializeField] private RectTransform rectTransAdeptes;
+    [SerializeField] private LayoutGroup[] layoutGroupsToDisable;
 
     [SerializeField] private bool introOn;
-    
+
     [Header("Vignette Noise Settings")]
-    [SerializeField] private float vignetteNoiseSpeed = 0.1f; 
+    [SerializeField] private float vignetteNoiseSpeed = 0.1f;
     private const float VIGNETTE_MIN_SCALE = 1f;
     private const float VIGNETTE_MAX_SCALE = 1.15f;
+
+    [Header("Credits")]
+    [SerializeField] private float creditsDuration = 20f;
 
     private float originalYTop;
     private float originalYBot;
     private float originalYAdeptes;
-    
+
     private Tween _fresqueTween;
+    private Sequence _sequenceFresque;
     private Coroutine _fresqueCoroutine;
-    private Coroutine _vignetteNoiseCoroutine; 
-    private GameObject _activeVisual; 
+    private Coroutine _vignetteNoiseCoroutine;
+    private GameObject _activeVisual;
+    private bool _isPlayingFresque;
+
+    private Vector3 _cachedVignetteScale = Vector3.one;
 
     private void Awake()
     {
@@ -72,11 +84,9 @@ public class UIFresqueElement : MonoBehaviour
         if (introOn) PlayFresque("intro");
     }
 
-
-
     public void PlayFresque(string sequenceID)
     {
-        if (string.IsNullOrEmpty(sequenceID)) return;
+        if (string.IsNullOrEmpty(sequenceID) || _isPlayingFresque) return;
 
         FresqueSequence targetSequence = fresqueSequences.Find(f => f.SequenceID == sequenceID);
 
@@ -89,6 +99,7 @@ public class UIFresqueElement : MonoBehaviour
 
         StopCurrentFresque();
 
+        _isPlayingFresque = true;
         _activeVisual = targetSequence.FresqueVisual;
         _activeVisual.SetActive(true);
 
@@ -99,20 +110,22 @@ public class UIFresqueElement : MonoBehaviour
             rectTransformFresque.anchoredPosition = localPos;
         }
 
-        _fresqueCoroutine = StartCoroutine(FresqueLogicIe(targetSequence.Steps,targetSequence.containAdeptes, sequenceID));
+        DisableLayoutGroups(true);
+        _fresqueCoroutine = StartCoroutine(FresqueLogicIe(targetSequence.Steps, targetSequence.containAdeptes, targetSequence.FresqueType));
     }
 
     public void StopCurrentFresque()
     {
         if (_fresqueCoroutine != null) StopCoroutine(_fresqueCoroutine);
-        
+
         _fresqueTween?.Kill();
+        _sequenceFresque?.Kill();
         CleanVignetteNoise();
         AnimateCinematicBars(false, 0.5f);
 
         if (fresqueCanvasGroup != null)
         {
-            fresqueCanvasGroup.DOFade(0f, 0.5f).SetEase(Ease.InOutCubic);
+            fresqueCanvasGroup.DOFade(0f, 0.5f).SetEase(Ease.InOutCubic).SetUpdate(true);
         }
 
         if (_activeVisual != null)
@@ -121,27 +134,28 @@ public class UIFresqueElement : MonoBehaviour
             _activeVisual = null;
         }
 
+        DisableLayoutGroups(false);
+        _isPlayingFresque = false;
         GameplayEvents.TriggerPlayerEnable(true);
     }
 
-    private IEnumerator FresqueLogicIe(List<FresqueData> steps, bool adeptes, string id)
+    private IEnumerator FresqueLogicIe(List<FresqueData> steps, bool adeptes, FresqueType fresqueType)
     {
-        if ("outro" == id)
+        if (fresqueType == FresqueType.Outro)
         {
             yield return new WaitForSecondsRealtime(5f);
         }
-        
-        
+
         yield return UiManager.Instance.FadeBlackScreen(1f, 0.5f);
-        
-        yield return fresqueCanvasGroup.DOFade(1f, 1f).SetEase(Ease.InOutCubic);
-            
+
+        yield return fresqueCanvasGroup.DOFade(1f, 1f).SetEase(Ease.InOutCubic).SetUpdate(true);
+
         GameplayEvents.TriggerPlayerEnable(false);
         yield return null;
 
         AnimateCinematicBars(true, 2.5f);
 
-        if (adeptes)AddAdeptes(true, 2.5f);
+        if (adeptes) AddAdeptes(true, 2.5f);
 
         if (rectTransfVignette != null)
         {
@@ -152,26 +166,26 @@ public class UIFresqueElement : MonoBehaviour
         for (int i = 0; i < count; i++)
         {
             _fresqueTween = rectTransformFresque.DOAnchorPosX(steps[i].TargetX, steps[i].DurationScroll)
-                .SetEase(Ease.InOutCubic) 
-                .SetUpdate(true);          
+                .SetEase(Ease.InOutCubic)
+                .SetUpdate(true);
 
             yield return _fresqueTween.WaitForCompletion();
 
             if (i == count - 1)
             {
                 AnimateCinematicBars(false, 3f);
-                if (adeptes)AddAdeptes(false, 3f);
+                if (adeptes) AddAdeptes(false, 3f);
             }
-            
-            if (steps[i].HoldDuration > 0f) 
+
+            if (steps[i].HoldDuration > 0f)
             {
                 yield return new WaitForSecondsRealtime(steps[i].HoldDuration);
             }
         }
-        
+
         CleanVignetteNoise();
 
-        yield return fresqueCanvasGroup.DOFade(0f, 1f).SetEase(Ease.InOutCubic);
+        yield return fresqueCanvasGroup.DOFade(0f, 1f).SetEase(Ease.InOutCubic).SetUpdate(true);
 
         if (_activeVisual != null)
         {
@@ -179,19 +193,19 @@ public class UIFresqueElement : MonoBehaviour
             _activeVisual = null;
         }
 
-        if ("intro" == id)
+        if (fresqueType == FresqueType.Intro)
         {
             GameplayEvents.TriggerPlayerEnable(true);
         }
-        
+
         yield return UiManager.Instance.FadeBlackScreen(0f, 1.5f);
 
-        if ("outro" == id)
+        if (fresqueType == FresqueType.Outro)
         {
-            //TODO FIX HARD CODED
-            GameplayEvents.TriggerCredits(20f);
+            GameplayEvents.TriggerCredits(creditsDuration);
         }
-        
+
+        _isPlayingFresque = false;
     }
 
     private IEnumerator VignetteNoiseRoutine()
@@ -200,11 +214,19 @@ public class UIFresqueElement : MonoBehaviour
 
         while (rectTransfVignette != null)
         {
+            if (_vignetteNoiseCoroutine == null) yield break;
+
             noiseSampleTime += Time.unscaledDeltaTime * vignetteNoiseSpeed;
             float noiseValue = Mathf.PerlinNoise(noiseSampleTime, 0f);
             float targetScale = Mathf.Lerp(VIGNETTE_MIN_SCALE, VIGNETTE_MAX_SCALE, noiseValue);
 
-            rectTransfVignette.localScale = new Vector3(targetScale, targetScale, 1f);
+            if (!Mathf.Approximately(_cachedVignetteScale.x, targetScale))
+            {
+                _cachedVignetteScale.x = targetScale;
+                _cachedVignetteScale.y = targetScale;
+                rectTransfVignette.localScale = _cachedVignetteScale;
+            }
+
             yield return null;
         }
     }
@@ -216,8 +238,9 @@ public class UIFresqueElement : MonoBehaviour
             StopCoroutine(_vignetteNoiseCoroutine);
             _vignetteNoiseCoroutine = null;
         }
-        if (rectTransfVignette != null) 
+        if (rectTransfVignette != null)
         {
+            _cachedVignetteScale = Vector3.one;
             rectTransfVignette.localScale = Vector3.one;
         }
     }
@@ -245,13 +268,25 @@ public class UIFresqueElement : MonoBehaviour
             rectTransformBot.DOAnchorPosY(targetY, duration).SetEase(Ease.InOutCubic).SetUpdate(true);
         }
     }
-    
+
+    private void DisableLayoutGroups(bool disable)
+    {
+        if (layoutGroupsToDisable == null || layoutGroupsToDisable.Length == 0) return;
+
+        foreach (var lg in layoutGroupsToDisable)
+        {
+            if (lg != null) lg.enabled = !disable;
+        }
+    }
+
     private void OnDestroy()
     {
         _fresqueTween?.Kill();
+        _sequenceFresque?.Kill();
         CleanVignetteNoise();
         rectTransformTop?.DOKill();
         rectTransformBot?.DOKill();
+        rectTransAdeptes?.DOKill();
         fresqueCanvasGroup?.DOKill();
     }
 }

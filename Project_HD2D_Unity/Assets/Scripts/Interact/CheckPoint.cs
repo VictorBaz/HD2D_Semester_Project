@@ -10,10 +10,10 @@ public class CheckPoint : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-
         if (other.CompareTag(GameConstants.PLAYER_TAG))
         {
-            ActivateCheckpoint();
+            PlayerManager player = other.GetComponent<PlayerManager>();
+            if (player &&  !player.IsPlayerRespawning) ActivateCheckpoint();
         }           
     }
 

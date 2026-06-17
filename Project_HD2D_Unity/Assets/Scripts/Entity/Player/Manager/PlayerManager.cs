@@ -66,6 +66,8 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         }
     }
 
+    public bool IsPlayerRespawning { get; private set; } = false;
+
     #endregion
 
     #region Unity Lifecycle
@@ -273,6 +275,8 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 
     private IEnumerator PlayerRespawn(bool isDead)
     {
+        IsPlayerRespawning = true;
+        
         playerController.enabled = false;
 
         if (!isDead) vfxManagerPlayer.TriggerSplash();
@@ -323,6 +327,8 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         yield return StartCoroutine(UiManager.Instance.FadeBlackScreen(0f, isDead ? 0.7f : 0.1f));
 
         playerController.enabled = true;
+        
+        IsPlayerRespawning = false;
     }
 
     public void TriggerRespawn(bool isDead)

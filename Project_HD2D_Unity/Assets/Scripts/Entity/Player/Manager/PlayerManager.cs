@@ -313,8 +313,12 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         timeSinceLastDamage = 0f;
         regenAccumulator    = 0f;
 
+        rb.linearVelocity = Vector3.zero;
+        
         Physics.SyncTransforms();
 
+        rb.linearVelocity = Vector3.zero;
+        
         yield return new WaitForSeconds(0.2f);
         yield return StartCoroutine(UiManager.Instance.FadeBlackScreen(0f, isDead ? 0.7f : 0.1f));
 

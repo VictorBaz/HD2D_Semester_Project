@@ -25,9 +25,10 @@ public static class UiEvents
     public static void TriggerShowArea(string areaName) 
         => OnShowArea?.Invoke(areaName);
     
-    public static event Action<System.Collections.Generic.List<Sprite>> OnShowSpritePopup;
+    public static event Action<System.Collections.Generic.List<Sprite>,string> OnShowSpritePopup;
     public static event Action OnHideSpritePopup;
 
-    public static void TriggerShowSpritePopup(System.Collections.Generic.List<Sprite> sprites) => OnShowSpritePopup?.Invoke(sprites);
+    public static void TriggerShowSpritePopup(System.Collections.Generic.List<Sprite> sprites, string description)
+        => OnShowSpritePopup?.Invoke(sprites,description);
     public static void TriggerHideSpritePopup() => OnHideSpritePopup?.Invoke();
 }

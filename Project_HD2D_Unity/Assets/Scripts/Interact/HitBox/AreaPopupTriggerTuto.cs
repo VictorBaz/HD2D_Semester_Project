@@ -8,6 +8,7 @@ public class AreaPopupTriggerTuto : MonoBehaviour
     [SerializeField] private List<Sprite> popupSprites = new();
     private PlayerManager player;
     private bool visited = false;
+    [field: SerializeField, TextArea] private string description = "";
 
     private void OnTriggerEnter(Collider other)
     {
@@ -19,7 +20,7 @@ public class AreaPopupTriggerTuto : MonoBehaviour
         
         if (player)
         {
-            UiEvents.TriggerShowSpritePopup(popupSprites);
+            UiEvents.TriggerShowSpritePopup(popupSprites,description);
 
             if (player.Context != null && player.Context.Rb != null)
             {

@@ -72,6 +72,8 @@ public class UiManager : MonoBehaviour
     [SerializeField] private Slider musicVolumeSlider;
     [SerializeField] private Slider sfxVolumeSlider;
     
+    [SerializeField] private TMP_Text descriptionText;
+    
     private List<Tween> activeTweens = new List<Tween>();
     
     private Sequence spritePopupSequence;
@@ -558,11 +560,13 @@ public class UiManager : MonoBehaviour
 
     #region Tutorial UI
 
-    private void HandleShowSpritePopup(List<Sprite> sprites)
+    private void HandleShowSpritePopup(List<Sprite> sprites,string description)
     {
-        if (spritePopupGroup == null || spritePopupImage == null) 
+        if (!spritePopupGroup || !spritePopupImage || !descriptionText) 
             return;
 
+        descriptionText.text = description;
+        
         activePopupSprites = sprites;
         currentSpriteIndex = 0;
 

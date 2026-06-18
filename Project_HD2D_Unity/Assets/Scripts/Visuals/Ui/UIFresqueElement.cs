@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class UIFresqueElement : MonoBehaviour
 {
+    #region Variables
+
     public enum FresqueType { Intro, Outro }
 
     [System.Serializable]
@@ -38,6 +40,7 @@ public class UIFresqueElement : MonoBehaviour
     [SerializeField] private RectTransform rectTransformBot;
     [SerializeField] private RectTransform rectTransfVignette;
     [SerializeField] private RectTransform rectTransAdeptes;
+    [SerializeField] private RectTransform pressX;
     [SerializeField] private LayoutGroup[] layoutGroupsToDisable;
 
     [SerializeField] private bool introOn;
@@ -55,13 +58,18 @@ public class UIFresqueElement : MonoBehaviour
     private float originalYAdeptes;
 
     private Tween _fresqueTween;
+    private Tween _pressXTween;
     private Sequence _sequenceFresque;
     private Coroutine _fresqueCoroutine;
     private Coroutine _vignetteNoiseCoroutine;
     private GameObject _activeVisual;
     private bool _isPlayingFresque;
+    private FresqueType _currentFresqueType;
 
     private Vector3 _cachedVignetteScale = Vector3.one;
+    #endregion
+
+    #region Unity LifeCycle
 
     private void Awake()
     {
@@ -84,6 +92,20 @@ public class UIFresqueElement : MonoBehaviour
         if (introOn) PlayFresque("intro");
     }
 
+    private void OnEnable()
+    {
+        GameplayEvents.OnSkip += SkipFresque;
+    }
+
+    private void OnDisable()
+    {
+        GameplayEvents.OnSkip -= SkipFresque;
+    }
+
+    #endregion
+
+    
+
     public void PlayFresque(string sequenceID)
     {
         if (string.IsNullOrEmpty(sequenceID) || _isPlayingFresque) return;
@@ -100,6 +122,7 @@ public class UIFresqueElement : MonoBehaviour
         StopCurrentFresque();
 
         _isPlayingFresque = true;
+        _currentFresqueType = targetSequence.FresqueType; 
         _activeVisual = targetSequence.FresqueVisual;
         _activeVisual.SetActive(true);
 
@@ -120,6 +143,7 @@ public class UIFresqueElement : MonoBehaviour
 
         _fresqueTween?.Kill();
         _sequenceFresque?.Kill();
+        _pressXTween?.Kill();
         CleanVignetteNoise();
         AnimateCinematicBars(false, 0.5f);
 
@@ -139,8 +163,55 @@ public class UIFresqueElement : MonoBehaviour
         GameplayEvents.TriggerPlayerEnable(true);
     }
 
+    public void SkipFresque()
+    {
+        if (!_isPlayingFresque) return;
+
+        if (_fresqueCoroutine != null) StopCoroutine(_fresqueCoroutine);
+        _fresqueTween?.Kill();
+        _sequenceFresque?.Kill();
+        _pressXTween?.Kill();
+        CleanVignetteNoise();
+
+        rectTransformTop?.DOKill();
+        rectTransformBot?.DOKill();
+        rectTransAdeptes?.DOKill();
+        fresqueCanvasGroup?.DOKill();
+
+        AnimateCinematicBars(false, 0f);
+        AddAdeptes(false, 0f);
+        fresqueCanvasGroup.alpha = 0f;
+
+        if (_activeVisual != null)
+        {
+            _activeVisual.SetActive(false);
+            _activeVisual = null;
+        }
+
+        DisableLayoutGroups(false);
+
+        StartCoroutine(SkipCleanupRoutine(_currentFresqueType));
+    }
+
+    private IEnumerator SkipCleanupRoutine(FresqueType fresqueType)
+    {
+        yield return UiManager.Instance.FadeBlackScreen(0f, 0.3f);
+
+        if (fresqueType == FresqueType.Intro)
+        {
+            GameplayEvents.TriggerPlayerEnable(true);
+        }
+        else if (fresqueType == FresqueType.Outro)
+        {
+            GameplayEvents.TriggerCredits(creditsDuration);
+        }
+
+        _isPlayingFresque = false;
+    }
+
     private IEnumerator FresqueLogicIe(List<FresqueData> steps, bool adeptes, FresqueType fresqueType)
     {
+        
         if (fresqueType == FresqueType.Outro)
         {
             yield return new WaitForSecondsRealtime(5f);
@@ -154,6 +225,8 @@ public class UIFresqueElement : MonoBehaviour
         yield return null;
 
         AnimateCinematicBars(true, 2.5f);
+        
+        _pressXTween = pressX.DOScaleX(1.05f, 0.5f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
 
         if (adeptes) AddAdeptes(true, 2.5f);
 
@@ -250,7 +323,10 @@ public class UIFresqueElement : MonoBehaviour
         if (rectTransAdeptes != null)
         {
             float targetY = show ? Mathf.Abs(originalYAdeptes) : -Mathf.Abs(originalYAdeptes);
-            rectTransAdeptes.DOAnchorPosY(targetY, duration).SetEase(Ease.InOutCubic).SetUpdate(true);
+            if (duration == 0f)
+                rectTransAdeptes.anchoredPosition = new Vector2(rectTransAdeptes.anchoredPosition.x, targetY);
+            else
+                rectTransAdeptes.DOAnchorPosY(targetY, duration).SetEase(Ease.InOutCubic).SetUpdate(true);
         }
     }
 
@@ -259,13 +335,19 @@ public class UIFresqueElement : MonoBehaviour
         if (rectTransformTop != null)
         {
             float targetY = show ? -Mathf.Abs(originalYTop) : Mathf.Abs(originalYTop);
-            rectTransformTop.DOAnchorPosY(targetY, duration).SetEase(Ease.InOutCubic).SetUpdate(true);
+            if (duration == 0f)
+                rectTransformTop.anchoredPosition = new Vector2(rectTransformTop.anchoredPosition.x, targetY);
+            else
+                rectTransformTop.DOAnchorPosY(targetY, duration).SetEase(Ease.InOutCubic).SetUpdate(true);
         }
 
         if (rectTransformBot != null)
         {
             float targetY = show ? Mathf.Abs(originalYBot) : -Mathf.Abs(originalYBot);
-            rectTransformBot.DOAnchorPosY(targetY, duration).SetEase(Ease.InOutCubic).SetUpdate(true);
+            if (duration == 0f)
+                rectTransformBot.anchoredPosition = new Vector2(rectTransformBot.anchoredPosition.x, targetY);
+            else
+                rectTransformBot.DOAnchorPosY(targetY, duration).SetEase(Ease.InOutCubic).SetUpdate(true);
         }
     }
 
@@ -283,6 +365,7 @@ public class UIFresqueElement : MonoBehaviour
     {
         _fresqueTween?.Kill();
         _sequenceFresque?.Kill();
+        _pressXTween?.Kill();
         CleanVignetteNoise();
         rectTransformTop?.DOKill();
         rectTransformBot?.DOKill();

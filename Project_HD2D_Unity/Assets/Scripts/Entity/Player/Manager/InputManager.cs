@@ -68,6 +68,8 @@ public class InputManager : MonoBehaviour
         
         playerInputAction.Player.AttackMelee.performed += ReceiveAttackMelee;
         
+        playerInputAction.Player.AttackMelee.started += GameplayEvents.TriggerSkip;
+        
         playerInputAction.Player.Dash.started += ReceiveDash;
 
         playerInputAction.Player.GiveEnergy.performed += ReceiveGiveEnergy;
@@ -100,6 +102,8 @@ public class InputManager : MonoBehaviour
         playerInputAction.Player.Lock.canceled -= ReceiveLockRelease;
         
         playerInputAction.Player.AttackMelee.performed -= ReceiveAttackMelee;
+        
+        playerInputAction.Player.AttackMelee.started -= GameplayEvents.TriggerSkip;
         
         playerInputAction.Player.Dash.started -= ReceiveDash;
         

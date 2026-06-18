@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public static class GameplayEvents
 {
@@ -19,5 +20,8 @@ public static class GameplayEvents
     
     public static event Action <bool> OnPlayerBlocked;
     public static void TriggerPlayerEnable(bool block) => OnPlayerBlocked?.Invoke(block);
+    
+    public static event Action OnSkip;
+    public static void TriggerSkip(InputAction.CallbackContext ctx) => OnSkip?.Invoke();
     
 }

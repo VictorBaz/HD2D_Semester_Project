@@ -52,8 +52,7 @@ public class PlayerActionHandler : MonoBehaviour
         inputManager.OnEnergyGive   += TryGiveEnergy;
         inputManager.OnEnergyTake   += TryTakeEnergy;
 
-        if (GameManager.Instance != null)
-            inputManager.OnPausePressed += GameManager.Instance.TogglePause;
+        inputManager.OnPausePressed += TogglePause;
 
         PlayerEvents.OnRequestCurrentLockTarget = GetCurrentTargetLock;
         GameplayEvents.OnPlayerBlocked += ToggleInput;
@@ -76,8 +75,8 @@ public class PlayerActionHandler : MonoBehaviour
         inputManager.OnEnergyGive   -= TryGiveEnergy;
         inputManager.OnEnergyTake   -= TryTakeEnergy;
 
-        if (GameManager.Instance != null)
-            inputManager.OnPausePressed -= GameManager.Instance.TogglePause;
+        inputManager.OnPausePressed -= TogglePause;
+        
         GameplayEvents.OnPlayerBlocked -= ToggleInput;
     }
 
@@ -312,5 +311,11 @@ public class PlayerActionHandler : MonoBehaviour
     #endregion
 
     private void ToggleInput(bool on) => Enable = on;
+
+    private void TogglePause()
+    {
+        if (!Enable) return;
+        if (GameManager.Instance) GameManager.Instance.TogglePause();
+    }
 
 }

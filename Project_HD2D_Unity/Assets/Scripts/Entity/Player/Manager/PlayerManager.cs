@@ -285,8 +285,14 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 
         if (isDead)
         {
+            
+            int currentPrayAmount = playerData.Sap;
+            
             playerData         = playerDataRaw.Init();
+            
             Context.PlayerData = playerData;
+            
+            Context.PlayerData.Sap = currentPrayAmount;
 
             if (UiManager.Instance)
                 UiManager.Instance.SetupLifeUi(Context.PlayerData.MaxLife, Context.PlayerData.MaxLife);

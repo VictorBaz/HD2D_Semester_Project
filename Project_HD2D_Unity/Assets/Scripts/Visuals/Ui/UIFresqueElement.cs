@@ -65,6 +65,8 @@ public class UIFresqueElement : MonoBehaviour
     private GameObject _activeVisual;
     private bool _isPlayingFresque;
     private FresqueType _currentFresqueType;
+    
+    private float _skipEnableTime; 
 
     private Vector3 _cachedVignetteScale = Vector3.one;
     #endregion
@@ -104,8 +106,6 @@ public class UIFresqueElement : MonoBehaviour
 
     #endregion
 
-    
-
     public void PlayFresque(string sequenceID)
     {
         if (string.IsNullOrEmpty(sequenceID) || _isPlayingFresque) return;
@@ -122,6 +122,9 @@ public class UIFresqueElement : MonoBehaviour
         StopCurrentFresque();
 
         _isPlayingFresque = true;
+        
+        _skipEnableTime = Time.unscaledTime + 1f;
+
         _currentFresqueType = targetSequence.FresqueType; 
         _activeVisual = targetSequence.FresqueVisual;
         _activeVisual.SetActive(true);
@@ -165,7 +168,7 @@ public class UIFresqueElement : MonoBehaviour
 
     public void SkipFresque()
     {
-        if (!_isPlayingFresque) return;
+        if (!_isPlayingFresque || Time.unscaledTime < _skipEnableTime) return;
 
         if (_fresqueCoroutine != null) StopCoroutine(_fresqueCoroutine);
         _fresqueTween?.Kill();
@@ -211,17 +214,17 @@ public class UIFresqueElement : MonoBehaviour
 
     private IEnumerator FresqueLogicIe(List<FresqueData> steps, bool adeptes, FresqueType fresqueType)
     {
+        GameplayEvents.TriggerPlayerEnable(false);
         
         if (fresqueType == FresqueType.Outro)
         {
-            yield return new WaitForSecondsRealtime(5f);
+            yield return new WaitForSecondsRealtime(7f);
         }
 
         yield return UiManager.Instance.FadeBlackScreen(1f, 0.5f);
 
         yield return fresqueCanvasGroup.DOFade(1f, 1f).SetEase(Ease.InOutCubic).SetUpdate(true);
-
-        GameplayEvents.TriggerPlayerEnable(false);
+        
         yield return null;
 
         AnimateCinematicBars(true, 2.5f);

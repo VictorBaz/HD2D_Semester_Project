@@ -10,8 +10,6 @@ public class CameraCinematicState : CameraBaseState
 
     public override void EnterState(CameraStateContext context)
     {
-        // 1. SI c'est les crédits, on calcule d'abord la logique des crédits 
-        // pour surcharger le timer de la caméra avec le bon timing global.
         if (context.CurrentSettings.isCredit)
         {
             CreditsLogic(context);

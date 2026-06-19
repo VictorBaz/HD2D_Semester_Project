@@ -702,7 +702,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5536121846451206162, guid: f3de42c61e3a3c44d9f5fcf076211f61, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5623431724501620591, guid: f3de42c61e3a3c44d9f5fcf076211f61, type: 3}
       propertyPath: koVfx
@@ -819,7 +819,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8125593173170283731, guid: f3de42c61e3a3c44d9f5fcf076211f61, type: 3}
       insertIndex: 1
       addedObject: {fileID: 3204288335612241699}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5536121846451206162, guid: f3de42c61e3a3c44d9f5fcf076211f61, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3874591580422393015}
   m_SourcePrefab: {fileID: 100100000, guid: f3de42c61e3a3c44d9f5fcf076211f61, type: 3}
 --- !u!4 &1644028421943847830 stripped
 Transform:
@@ -857,6 +860,31 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 5708777643528437304, guid: f3de42c61e3a3c44d9f5fcf076211f61, type: 3}
   m_PrefabInstance: {fileID: 3716297737206203370}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &9171211647392644088 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5536121846451206162, guid: f3de42c61e3a3c44d9f5fcf076211f61, type: 3}
+  m_PrefabInstance: {fileID: 3716297737206203370}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3874591580422393015
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9171211647392644088}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.AI.Navigation::Unity.AI.Navigation.NavMeshModifier
+  m_SerializedVersion: 0
+  m_OverrideArea: 0
+  m_Area: 0
+  m_OverrideGenerateLinks: 0
+  m_GenerateLinks: 0
+  m_IgnoreFromBuild: 1
+  m_ApplyToChildren: 1
+  m_AffectedAgents: ffffffff
 --- !u!1001 &4847204022428220721
 PrefabInstance:
   m_ObjectHideFlags: 0

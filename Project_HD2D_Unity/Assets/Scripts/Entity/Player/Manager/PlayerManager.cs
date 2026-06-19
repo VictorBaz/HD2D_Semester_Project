@@ -114,8 +114,6 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         PlayerEvents.OnRequestPlayerContext   = GetContext;
 
         originPos = transform.position;
-
-        GameplayEvents.OnCredits += CreditsState;
     }
 
     private void Start()
@@ -148,7 +146,6 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         PlayerEvents.OnRequestPlayerTransform   = null;
         PlayerEvents.OnRequestPlayerContext     = null;
         PlayerEvents.OnRequestCurrentLockTarget = null;
-        GameplayEvents.OnCredits -= CreditsState;
     }
 
     private void OnEnable()
@@ -296,12 +293,14 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         {
             
             int currentPrayAmount = playerData.Sap;
+            int currentEnergyAmount = playerData.Energy;
             
             playerData         = playerDataRaw.Init();
             
             Context.PlayerData = playerData;
             
             Context.PlayerData.Sap = currentPrayAmount;
+            Context.PlayerData.Energy = currentEnergyAmount;
 
             if (UiManager.Instance)
                 UiManager.Instance.SetupLifeUi(Context.PlayerData.MaxLife, Context.PlayerData.MaxLife);
@@ -362,14 +361,12 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         {
             TransitionTo(LocomotionState);
         }
+        
     }   
 
     public InputManager GetInputManager() => inputManager;
 
-    public void CreditsState(float time)
-    {
-        TogglePlayer(true);
-    }
+    
 
     public void RegisterPuzzleVisited(Puzzle puzzle)
     {

@@ -115,7 +115,7 @@ public class Puzzle : MonoBehaviour
     #region Volume Controller Communication
     public void NotifyPlayerEnter()
     {
-        GameplayEvents.TriggerPuzzleVisited(puzzleID);
+        this.TriggerPuzzleVisited();
     }
 
     public void ChangeSpawnPoint(Transform spawnPoint)

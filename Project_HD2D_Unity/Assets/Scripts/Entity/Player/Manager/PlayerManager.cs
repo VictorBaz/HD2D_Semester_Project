@@ -5,6 +5,7 @@ using Player.State;
 using Script.Manager;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(PlayerActionHandler))]
 public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
@@ -43,6 +44,7 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
 
     private Vector3   originPos;
     private Vector3   checkPointPos;
+    private Puzzle    lastPuzzleVisited;
     private Coroutine respawnRoutine;
 
     [Header("Passive Regen")]
@@ -128,6 +130,11 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         if(!Enable) return;
         CurrentPlayerState.UpdateState(Context);
         HandlePassiveRegen();
+
+        if (Keyboard.current.bKey.wasPressedThisFrame)
+        {
+            TriggerRespawn(true);
+        }
     }
 
     private void FixedUpdate()
@@ -148,12 +155,14 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     { 
         GameplayEvents.OnCheckpoint += UpdateCheckPoint;
         GameplayEvents.OnPlayerBlocked += TogglePlayer;
+        GameplayEvents.OnPuzzleVisited += RegisterPuzzleVisited;
     }
 
     private void OnDisable()
     {
         GameplayEvents.OnCheckpoint -= UpdateCheckPoint;
         GameplayEvents.OnPlayerBlocked -= TogglePlayer;
+        GameplayEvents.OnPuzzleVisited -= RegisterPuzzleVisited;
     }
     
 
@@ -300,14 +309,11 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
             UiEvents.TriggerEnergyChanged(Context.PlayerData.Energy, Context.PlayerData.MaxEnergy);
             UiEvents.TriggerSapChanged(Context.PlayerData.Sap);
 
-            var managerData = DataPersistenceManager.Instance;
-
-            if (managerData && managerData.HasGameData() && managerData.CanTPPlayerToLastPos())
+            
+            if (lastPuzzleVisited)
             {
-                var lastPuzzle = PuzzleManager.Instance.GetPuzzleById(managerData.GetLastVisitedPuzzleId());
-
-                transform.position = lastPuzzle && lastPuzzle.SpawnPoint
-                    ? lastPuzzle.SpawnPoint.position
+                transform.position = lastPuzzleVisited.SpawnPoint
+                    ? lastPuzzleVisited.SpawnPoint.position
                     : originPos;
             }
             else
@@ -363,6 +369,11 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
     public void CreditsState(float time)
     {
         TogglePlayer(true);
+    }
+
+    public void RegisterPuzzleVisited(Puzzle puzzle)
+    {
+        if (puzzle) lastPuzzleVisited = puzzle;
     }
 
     #endregion

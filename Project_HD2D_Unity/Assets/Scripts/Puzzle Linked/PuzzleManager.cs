@@ -55,7 +55,6 @@ public class PuzzleManager : MonoBehaviour, IDataPersistence
     private void OnEnable()
     {
         GameplayEvents.OnPuzzleCompleted += RegisterPuzzleCompletion;
-        GameplayEvents.OnPuzzleVisited += RegisterPuzzleCompletion;
     }
 
     private void OnDisable()

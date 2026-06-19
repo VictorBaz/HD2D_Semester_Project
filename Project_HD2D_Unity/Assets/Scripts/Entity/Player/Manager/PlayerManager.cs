@@ -296,12 +296,14 @@ public class PlayerManager : MonoBehaviour, IDamageable, IDataPersistence
         {
             
             int currentPrayAmount = playerData.Sap;
+            int currentEnergyAmount = playerData.Energy;
             
             playerData         = playerDataRaw.Init();
             
             Context.PlayerData = playerData;
             
             Context.PlayerData.Sap = currentPrayAmount;
+            Context.PlayerData.Energy = currentEnergyAmount;
 
             if (UiManager.Instance)
                 UiManager.Instance.SetupLifeUi(Context.PlayerData.MaxLife, Context.PlayerData.MaxLife);

@@ -23,6 +23,7 @@ public class EnemyFriendlyState : EnemyBaseState
         MoveToRandomPoint(actx);
         actx.AnimManager.ToggleRepulsiveCollider(true);
         actx.AnimManager.UpdateMovement(GameConstants.ANIM_MAGNITUDE_WALK);
+        actx.VfxManager.StopKoVfx();
     }
 
     public override void UpdateState(EnemyContext actx)

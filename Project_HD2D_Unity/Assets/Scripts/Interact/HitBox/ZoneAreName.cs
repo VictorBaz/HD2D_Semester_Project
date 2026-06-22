@@ -10,6 +10,7 @@ public class ZoneAreName : MonoBehaviour
         if (other.CompareTag(GameConstants.PLAYER_TAG))
         {
             UiEvents.TriggerShowArea(areaName);
+            Destroy(gameObject);
         }
     }
 }

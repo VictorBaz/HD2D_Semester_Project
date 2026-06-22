@@ -14,6 +14,7 @@ public class EnemyFriendlyState : EnemyBaseState
 
     public override void EnterState(EnemyContext actx)
     {
+        actx.AnimManager.TriggerSafe();
         actx.Manager.ApplyMovementMode(false);
         actx.ResumeAgent();
 

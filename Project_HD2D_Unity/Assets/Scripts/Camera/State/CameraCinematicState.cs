@@ -10,14 +10,11 @@ public class CameraCinematicState : CameraBaseState
 
     public override void EnterState(CameraStateContext context)
     {
-        if (context.CurrentSettings.isCredit)
-        {
-            CreditsLogic(context);
-        }
-        else
-        {
-            timer = context.CurrentSettings.holdDuration;
-        }
+        if (context.CurrentSettings.isLock) GameplayEvents.TriggerPlayerEnable(false);
+        
+        if (context.CurrentSettings.isCredit) CreditsLogic(context);
+        
+        else timer = context.CurrentSettings.holdDuration;
 
         isHolding = false;
         transition = false;
@@ -50,6 +47,7 @@ public class CameraCinematicState : CameraBaseState
             if (timer <= 0)
             {
                 transition = true;
+                if (context.CurrentSettings.isLock) GameplayEvents.TriggerPlayerEnable(true);
                 context.Manager.ReturnFromCinematic();
             }
         }
@@ -58,6 +56,8 @@ public class CameraCinematicState : CameraBaseState
     public override void ExitState(CameraStateContext context) 
     {
         isHolding = false;
+        
+        
     }
 
     private void CreditsLogic(CameraStateContext context)

@@ -15,6 +15,7 @@ public class EnemyAnimationManager : BaseAnimationManager
     private static readonly int IsExposedHash = Animator.StringToHash("IsExposed");
     
     private static readonly int IsChargingHash = Animator.StringToHash("IsCharging");
+    private static readonly int SafeHash = Animator.StringToHash("Safe");
 
     [SerializeField] private GameObject colliderAttack;
     [SerializeField] private GameObject colliderAttackEnemy;
@@ -31,6 +32,7 @@ public class EnemyAnimationManager : BaseAnimationManager
 
     public void TriggerAttack() => animator.SetTrigger(IsAttackingHash);
     public void TriggerCharge() => animator.SetTrigger(IsChargingHash);
+    public void TriggerSafe() => animator.SetTrigger(SafeHash);
     
     public void SetCarry(bool isCarry) => animator.SetBool(IsCarryHash,isCarry);
 

@@ -16,4 +16,5 @@ public class CameraSettings
     [Header("Target Cinematic")]
     public Transform targetCinematic;
     public bool isCredit = false;
+    public bool isLock = false;
 }

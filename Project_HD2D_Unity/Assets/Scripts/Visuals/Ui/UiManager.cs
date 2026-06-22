@@ -98,6 +98,9 @@ public class UiManager : MonoBehaviour
     private bool isEventsSubscribed = false;
 
     private Dictionary<GameState, CanvasGroup> panelMap;
+    
+    private RectTransform leftPanelRect;
+    private RectTransform rightPanelRect;
 
     #endregion
 
@@ -115,8 +118,11 @@ public class UiManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        openLeftPanelX = canvasGroupLeftPanel.transform.localPosition.x;
-        openRightPanelX = canvasGroupRightPanel.transform.localPosition.x;
+        leftPanelRect = canvasGroupLeftPanel.GetComponent<RectTransform>();
+        rightPanelRect = canvasGroupRightPanel.GetComponent<RectTransform>();
+        
+        openLeftPanelX = leftPanelRect.anchoredPosition.x;
+        openRightPanelX = rightPanelRect.anchoredPosition.x;
 
         panelMap = new Dictionary<GameState, CanvasGroup>
         {
@@ -255,10 +261,10 @@ public class UiManager : MonoBehaviour
         canvasGroupLeftPanel.alpha = on ? 1f : 0f;
         canvasGroupRightPanel.alpha = on ? 1f : 0f;
 
-        canvasGroupLeftPanel.transform.localPosition = 
-            new Vector3(on ? openLeftPanelX : openLeftPanelX - hideOffset, -87.5f, 0);
-        canvasGroupRightPanel.transform.localPosition = 
-            new Vector3(on ? openRightPanelX : openRightPanelX + hideOffset, 0, 0);
+        leftPanelRect.anchoredPosition = 
+            new Vector2(on ? openLeftPanelX : openLeftPanelX - hideOffset, leftPanelRect.anchoredPosition.y);
+        rightPanelRect.anchoredPosition = 
+            new Vector2(on ? openRightPanelX : openRightPanelX + hideOffset, rightPanelRect.anchoredPosition.y);
     }
 
     public void DisplayPanelInput(bool on)
@@ -270,16 +276,16 @@ public class UiManager : MonoBehaviour
         float leftX = on ? openLeftPanelX : openLeftPanelX - hideOffset;
         float rightX = on ? openRightPanelX : openRightPanelX + hideOffset;
 
+        leftPanelRect.DOKill();
+        rightPanelRect.DOKill();
         canvasGroupLeftPanel.DOKill();
         canvasGroupRightPanel.DOKill();
-        canvasGroupLeftPanel.transform.DOKill();
-        canvasGroupRightPanel.transform.DOKill();
 
         RegisterTween(canvasGroupLeftPanel.DOFade(targetAlpha, transitionDuration));
         RegisterTween(canvasGroupRightPanel.DOFade(targetAlpha, transitionDuration));
 
-        RegisterTween(canvasGroupLeftPanel.transform.DOLocalMoveX(leftX, transitionDuration).SetEase(Ease.OutCubic));
-        RegisterTween(canvasGroupRightPanel.transform.DOLocalMoveX(rightX, transitionDuration).SetEase(Ease.OutCubic));
+        RegisterTween(leftPanelRect.DOAnchorPosX(leftX, transitionDuration).SetEase(Ease.OutCubic));
+        RegisterTween(rightPanelRect.DOAnchorPosX(rightX, transitionDuration).SetEase(Ease.OutCubic));
     }
 
     private void AnimateButtonSwap(Image lockImg, Image unlockImg, float lockTarget, float unlockTarget)
